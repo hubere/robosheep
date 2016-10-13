@@ -12,6 +12,7 @@
 #include <fstream>
 using namespace std;
 
+
 #define PI 3.14159265
 #define GetCurrentDir getcwd
 
@@ -28,7 +29,7 @@ void OpenCVUtils::printWorkingDirectory() {
 	// print working directory
 	//
 	char *path = NULL;
-	path = getcwd(NULL, 0); // or _getcwd
+//	path = getcwd(); // or _getcwd
 	if (path != NULL
 		)
 		printf("Working directory: %s\n", path);
@@ -64,7 +65,7 @@ VideoCapture OpenCVUtils::openVideoCapture() {
 //	cap.open(0);
 	//cap.open("http://iris.not.iac.es/axis-cgi/mjpg/video.cgi?resolution=320x240");
 //	cap.open("http://88.53.197.250/axis-cgi/mjpg/video.cgi?resolution=320x240");
-	cap.open("/home/ubuntu/cworkspace/robosheep/M20120703_200959.avi");
+	cap.open("/home/edi/workspace/robosheep/resources/M20120703_200959.avi");
 
 	string filename = "M20120703_200959.avi";
 //

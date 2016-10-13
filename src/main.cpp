@@ -180,6 +180,7 @@ int main(int argc, char** argv) {
 	// global variables
 	//
 
+	printf("Working directory (argv[0]): %s\n", argv[0]);
 	util.printWorkingDirectory();
 
 	VideoCapture cap = util.openVideoCapture();
