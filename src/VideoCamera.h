@@ -23,12 +23,18 @@ class VideoCamera {
 	Point_<int> lastRoboPos;
 	Point_<int> roboPos;
 
+	Scalar gimpValue;
+	Scalar treshColorLow;
+	Scalar treshColorHi;
+
+
 public:
 	VideoCamera();
 	virtual ~VideoCamera();
-	bool read(cv::Mat frame);
+	bool read(Mat& frame);
 	Point_<int>  detectSheepPosition(virtualSheep sheep);
 	Point_<int>  getLastRoboPos();
+	Scalar gimpValue2OpenCV(Scalar gimpValue, int range);
 };
 
 #endif /* SRC_VIDEOCAMERA_H_ */

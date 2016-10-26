@@ -11,12 +11,11 @@
 #include <stdio.h>
 #include <opencv2/imgproc/imgproc.hpp>
 
-
 using namespace std;
 using namespace cv;
 
-
-VideoCamera::VideoCamera() {
+VideoCamera::VideoCamera() :
+		gimpValue(70, 30, 97) {
 
 	OpenCVUtils util;
 
@@ -26,13 +25,10 @@ VideoCamera::VideoCamera() {
 //	cap.open(0);
 	//cap.open("http://iris.not.iac.es/axis-cgi/mjpg/video.cgi?resolution=320x240");
 //	cap.open("http://88.53.197.250/axis-cgi/mjpg/video.cgi?resolution=320x240");
-	cap.open("/home/edi/workspace/robosheep/resources/M20120703_200959.avi");
 
-	string filename = "M20120703_200959.avi";
-//
-//	CvCapture* capture = cvCaptureFromAVI("M20120703_200959.avi");
-//
-//	cap.open(filename);
+	string filename =
+			"/home/edi/workspace/robosheep/resources/M20120703_200959.avi";
+	cap.open(filename);
 
 	if (!cap.isOpened()) {
 		if (util.isFileReadable(filename.c_str())) {
@@ -46,6 +42,10 @@ VideoCamera::VideoCamera() {
 		// cv::waitKey();
 		// return 0;
 	}
+
+	// see http://www.instructables.com/id/How-to-Track-your-Robot-with-OpenCV/step17/OpenCV-Selecting-Your-Color/
+	treshColorLow = gimpValue2OpenCV(gimpValue, -10);
+	treshColorHi = gimpValue2OpenCV(gimpValue, 10);
 
 	printf("\n\nVideoCapture properties:\n");
 	printf("CV_CAP_PROP_FRAME_WIDTH properties:  %d\n",
@@ -80,36 +80,23 @@ VideoCamera::~VideoCamera() {
 	// TODO Auto-generated destructor stub
 }
 
-bool VideoCamera::read(cv::Mat frame)
-{
+bool VideoCamera::read(cv::Mat& frame) {
 	return cap.read(frame);
 }
 
-Point_<int>  VideoCamera::getLastRoboPos(){
+Point_<int> VideoCamera::getLastRoboPos() {
 	return lastRoboPos;
 }
 
-Point_<int>  VideoCamera::detectSheepPosition(virtualSheep sheep)
-{
+Point_<int> VideoCamera::detectSheepPosition(virtualSheep sheep) {
 	cv::Mat frame;
 
 	cap.read(frame);
 
-	/// Convert image to gray and blur it
-	Mat src_gray;
-	cvtColor(frame, src_gray, CV_BGR2GRAY);
-	blur(src_gray, src_gray, Size(3, 3));
-
-	/// Detect edges using Threshold
-	Mat threshold_output;
-	int thresh = 200;
-	int max_thresh = 255;
-	threshold(src_gray, threshold_output, thresh, 255, THRESH_BINARY);
-
 	Mat imgHSV;
 	Mat imgThreshed;
-	Scalar treshColorLow(0, 200, 200);
-	Scalar treshColorHi(40, 255, 255);
+	vector<vector<Point> > contours0;
+	vector<Vec4i> hierarchy;
 
 	// change to HSV color space
 	cvtColor(frame, imgHSV, CV_BGR2HSV);
@@ -119,15 +106,22 @@ Point_<int>  VideoCamera::detectSheepPosition(virtualSheep sheep)
 
 	namedWindow("contours", 1);
 
-	vector<vector<Point> > contours0;
-	vector<Vec4i> hierarchy;
 	findContours(imgThreshed, contours0, hierarchy, RETR_TREE,
 			CHAIN_APPROX_SIMPLE);
-	if (contours0.size() != 1) {
-		printf(
-				"ERROR! found more or less than one contour! contours count: %i\n",
-				contours0.size());
+
+	// find contours with max area
+	double maxArea = 0;
+	vector<Point> bestContour;
+	for (int i = 0; i < contours0.size(); i++) {
+		double area = contourArea(contours0[i]);
+		if (area > maxArea)
+		{
+			maxArea = area;
+			bestContour = contours0[i];
+		}
 	}
+
+	// TODO FIXME HU use bestContour only
 
 	/// Approximate contours to polygons + get bounding rects and circles
 	vector<vector<Point> > contours(contours0.size());
@@ -143,8 +137,12 @@ Point_<int>  VideoCamera::detectSheepPosition(virtualSheep sheep)
 		boundRect[i] = boundingRect(Mat(contours[i]));
 		minEnclosingCircle(contours[i], center[i], radius[i]);
 		if (radius[i] > minRadius and radius[i] < maxRadius)
+		{
 			rightCountourIdx = i;
+			bestContour = contours[i];
+		}
 	}
+
 
 	Mat cnt_img;
 	frame.copyTo(cnt_img);
@@ -154,14 +152,17 @@ Point_<int>  VideoCamera::detectSheepPosition(virtualSheep sheep)
 	Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255),
 			rng.uniform(0, 255));
 	for (uint i = 0; i < contours.size(); i++) {
-		drawContours(cnt_img, contours, i, Scalar(128, 255, 255), 3, CV_AA,
+		drawContours(cnt_img, contours, i, Scalar(128, 255, 255), 1, CV_AA,
 				hierarchy, std::abs(_levels));
-		circle(cnt_img, center[i], (int) radius[i], color, 2, 8, 0);
+//		circle(cnt_img, center[i], (int) radius[i], color, 2, 8, 0);
 	}
 
 	if (rightCountourIdx == -1) {
 		return Point(0, 0);
 	}
+
+	drawContours(cnt_img, contours, rightCountourIdx, Scalar(255, 128, 255), 3, CV_AA,
+			hierarchy, std::abs(_levels));
 
 	circle(cnt_img, center[rightCountourIdx], 10, color, 4, 8, 0);
 
@@ -171,4 +172,14 @@ Point_<int>  VideoCamera::detectSheepPosition(virtualSheep sheep)
 	roboPos = center[rightCountourIdx];
 
 	return roboPos;
+}
+
+/**
+ * HSV value range in Gimp is H = 0-360, S = 0-100, V = 0-100.
+ * In                 OpenCV, H = 0-180, S = 0-255, V = 0-255.
+ */
+Scalar VideoCamera::gimpValue2OpenCV(Scalar gimpValue, int range) {
+	Scalar opencvValue(gimpValue[0] * 180 / 360 + range,
+			gimpValue[1] * 255 / 100 + range, gimpValue[2] * 255 / 100 + range);
+	return opencvValue;
 }

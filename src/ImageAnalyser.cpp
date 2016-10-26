@@ -11,6 +11,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+using namespace std;
 using namespace cv;
 
 #define pi 3.14159265
@@ -20,17 +21,22 @@ const char* trackbar_type =
 		"Type: \n 0: Binary \n 1: Binary Inverted \n 2: Truncate \n 3: To Zero \n 4: To Zero Inverted";
 const char* trackbar_value = "Value";
 
+const char* trackbar_threshold_low = "threshold_low";
+const char* trackbar_threshold_high = "threshold_high";
+
+
 
 Mat src, src_gray, dst;
 
-int threshold_value = 0;
-int threshold_type = 3;
+int threshold_low = 0;
+int threshold_high = 0;
+
 int const max_value = 255;
 int const max_type = 4;
 int const max_BINARY_value = 255;
 
 /// Function headers
-void Threshold_Demo( int, void* );
+void Threshold_Demo(int, void*);
 
 ImageAnalyser::ImageAnalyser() {
 	pos = Point2f(250, 300);
@@ -50,22 +56,18 @@ void ImageAnalyser::analyse(std::string imageName) {
 	/// Load an image
 	src = imread(imageName, 1);
 
-	  /// Convert the image to Gray
-	  cvtColor( src, src_gray, COLOR_RGB2GRAY );
-
-
 	// Create a window to display results
 	namedWindow(window_name, WINDOW_AUTOSIZE);
 
 	/// Create Trackbar to choose type of Threshold
-	createTrackbar(trackbar_type, window_name, &threshold_type, max_type,
+	createTrackbar(trackbar_threshold_low, window_name, &threshold_low, max_value,
 			Threshold_Demo);
 
-	createTrackbar(trackbar_value, window_name, &threshold_value, max_value,
+	createTrackbar(trackbar_threshold_high, window_name, &threshold_high, max_value,
 			Threshold_Demo);
 
 	/// Call the function to initialize
-	  Threshold_Demo( 0, 0 );
+	Threshold_Demo(0, 0);
 
 	waitKey(0);
 }
@@ -73,18 +75,43 @@ void ImageAnalyser::analyse(std::string imageName) {
 /**
  * @function Threshold_Demo
  */
-void Threshold_Demo( int, void* )
-{
-  /* 0: Binary
-     1: Binary Inverted
-     2: Threshold Truncated
-     3: Threshold to Zero
-     4: Threshold to Zero Inverted
-   */
+void Threshold_Demo(int, void*) {
+	/* 0: Binary
+	 1: Binary Inverted
+	 2: Threshold Truncated
+	 3: Threshold to Zero
+	 4: Threshold to Zero Inverted
+	 */
 
-  threshold( src_gray, dst, threshold_value, max_BINARY_value,threshold_type );
+	/// Convert image to gray and blur it
+//	Mat src_gray;
+//	cvtColor(src, src_gray, CV_BGR2GRAY);
+//	blur(src_gray, src_gray, Size(3, 3));
 
-  imshow( window_name, dst );
+//	threshold(dst, dst, threshold_value, max_BINARY_value, threshold_type);
+
+
+	// treshhold
+	Mat imgHSV;
+	Mat imgThreshed;
+	Scalar treshColorLow(0, 200, 200);
+	Scalar treshColorHi(40, 255, 255);
+	vector<vector<Point> > contours0;
+	vector<Vec4i> hierarchy;
+
+	// change to HSV color space
+	cvtColor(src, imgHSV, CV_BGR2HSV);
+	inRange(imgHSV, treshColorLow, treshColorHi, imgThreshed);
+	findContours(imgThreshed, contours0, hierarchy, RETR_TREE,
+			CHAIN_APPROX_SIMPLE);
+
+	if (contours0.size() != 1) {
+		printf(
+				"ERROR! found more or less than one contour! contours count: %i\n",
+				contours0.size());
+	}
+
+	imshow(window_name, imgThreshed);
 }
 
 Size ImageAnalyser::getSize() {

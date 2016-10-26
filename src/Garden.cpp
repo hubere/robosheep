@@ -9,7 +9,7 @@
 
 #include <stdio.h>
 
-Garden::Garden() {
+Garden::Garden() : green(6), greenContours(1), route(20), routes(1){
 
 	//
 	// get contours for greens
