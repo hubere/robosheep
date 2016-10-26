@@ -114,16 +114,6 @@ int main(int argc, char** argv) {
 	//
 	// evaluate arguments
 	//
-
-//	if (argc < 2)
-//	{
-//		MainWindow mainWindow;
-//		mainWindow.show();
-//
-//		waitKey(0);
-//		return 0;
-//	}
-
 	if (argc > 2) {
 		std::string arg1 = argv[1];
 		std::string arg2 = argv[2];
@@ -133,13 +123,34 @@ int main(int argc, char** argv) {
 			imageAnalyser.analyse(arg2);
 			exit(0);
 		}
+	} else if (argc > 1) {
+		std::string arg1 = argv[1];
+
+		if ((arg1 == "-t") || (arg1 == "--track")) {
+			// we want to track an object
+			VideoCamera videoCamera;
+			TrackedObject trackedObject;
+			Mat frame;
+			int framedelay = 1000;
+
+			namedWindow("video", 1);
+
+			while (videoCamera.read(frame, framedelay))
+			{
+				videoCamera.detectObjectPosition(frame, trackedObject);
+				trackedObject.print();
+				imshow("video", frame);
+			}
+			exit(0);
+		}
 	} else {
 		Garden garden;
 		VideoCamera videoCamera;
+		TrackedObject trackedObject;
 
-		cv::Mat frame;
-		cv::Mat mowed;
-		cv::Mat result;
+		Mat frame;
+		Mat mowed;
+		Mat result;
 
 		bool stop(false);
 		int frametime = 0;
@@ -198,23 +209,18 @@ int main(int argc, char** argv) {
 			framecount = 0;
 
 			//
-			// get sheep position
+			// get position of tracked object
 			//
-			Point_<int> roboPos = videoCamera.detectSheepPosition(sheep);
-			Point_<int> lastRoboPos = videoCamera.getLastRoboPos();
-
-			printf(" last=(%d,%d)", lastRoboPos.x, lastRoboPos.y);
-			printf(" detected=(%d,%d) error=(%.0f,%.0f)", roboPos.x, roboPos.y,
-					sheep.getPosition().x - roboPos.x,
-					sheep.getPosition().y - roboPos.y);
-			roboPos = sheep.getPosition(); // nur zum debuggen
+			videoCamera.detectObjectPosition(trackedObject);
+			Point_<int> roboPos = trackedObject.getAktualPos();
+			Point_<int> lastPos = trackedObject.getLastPos();
 
 			//
 			// update mowed image
 			//
-			if (lastRoboPos.x > 0 && lastRoboPos.y > 0 && roboPos.x > 0
+			if (lastPos.x > 0 && lastPos.y > 0 && roboPos.x > 0
 					&& roboPos.y > 0) {
-				line(mowed, roboPos, lastRoboPos, cvScalar(255, 255, 255), 10);
+				line(mowed, roboPos, lastPos, cvScalar(255, 255, 255), 10);
 			}
 
 			//
@@ -241,7 +247,7 @@ int main(int argc, char** argv) {
 			//}
 
 			// 1. calc direction to head
-			int tiDegree = util.getKurswinkelDegree(lastRoboPos, roboPos); // Kurswinkel ist
+			int tiDegree = util.getKurswinkelDegree(lastPos, roboPos); // Kurswinkel ist
 			int tsDegree = util.getKurswinkelDegree(roboPos, aim); // Kurswinkel soll
 
 			// 2. calc movement commands

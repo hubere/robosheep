@@ -34,6 +34,7 @@ public:
 	void slowDown();
 	void update();
 	void print();
+	void locatedAt(Point_<int> location);
 };
 
 #endif /* VIRTUALSHEEP_H_ */

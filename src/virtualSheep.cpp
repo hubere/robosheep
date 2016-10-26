@@ -30,6 +30,13 @@ Size virtualSheep::getSize()
 	return size;
 }
 
+void virtualSheep::locatedAt(Point_<int> location)
+{
+
+}
+
+
+
 void virtualSheep::update() {
 
 	if (pos == Point2f(0, 0))

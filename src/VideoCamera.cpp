@@ -10,12 +10,13 @@
 #include "OpenCVUtils.h"
 #include <stdio.h>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
+
 
 using namespace std;
 using namespace cv;
 
-VideoCamera::VideoCamera() :
-		gimpValue(70, 30, 97) {
+VideoCamera::VideoCamera()  {
 
 	OpenCVUtils util;
 
@@ -43,36 +44,40 @@ VideoCamera::VideoCamera() :
 		// return 0;
 	}
 
-	// see http://www.instructables.com/id/How-to-Track-your-Robot-with-OpenCV/step17/OpenCV-Selecting-Your-Color/
-	treshColorLow = gimpValue2OpenCV(gimpValue, -10);
-	treshColorHi = gimpValue2OpenCV(gimpValue, 10);
-
 	printf("\n\nVideoCapture properties:\n");
-	printf("CV_CAP_PROP_FRAME_WIDTH properties:  %d\n",
+	printf("CV_CAP_PROP_FRAME_WIDTH properties:  %f\n",
 			cap.get(CV_CAP_PROP_FRAME_WIDTH));
-	printf("CV_CAP_PROP_FRAME_HEIGHT properties: %d\n",
+	printf("CV_CAP_PROP_FRAME_HEIGHT properties: %f\n",
 			cap.get(CV_CAP_PROP_FRAME_HEIGHT));
-	printf("CV_CAP_PROP_FPS properties:          %d\n",
+	printf("CV_CAP_PROP_FPS properties:          %f\n",
 			cap.get(CV_CAP_PROP_FPS));
-	printf("CV_CAP_PROP_FORMAT properties:       %d\n",
+	printf("CV_CAP_PROP_FORMAT properties:       %f\n",
 			cap.get(CV_CAP_PROP_FORMAT));
-	printf("CV_CAP_PROP_MODE properties:         %d\n",
+	printf("CV_CAP_PROP_MODE properties:         %f\n",
 			cap.get(CV_CAP_PROP_MODE));
-	printf("CV_CAP_PROP_BRIGHTNESS properties:   %d\n",
+	printf("CV_CAP_PROP_BRIGHTNESS properties:   %f\n",
 			cap.get(CV_CAP_PROP_BRIGHTNESS));
-	printf("CV_CAP_PROP_CONTRAST properties:     %d\n",
+	printf("CV_CAP_PROP_CONTRAST properties:     %f\n",
 			cap.get(CV_CAP_PROP_CONTRAST));
-	printf("CV_CAP_PROP_SATURATION properties:   %d\n",
+	printf("CV_CAP_PROP_SATURATION properties:   %f\n",
 			cap.get(CV_CAP_PROP_SATURATION));
-	printf("CV_CAP_PROP_HUE properties:          %d\n",
+	printf("CV_CAP_PROP_HUE properties:          %f\n",
 			cap.get(CV_CAP_PROP_HUE));
-	printf("CV_CAP_PROP_GAIN properties:         %d\n",
+	printf("CV_CAP_PROP_GAIN properties:         %f\n",
 			cap.get(CV_CAP_PROP_GAIN));
-	printf("CV_CAP_PROP_EXPOSURE properties:     %d\n",
+	printf("CV_CAP_PROP_EXPOSURE properties:     %f\n",
 			cap.get(CV_CAP_PROP_EXPOSURE));
-	printf("CV_CAP_PROP_CONVERT_RGB properties:  %d\n",
+	printf("CV_CAP_PROP_CONVERT_RGB properties:  %f\n",
 			cap.get(CV_CAP_PROP_CONVERT_RGB));
 	printf("\n\n");
+
+
+	namedWindow("contours", 1);
+	moveWindow("contours", 100,100);
+
+	namedWindow("imgThreshed", 1);
+	moveWindow("imgThreshed", 700,100);
+
 
 }
 
@@ -80,77 +85,108 @@ VideoCamera::~VideoCamera() {
 	// TODO Auto-generated destructor stub
 }
 
-bool VideoCamera::read(cv::Mat& frame) {
+bool VideoCamera::read(Mat& frame) {
 	return cap.read(frame);
 }
 
-Point_<int> VideoCamera::getLastRoboPos() {
-	return lastRoboPos;
+bool VideoCamera::read(Mat& frame, int frameDelay) {
+	if (!cap.read(frame))
+			return false;
+
+	char key = waitKey(frameDelay);
+	switch (key) {
+	case 27:
+		return false;
+		break;
+	}
+	return true;
 }
 
-Point_<int> VideoCamera::detectSheepPosition(virtualSheep sheep) {
-	cv::Mat frame;
 
-	cap.read(frame);
+bool VideoCamera::detectObjectPosition(TrackedObject& trackedObject)
+{
+	//
+	// read image from video
+	//
+	Mat frame;
+	if (!cap.read(frame)) {
+		return false;
+	}
 
+	return detectObjectPosition(trackedObject);
+}
+
+bool VideoCamera::detectObjectPosition(Mat& frame, TrackedObject& trackedObject)
+{
+
+	// see http://www.instructables.com/id/How-to-Track-your-Robot-with-OpenCV/step17/OpenCV-Selecting-Your-Color/
+	Scalar treshColorLow = gimpValue2OpenCV(trackedObject.getGimpColor(), -trackedObject.getColorRange());
+	Scalar treshColorHi = gimpValue2OpenCV(trackedObject.getGimpColor(), trackedObject.getColorRange());
+
+	//
+	// prepare image for finding contours
+	//
 	Mat imgHSV;
 	Mat imgThreshed;
+	cvtColor(frame, imgHSV, CV_BGR2HSV); // change to HSV color space
+	inRange(imgHSV, treshColorLow, treshColorHi, imgThreshed); // treshhold
+	imshow("imgThreshed", imgThreshed);
+
+	//
+	// find contours
+	//
 	vector<vector<Point> > contours0;
 	vector<Vec4i> hierarchy;
-
-	// change to HSV color space
-	cvtColor(frame, imgHSV, CV_BGR2HSV);
-
-	// treshhold
-	inRange(imgHSV, treshColorLow, treshColorHi, imgThreshed);
-
-	namedWindow("contours", 1);
-
 	findContours(imgThreshed, contours0, hierarchy, RETR_TREE,
 			CHAIN_APPROX_SIMPLE);
 
-	// find contours with max area
+	//
+	// find bestContour with maximum area
+	//
+	vector<Point> bestContour1;
 	double maxArea = 0;
-	vector<Point> bestContour;
-	for (int i = 0; i < contours0.size(); i++) {
+	for (unsigned int i = 0; i < contours0.size(); i++) {
 		double area = contourArea(contours0[i]);
-		if (area > maxArea)
-		{
+		if (area > maxArea) {
 			maxArea = area;
-			bestContour = contours0[i];
+			bestContour1 = contours0[i];
 		}
 	}
 
+
 	// TODO FIXME HU use bestContour only
 
-	/// Approximate contours to polygons + get bounding rects and circles
+	//
+	// Approximate contours to polygons + get bounding rects and circles
+	//
+	vector<Point> bestContour2;
 	vector<vector<Point> > contours(contours0.size());
 	vector<Rect> boundRect(contours.size());
 	vector<Point2f> center(contours.size());
 	vector<float> radius(contours.size());
 	int rightCountourIdx = -1;
-	Size sheepSize = sheep.getSize();
-	float minRadius = fmin(sheepSize.width, sheepSize.height) / 2.0;
-	float maxRadius = fmax(sheepSize.width, sheepSize.height) * 2.0;
-	for (int i = 0; i < contours.size(); i++) {
+	Size objSize = trackedObject.getSize();
+	float minRadius = fmin(objSize.width, objSize.height) / 2.0;
+	float maxRadius = fmax(objSize.width, objSize.height) * 2.0;
+	for (unsigned int i = 0; i < contours.size(); i++) {
 		approxPolyDP(Mat(contours0[i]), contours[i], 3, true);
 		boundRect[i] = boundingRect(Mat(contours[i]));
 		minEnclosingCircle(contours[i], center[i], radius[i]);
-		if (radius[i] > minRadius and radius[i] < maxRadius)
-		{
+		if (radius[i] > minRadius and radius[i] < maxRadius) {
 			rightCountourIdx = i;
-			bestContour = contours[i];
+			bestContour2 = contours[i];
 		}
 	}
 
-
+	//
+	// draw contours into image cnt_img
+	//
 	Mat cnt_img;
 	frame.copyTo(cnt_img);
 
 	RNG rng(12345);
 	int _levels = 3;
-	Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255),
-			rng.uniform(0, 255));
+	Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
 	for (uint i = 0; i < contours.size(); i++) {
 		drawContours(cnt_img, contours, i, Scalar(128, 255, 255), 1, CV_AA,
 				hierarchy, std::abs(_levels));
@@ -158,20 +194,25 @@ Point_<int> VideoCamera::detectSheepPosition(virtualSheep sheep) {
 	}
 
 	if (rightCountourIdx == -1) {
-		return Point(0, 0);
+		printf("Coulnd not find rightCountourIdx\n");
+		return true;
 	}
 
-	drawContours(cnt_img, contours, rightCountourIdx, Scalar(255, 128, 255), 3, CV_AA,
-			hierarchy, std::abs(_levels));
-
+	drawContours(cnt_img, contours, rightCountourIdx, Scalar(255, 128, 255), 3,
+			CV_AA, hierarchy, std::abs(_levels));
 	circle(cnt_img, center[rightCountourIdx], 10, color, 4, 8, 0);
 
+	//
+	// show contours image cnt_img
+	//
 	imshow("contours", cnt_img);
 
-	lastRoboPos = roboPos;
-	roboPos = center[rightCountourIdx];
+	//
+	// update tracked objects position
+	//
+	trackedObject.setAktualPos(center[rightCountourIdx]);
 
-	return roboPos;
+	return true;
 }
 
 /**

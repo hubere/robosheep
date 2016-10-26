@@ -11,7 +11,7 @@
 #include <opencv2/highgui/highgui.hpp>
 
 #include "OpenCVUtils.h"
-#include "virtualSheep.h"
+#include "TrackedObject.h"
 
 
 using namespace cv;
@@ -19,21 +19,13 @@ using namespace cv;
 class VideoCamera {
 	VideoCapture cap;
 
-	// the detected sheep position
-	Point_<int> lastRoboPos;
-	Point_<int> roboPos;
-
-	Scalar gimpValue;
-	Scalar treshColorLow;
-	Scalar treshColorHi;
-
-
 public:
 	VideoCamera();
 	virtual ~VideoCamera();
+	bool read(Mat& frame, int frameDelay);
 	bool read(Mat& frame);
-	Point_<int>  detectSheepPosition(virtualSheep sheep);
-	Point_<int>  getLastRoboPos();
+	bool detectObjectPosition(TrackedObject& trackedObject);
+	bool detectObjectPosition(Mat& frame, TrackedObject& trackedObject);
 	Scalar gimpValue2OpenCV(Scalar gimpValue, int range);
 };
 
