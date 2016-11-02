@@ -147,6 +147,9 @@ bool ImageAnalyser::detectObjectPosition(Mat& frame,
 	//
 	// show contours image cnt_img
 	//
+	ostringstream text;
+	text << "contours: " << contours0.size();
+	putText(cnt_img, text.str(), Point(40,100), FONT_HERSHEY_COMPLEX_SMALL, 2, Scalar::all(255), 3, 8);
 	imshow(WINDOW_CONTOURS, cnt_img);
 
 	//
@@ -183,42 +186,8 @@ void ImageAnalyser::analyse(std::string imageName,
  * @function adjustParameters
  */
 void adjustParameters(int, void*) {
-	/* 0: Binary
-	 1: Binary Inverted
-	 2: Threshold Truncated
-	 3: Threshold to Zero
-	 4: Threshold to Zero Inverted
-	 */
-
-	/// Convert image to gray and blur it
-//	Mat src_gray;
-//	cvtColor(src, src_gray, CV_BGR2GRAY);
-//	blur(src_gray, src_gray, Size(3, 3));
-//	threshold(dst, dst, threshold_value, max_BINARY_value, threshold_type);
 
 	ImageAnalyser::instance().detectObjectPosition(src);
-
-	// treshhold
-//	Mat imgHSV;
-//	Mat imgThreshed;
-//	Scalar treshColorLow(0, 200, 200);
-//	Scalar treshColorHi(40, 255, 255);
-//	vector<vector<Point> > contours0;
-//	vector<Vec4i> hierarchy;
-//
-//	// change to HSV color space
-//	cvtColor(src, imgHSV, CV_BGR2HSV);
-//	inRange(imgHSV, treshColorLow, treshColorHi, imgThreshed);
-//	findContours(imgThreshed, contours0, hierarchy, RETR_TREE,
-//			CHAIN_APPROX_SIMPLE);
-//
-//	if (contours0.size() != 1) {
-//		printf(
-//				"ERROR! found more or less than one contour! contours count: %lu\n",
-//				contours0.size());
-//	}
-//
-//	imshow(WINDOW_THRESHED, imgThreshed);
 }
 
 Size ImageAnalyser::getSize() {

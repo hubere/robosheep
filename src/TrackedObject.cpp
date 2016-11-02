@@ -24,10 +24,10 @@ static const string WINDOW_TRACKED_OBJECT = "Tracked Object";
 
 static TrackedObject* theTrackedObject;
 
-const char* trackbar_threshold_color_H = "threshold color H";
-const char* trackbar_threshold_color_S = "threshold color S";
-const char* trackbar_threshold_color_V = "threshold color V";
-const char* trackbar_threshold_range   = "threshold range";
+const char* trackbar_threshold_color_H = "H";
+const char* trackbar_threshold_color_S = "S";
+const char* trackbar_threshold_color_V = "V";
+const char* trackbar_threshold_range   = "range";
 
 int color_H = 0;
 int color_S = 0;
@@ -117,7 +117,7 @@ void adjustTrackedObjectParameters(int, void*) {
 	OpenCVUtils utils;
 	Mat imgHSV;
 
-	Mat imgRgb(200,200, CV_8UC3, Scalar::all(0));
+	Mat imgRgb(80,180, CV_8UC3, Scalar::all(0));
 	cvtColor(imgRgb, imgHSV, CV_BGR2HSV); // change to HSV color space
 
 	Scalar gimpColor = theTrackedObject->getGimpColor();
