@@ -10,6 +10,9 @@
 
 #include <opencv2/core/core.hpp>
 
+#include "TrackedObject.h"
+
+
 using namespace std;
 using namespace cv;
 
@@ -21,11 +24,20 @@ class ImageAnalyser {
 	int velocity;
 	Size size;
 	Scalar color;
+	TrackedObject* trackedObject;
+
 
 public:
-	ImageAnalyser();
+	static ImageAnalyser& instance()
+	{
+		static ImageAnalyser INSTANCE;
+		return INSTANCE;
+	}
 	virtual ~ImageAnalyser();
-	void analyse(std::string imageName);
+	bool detectObjectPosition(Mat& frame, TrackedObject& trackedObject);
+	bool detectObjectPosition(Mat& frame);
+	void analyse(std::string imageName, TrackedObject& aTrackedObject);
+
 	void draw(cv::Mat &frame);
 	Size getSize();
 	Point2f getPosition();
@@ -35,6 +47,12 @@ public:
 	void slowDown();
 	void update();
 	void print();
+
+private:
+	ImageAnalyser();
+ 	ImageAnalyser(const ImageAnalyser&);
+	void operator=(const ImageAnalyser&);
+
 };
 
 #endif /* ImageAnalyser_H_ */

@@ -6,6 +6,8 @@
  */
 
 #include "ImageAnalyser.h"
+#include "GUI.h"
+#include "OpenCVUtils.h"
 
 #include <stdio.h>
 #include <opencv2/highgui/highgui.hpp>
@@ -13,18 +15,16 @@
 
 using namespace std;
 using namespace cv;
+using namespace robosheep;
 
 #define pi 3.14159265
 
-const char* window_name = "ImageAnalyser";
+// the adjustable parameter
 const char* trackbar_type =
 		"Type: \n 0: Binary \n 1: Binary Inverted \n 2: Truncate \n 3: To Zero \n 4: To Zero Inverted";
 const char* trackbar_value = "Value";
-
 const char* trackbar_threshold_low = "threshold_low";
 const char* trackbar_threshold_high = "threshold_high";
-
-
 
 Mat src, src_gray, dst;
 
@@ -36,7 +36,7 @@ int const max_type = 4;
 int const max_BINARY_value = 255;
 
 /// Function headers
-void Threshold_Demo(int, void*);
+void adjustParameters(int, void*);
 
 ImageAnalyser::ImageAnalyser() {
 	pos = Point2f(250, 300);
@@ -48,34 +48,141 @@ ImageAnalyser::ImageAnalyser() {
 }
 
 ImageAnalyser::~ImageAnalyser() {
-	// TODO Auto-generated destructor stub
 }
 
-void ImageAnalyser::analyse(std::string imageName) {
+bool ImageAnalyser::detectObjectPosition(Mat& frame) {
+	return detectObjectPosition(frame, *trackedObject);
+}
+
+bool ImageAnalyser::detectObjectPosition(Mat& frame,
+		TrackedObject& trackedObject) {
+
+	OpenCVUtils utils;
+
+	// see http://www.instructables.com/id/How-to-Track-your-Robot-with-OpenCV/step17/OpenCV-Selecting-Your-Color/
+	Scalar treshColorLow = utils.gimpValue2OpenCV(trackedObject.getGimpColor(),
+			-trackedObject.getColorRange());
+	Scalar treshColorHi = utils.gimpValue2OpenCV(trackedObject.getGimpColor(),
+			trackedObject.getColorRange());
+
+	//
+	// prepare image for finding contours
+	//
+	Mat imgHSV;
+	Mat imgThreshed;
+	cvtColor(frame, imgHSV, CV_BGR2HSV); // change to HSV color space
+	inRange(imgHSV, treshColorLow, treshColorHi, imgThreshed); // treshhold
+	imshow(WINDOW_THRESHED, imgThreshed);
+
+	//
+	// find contours
+	//
+	vector<vector<Point> > contours0;
+	vector<Vec4i> hierarchy;
+	findContours(imgThreshed, contours0, hierarchy, RETR_TREE,
+			CHAIN_APPROX_SIMPLE);
+
+	//
+	// find bestContour with maximum area
+	//
+	vector<Point> bestContour1;
+	double maxArea = 0;
+	for (unsigned int i = 0; i < contours0.size(); i++) {
+		double area = contourArea(contours0[i]);
+		if (area > maxArea) {
+			maxArea = area;
+			bestContour1 = contours0[i];
+		}
+	}
+
+	// TODO FIXME HU use bestContour only
+
+	//
+	// Approximate contours to polygons + get bounding rects and circles
+	//
+	vector<Point> bestContour2;
+	vector<vector<Point> > contours(contours0.size());
+	vector<Rect> boundRect(contours.size());
+	vector<Point2f> center(contours.size());
+	vector<float> radius(contours.size());
+	int rightCountourIdx = -1;
+	Size objSize = trackedObject.getSize();
+	float minRadius = fmin(objSize.width, objSize.height) / 2.0;
+	float maxRadius = fmax(objSize.width, objSize.height) * 2.0;
+	for (unsigned int i = 0; i < contours.size(); i++) {
+		approxPolyDP(Mat(contours0[i]), contours[i], 3, true);
+		boundRect[i] = boundingRect(Mat(contours[i]));
+		minEnclosingCircle(contours[i], center[i], radius[i]);
+		if (radius[i] > minRadius and radius[i] < maxRadius) {
+			rightCountourIdx = i;
+			bestContour2 = contours[i];
+		}
+	}
+
+	//
+	// draw contours into image cnt_img
+	//
+	Mat cnt_img;
+	frame.copyTo(cnt_img);
+
+	RNG rng(12345);
+	int _levels = 3;
+	Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255),
+			rng.uniform(0, 255));
+	for (uint i = 0; i < contours.size(); i++) {
+		drawContours(cnt_img, contours, i, Scalar(128, 255, 255), 1, CV_AA,
+				hierarchy, std::abs(_levels));
+//		circle(cnt_img, center[i], (int) radius[i], color, 2, 8, 0);
+	}
+
+	if (rightCountourIdx == -1) {
+		printf("Could not find rightCountourIdx\n");
+		return true;
+	}
+
+	drawContours(cnt_img, contours, rightCountourIdx, Scalar(255, 128, 255), 3,
+	CV_AA, hierarchy, std::abs(_levels));
+	circle(cnt_img, center[rightCountourIdx], 10, color, 4, 8, 0);
+
+	//
+	// show contours image cnt_img
+	//
+	imshow(WINDOW_CONTOURS, cnt_img);
+
+	//
+	// update tracked objects position
+	//
+	trackedObject.setAktualPos(center[rightCountourIdx]);
+
+	return true;
+}
+
+void ImageAnalyser::analyse(std::string imageName,
+		TrackedObject& aTrackedObject) {
 
 	/// Load an image
 	src = imread(imageName, 1);
+	imshow(WINDOW_SOURCE, src);
 
-	// Create a window to display results
-	namedWindow(window_name, WINDOW_AUTOSIZE);
+	trackedObject = &aTrackedObject;
 
 	/// Create Trackbar to choose type of Threshold
-	createTrackbar(trackbar_threshold_low, window_name, &threshold_low, max_value,
-			Threshold_Demo);
+	createTrackbar(trackbar_threshold_low, WINDOW_THRESHED, &threshold_low,
+			max_value, adjustParameters);
 
-	createTrackbar(trackbar_threshold_high, window_name, &threshold_high, max_value,
-			Threshold_Demo);
+	createTrackbar(trackbar_threshold_high, WINDOW_THRESHED, &threshold_high,
+			max_value, adjustParameters);
 
 	/// Call the function to initialize
-	Threshold_Demo(0, 0);
+	adjustParameters(0, 0);
 
 	waitKey(0);
 }
 
 /**
- * @function Threshold_Demo
+ * @function adjustParameters
  */
-void Threshold_Demo(int, void*) {
+void adjustParameters(int, void*) {
 	/* 0: Binary
 	 1: Binary Inverted
 	 2: Threshold Truncated
@@ -87,31 +194,31 @@ void Threshold_Demo(int, void*) {
 //	Mat src_gray;
 //	cvtColor(src, src_gray, CV_BGR2GRAY);
 //	blur(src_gray, src_gray, Size(3, 3));
-
 //	threshold(dst, dst, threshold_value, max_BINARY_value, threshold_type);
 
+	ImageAnalyser::instance().detectObjectPosition(src);
 
 	// treshhold
-	Mat imgHSV;
-	Mat imgThreshed;
-	Scalar treshColorLow(0, 200, 200);
-	Scalar treshColorHi(40, 255, 255);
-	vector<vector<Point> > contours0;
-	vector<Vec4i> hierarchy;
-
-	// change to HSV color space
-	cvtColor(src, imgHSV, CV_BGR2HSV);
-	inRange(imgHSV, treshColorLow, treshColorHi, imgThreshed);
-	findContours(imgThreshed, contours0, hierarchy, RETR_TREE,
-			CHAIN_APPROX_SIMPLE);
-
-	if (contours0.size() != 1) {
-		printf(
-				"ERROR! found more or less than one contour! contours count: %i\n",
-				contours0.size());
-	}
-
-	imshow(window_name, imgThreshed);
+//	Mat imgHSV;
+//	Mat imgThreshed;
+//	Scalar treshColorLow(0, 200, 200);
+//	Scalar treshColorHi(40, 255, 255);
+//	vector<vector<Point> > contours0;
+//	vector<Vec4i> hierarchy;
+//
+//	// change to HSV color space
+//	cvtColor(src, imgHSV, CV_BGR2HSV);
+//	inRange(imgHSV, treshColorLow, treshColorHi, imgThreshed);
+//	findContours(imgThreshed, contours0, hierarchy, RETR_TREE,
+//			CHAIN_APPROX_SIMPLE);
+//
+//	if (contours0.size() != 1) {
+//		printf(
+//				"ERROR! found more or less than one contour! contours count: %lu\n",
+//				contours0.size());
+//	}
+//
+//	imshow(WINDOW_THRESHED, imgThreshed);
 }
 
 Size ImageAnalyser::getSize() {
@@ -155,6 +262,7 @@ void ImageAnalyser::update() {
 		pos.y = 500;
 
 	// print();
+	adjustParameters(0,0);
 }
 
 void ImageAnalyser::draw(cv::Mat &frame) {

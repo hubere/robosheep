@@ -14,8 +14,7 @@ using namespace cv;
 
 class TrackedObject {
 	Size size;
-	Scalar gimpColorValue;
-	int colorRange;
+	Mat img;
 
 	// the detected position
 	Point_<int> lastPos;

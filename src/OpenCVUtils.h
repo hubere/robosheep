@@ -23,7 +23,7 @@ public:
 	int getKurswinkelDegree(Point2f Aufpunkt, Point2f Zielpunkt);
 	void testKurswinkel();
 	bool isFileReadable(const char* filename);
-
+	Scalar gimpValue2OpenCV(Scalar gimpValue, int range);
 
 };
 

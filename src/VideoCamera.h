@@ -24,9 +24,6 @@ public:
 	virtual ~VideoCamera();
 	bool read(Mat& frame, int frameDelay);
 	bool read(Mat& frame);
-	bool detectObjectPosition(TrackedObject& trackedObject);
-	bool detectObjectPosition(Mat& frame, TrackedObject& trackedObject);
-	Scalar gimpValue2OpenCV(Scalar gimpValue, int range);
 };
 
 #endif /* SRC_VIDEOCAMERA_H_ */

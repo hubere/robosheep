@@ -18,14 +18,15 @@
 #include "ImageAnalyser.h"
 #include "VideoCamera.h"
 #include "Garden.h"
+#include "GUI.h"
 
 using namespace std;
 using namespace cv;
+using namespace robosheep;
 
 // our virtual sheep
 virtualSheep sheep;
 OpenCVUtils util;
-ImageAnalyser imageAnalyser;
 
 static int idx = 0;
 static double dist2aim = std::numeric_limits<double>::max();
@@ -119,31 +120,47 @@ int main(int argc, char** argv) {
 		std::string arg2 = argv[2];
 
 		if ((arg1 == "-i") || (arg1 == "--image")) {
+
+			//
 			// we want to analyse an image
-			imageAnalyser.analyse(arg2);
+			//
+			GUI gui;
+			TrackedObject trackedObject;
+
+			ImageAnalyser::instance().analyse(arg2, trackedObject);
 			exit(0);
 		}
+
 	} else if (argc > 1) {
 		std::string arg1 = argv[1];
 
 		if ((arg1 == "-t") || (arg1 == "--track")) {
+
+			//
 			// we want to track an object
+			//
+
 			VideoCamera videoCamera;
 			TrackedObject trackedObject;
+
 			Mat frame;
 			int framedelay = 1000;
 
 			namedWindow("video", 1);
 
-			while (videoCamera.read(frame, framedelay))
-			{
-				videoCamera.detectObjectPosition(frame, trackedObject);
-				trackedObject.print();
+			while (videoCamera.read(frame, framedelay)) {
+				ImageAnalyser::instance().detectObjectPosition(frame, trackedObject);
+				// TODO FIXME HU trackedObject.print();
 				imshow("video", frame);
 			}
 			exit(0);
 		}
 	} else {
+
+		//
+		// control the mower
+		//
+
 		Garden garden;
 		VideoCamera videoCamera;
 		TrackedObject trackedObject;
@@ -211,7 +228,7 @@ int main(int argc, char** argv) {
 			//
 			// get position of tracked object
 			//
-			videoCamera.detectObjectPosition(trackedObject);
+			ImageAnalyser::instance().detectObjectPosition(frame, trackedObject);
 			Point_<int> roboPos = trackedObject.getAktualPos();
 			Point_<int> lastPos = trackedObject.getLastPos();
 
@@ -336,13 +353,10 @@ int main(int argc, char** argv) {
 	return (0);
 }
 
-static void show_usage(std::string name) {
-	std::cerr << "Usage: " << name << " <option(s)> SOURCES" << "Options:\n"
-			<< "\t-h,--help\t\tShow this help message\n"
-			<< "\t-d,--destination DESTINATION\tSpecify the destination path"
-			<< std::endl;
-}
-
-static void parse_arguments() {
-}
+//static void show_usage(std::string name) {
+//	std::cerr << "Usage: " << name << " <option(s)> SOURCES" << "Options:\n"
+//			<< "\t-h,--help\t\tShow this help message\n"
+//			<< "\t-d,--destination DESTINATION\tSpecify the destination path"
+//			<< std::endl;
+//}
 
