@@ -14,18 +14,18 @@
 
 #include "MainWindow.h"
 #include "OpenCVUtils.h"
-#include "virtualSheep.h"
 #include "ImageAnalyser.h"
 #include "VideoCamera.h"
 #include "Garden.h"
 #include "GUI.h"
+#include "VirtualSheep.h"
 
 using namespace std;
 using namespace cv;
 using namespace robosheep;
 
 // our virtual sheep
-virtualSheep sheep;
+VirtualSheep sheep;
 OpenCVUtils util;
 
 static int idx = 0;
@@ -124,10 +124,13 @@ int main(int argc, char** argv) {
 			//
 			// we want to analyse an image
 			//
+
 			GUI gui;
 			TrackedObject trackedObject;
+			ImageAnalyser imageAnalyser;
 
-			ImageAnalyser::instance().analyse(arg2, trackedObject);
+			imageAnalyser.analyse(arg2, trackedObject);
+
 			exit(0);
 		}
 
@@ -142,6 +145,7 @@ int main(int argc, char** argv) {
 
 			VideoCamera videoCamera;
 			TrackedObject trackedObject;
+			ImageAnalyser imageAnalyser;
 
 			Mat frame;
 			int framedelay = 1000;
@@ -149,10 +153,54 @@ int main(int argc, char** argv) {
 			namedWindow("video", 1);
 
 			while (videoCamera.read(frame, framedelay)) {
-				ImageAnalyser::instance().detectObjectPosition(frame, trackedObject);
-				// TODO FIXME HU trackedObject.print();
+				imageAnalyser.detectObjectPosition(frame, trackedObject);
 				imshow("video", frame);
 			}
+
+			exit(0);
+
+		} else if (arg1 == "--virtualSheep") {
+
+			//
+			// we want to track a virtualSheep
+			//
+
+			GUI gui;
+			VideoCamera videoCamera;
+			TrackedObject trackedObject;
+			ImageAnalyser imageAnalyser;
+			VirtualSheep virtualSheep;
+
+			trackedObject.setGimpColor(
+					util.openCV2gimpValue(virtualSheep.getColor()));
+
+			virtualSheep.show(gui);
+			imageAnalyser.show(gui);
+
+			bool stop(false);
+			Mat origFrame, frame;
+			int framedelay = 1000;
+
+			// read next frame if any
+			if (!videoCamera.read(origFrame)) {
+				exit(-1);
+			}
+
+			while (!stop) {
+
+
+				origFrame.copyTo(frame);
+				virtualSheep.update();
+				virtualSheep.print();
+				virtualSheep.draw(frame);
+
+ 				imageAnalyser.detectObjectPosition(frame, trackedObject);
+
+				char key = cv::waitKey(framedelay);
+				virtualSheep.keyPressed(key);
+
+			}
+
 			exit(0);
 		}
 	} else {
@@ -164,6 +212,7 @@ int main(int argc, char** argv) {
 		Garden garden;
 		VideoCamera videoCamera;
 		TrackedObject trackedObject;
+		ImageAnalyser imageAnalyser;
 
 		Mat frame;
 		Mat mowed;
@@ -228,7 +277,7 @@ int main(int argc, char** argv) {
 			//
 			// get position of tracked object
 			//
-			ImageAnalyser::instance().detectObjectPosition(frame, trackedObject);
+			imageAnalyser.detectObjectPosition(frame, trackedObject);
 			Point_<int> roboPos = trackedObject.getAktualPos();
 			Point_<int> lastPos = trackedObject.getLastPos();
 

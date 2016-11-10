@@ -18,7 +18,6 @@
 using namespace cv;
 using namespace std;
 
-
 // names of windows
 static const string WINDOW_TRACKED_OBJECT = "Tracked Object";
 
@@ -52,10 +51,15 @@ TrackedObject::TrackedObject() {
 
 	size = Size(10,15);
 
+}
+
+TrackedObject::~TrackedObject() {
+}
+
+void TrackedObject::show()
+{
 	namedWindow(WINDOW_TRACKED_OBJECT, WINDOW_AUTOSIZE);
 	moveWindow(WINDOW_TRACKED_OBJECT, 0, 500);
-
-
 
 	/// Create Trackbar to choose type of Threshold
 	createTrackbar(trackbar_threshold_color_H, WINDOW_TRACKED_OBJECT, &color_H,
@@ -66,14 +70,16 @@ TrackedObject::TrackedObject() {
 			255, adjustTrackedObjectParameters);
 	createTrackbar(trackbar_threshold_range, WINDOW_TRACKED_OBJECT, &color_range,
 			255, adjustTrackedObjectParameters);
-
-}
-
-TrackedObject::~TrackedObject() {
 }
 
 Scalar TrackedObject::getGimpColor() {
 	return Scalar(color_H, color_S, color_V);
+}
+
+void TrackedObject::setGimpColor(Scalar gimpColor) {
+	color_H = gimpColor[0];
+	color_S = gimpColor[1];
+	color_V = gimpColor[2];
 }
 
 
@@ -131,7 +137,7 @@ void adjustTrackedObjectParameters(int, void*) {
 
 	imshow(WINDOW_TRACKED_OBJECT, imgRgb);
 
-	ImageAnalyser::instance().update();
+	// ImageAnalyser::instance().update();
 }
 
 

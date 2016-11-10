@@ -200,4 +200,10 @@ Scalar OpenCVUtils::gimpValue2OpenCV(Scalar gimpValue, int range) {
 	return opencvValue;
 }
 
+Scalar OpenCVUtils::openCV2gimpValue(Scalar value) {
+	Scalar gimpValue(value[0] / 180 * 360,
+			value[1] / 255 * 100, value[2] / 255 * 100);
+	return gimpValue;
+}
+
 

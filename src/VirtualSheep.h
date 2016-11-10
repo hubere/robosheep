@@ -8,12 +8,15 @@
 #ifndef VIRTUALSHEEP_H_
 #define VIRTUALSHEEP_H_
 
+#include "GUI.h"
+
 #include <opencv2/core/core.hpp>
 
 using namespace std;
 using namespace cv;
+using namespace robosheep;
 
-class virtualSheep {
+class VirtualSheep {
 	// position and direction of sheep
 	Point2f pos;
 	Point2f lastpos;
@@ -23,11 +26,13 @@ class virtualSheep {
 	Scalar color;
 
 public:
-	virtualSheep();
-	virtual ~virtualSheep();
+	VirtualSheep();
+	virtual ~VirtualSheep();
+	void show(GUI& gui);
 	void draw(cv::Mat &frame);
 	Size getSize();
 	Point2f getPosition();
+	Scalar getColor();
 	void setPosition(Point2f newPos);
 	void rotate(double dt);
 	void speedUp();
@@ -35,6 +40,8 @@ public:
 	void update();
 	void print();
 	void locatedAt(Point_<int> location);
+
+	void keyPressed(char key);
 };
 
 #endif /* VIRTUALSHEEP_H_ */

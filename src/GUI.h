@@ -8,25 +8,23 @@
 #ifndef SRC_GUI_H_
 #define SRC_GUI_H_
 
+
 #include <opencv2/highgui/highgui.hpp>
 
 
 using namespace std;
 using namespace cv;
+using namespace cv;
 
 
 namespace robosheep {
 
-// names of windows
-static const string WINDOW_SOURCE = "Source";
-static const string WINDOW_THRESHED = "Threshed";
-static const string WINDOW_CONTOURS = "Contours";
-
-
 class GUI {
+	int nextWindowX, nextWindowY;
 public:
 	GUI();
 	virtual ~GUI();
+	void addWindow(const string& winname);
 };
 
 } /* namespace robosheep */

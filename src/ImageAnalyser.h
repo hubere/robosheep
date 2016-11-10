@@ -10,48 +10,32 @@
 
 #include <opencv2/core/core.hpp>
 
+#include "GUI.h"
 #include "TrackedObject.h"
 
 
 using namespace std;
 using namespace cv;
+using namespace robosheep;
 
+/**
+ * Analyse an image in order to find position of a trackedObject.
+ *
+ */
 class ImageAnalyser {
-	// position and direction of sheep
-	Point2f pos;
-	Point2f lastpos;
-	int dir;
-	int velocity;
-	Size size;
-	Scalar color;
-	TrackedObject* trackedObject;
 
+	TrackedObject* pTrackedObject;
+	Mat* pFrame;
 
 public:
-	static ImageAnalyser& instance()
-	{
-		static ImageAnalyser INSTANCE;
-		return INSTANCE;
-	}
+	ImageAnalyser();
 	virtual ~ImageAnalyser();
+	void show(GUI& gui);
 	bool detectObjectPosition(Mat& frame, TrackedObject& trackedObject);
-	bool detectObjectPosition(Mat& frame);
+	bool detectObjectPosition();
 	void analyse(std::string imageName, TrackedObject& aTrackedObject);
 
-	void draw(cv::Mat &frame);
-	Size getSize();
-	Point2f getPosition();
-	void setPosition(Point2f newPos);
-	void rotate(double dt);
-	void speedUp();
-	void slowDown();
-	void update();
-	void print();
-
 private:
-	ImageAnalyser();
- 	ImageAnalyser(const ImageAnalyser&);
-	void operator=(const ImageAnalyser&);
 
 };
 

@@ -24,6 +24,8 @@ public:
 	void testKurswinkel();
 	bool isFileReadable(const char* filename);
 	Scalar gimpValue2OpenCV(Scalar gimpValue, int range);
+	Scalar openCV2gimpValue(Scalar gimpValue);
+
 
 };
 

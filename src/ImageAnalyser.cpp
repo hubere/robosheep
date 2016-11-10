@@ -19,51 +19,58 @@ using namespace robosheep;
 
 #define pi 3.14159265
 
+static const string WINDOW_IMAGE_ANALYSER = "ImageAnalyser - inRange";
+static const string WINDOW_CONTOURS = "ImageAnalyser - contours";
+
 // the adjustable parameter
-const char* trackbar_type =
-		"Type: \n 0: Binary \n 1: Binary Inverted \n 2: Truncate \n 3: To Zero \n 4: To Zero Inverted";
-const char* trackbar_value = "Value";
-const char* trackbar_threshold_low = "threshold_low";
-const char* trackbar_threshold_high = "threshold_high";
-
-Mat src, src_gray, dst;
-
-int threshold_low = 0;
-int threshold_high = 0;
+const char* trackbar_range = "range";
+int threshold_range = 0;
 
 int const max_value = 255;
 int const max_type = 4;
 int const max_BINARY_value = 255;
 
-/// Function headers
+// callback and callback parameters
 void adjustParameters(int, void*);
 
 ImageAnalyser::ImageAnalyser() {
-	pos = Point2f(250, 300);
-	lastpos = Point2f(0, 0);
-	dir = 45;
-	velocity = 1;
-	size = Size(10, 15);
-	color = Scalar(0, 255, 255); // yellow
 }
 
 ImageAnalyser::~ImageAnalyser() {
 }
 
-bool ImageAnalyser::detectObjectPosition(Mat& frame) {
-	return detectObjectPosition(frame, *trackedObject);
+void ImageAnalyser::show(GUI& gui) {
+	gui.addWindow(WINDOW_IMAGE_ANALYSER);
+	gui.addWindow(WINDOW_CONTOURS);
+
+	/// Create Trackbar to choose type of Threshold
+	createTrackbar(trackbar_range, WINDOW_IMAGE_ANALYSER,
+			&threshold_range, max_value, adjustParameters, this);
+}
+
+bool ImageAnalyser::detectObjectPosition() {
+	if (pFrame != NULL && pTrackedObject != NULL)
+		detectObjectPosition(*pFrame, *pTrackedObject);
 }
 
 bool ImageAnalyser::detectObjectPosition(Mat& frame,
 		TrackedObject& trackedObject) {
 
+	// store parameters for callback function
+	pFrame = &frame;
+	pTrackedObject = &trackedObject;
+
 	OpenCVUtils utils;
 
+	int range = threshold_range;
+	if (threshold_range == 0)
+	{
+		range = trackedObject.getColorRange();
+	}
+
 	// see http://www.instructables.com/id/How-to-Track-your-Robot-with-OpenCV/step17/OpenCV-Selecting-Your-Color/
-	Scalar treshColorLow = utils.gimpValue2OpenCV(trackedObject.getGimpColor(),
-			-trackedObject.getColorRange());
-	Scalar treshColorHi = utils.gimpValue2OpenCV(trackedObject.getGimpColor(),
-			trackedObject.getColorRange());
+	Scalar treshColorLow = utils.gimpValue2OpenCV(trackedObject.getGimpColor(), -range);
+	Scalar treshColorHi = utils.gimpValue2OpenCV(trackedObject.getGimpColor(), range);
 
 	//
 	// prepare image for finding contours
@@ -72,7 +79,7 @@ bool ImageAnalyser::detectObjectPosition(Mat& frame,
 	Mat imgThreshed;
 	cvtColor(frame, imgHSV, CV_BGR2HSV); // change to HSV color space
 	inRange(imgHSV, treshColorLow, treshColorHi, imgThreshed); // treshhold
-	imshow(WINDOW_THRESHED, imgThreshed);
+	imshow(WINDOW_IMAGE_ANALYSER, imgThreshed);
 
 	//
 	// find contours
@@ -149,7 +156,8 @@ bool ImageAnalyser::detectObjectPosition(Mat& frame,
 	//
 	ostringstream text;
 	text << "contours: " << contours0.size();
-	putText(cnt_img, text.str(), Point(40,100), FONT_HERSHEY_COMPLEX_SMALL, 2, Scalar::all(255), 3, 8);
+	putText(cnt_img, text.str(), Point(40, 100), FONT_HERSHEY_COMPLEX_SMALL, 1,
+			Scalar::all(255), 1, 8);
 	imshow(WINDOW_CONTOURS, cnt_img);
 
 	//
@@ -164,20 +172,12 @@ void ImageAnalyser::analyse(std::string imageName,
 		TrackedObject& aTrackedObject) {
 
 	/// Load an image
-	src = imread(imageName, 1);
-	imshow(WINDOW_SOURCE, src);
-
-	trackedObject = &aTrackedObject;
-
-	/// Create Trackbar to choose type of Threshold
-	createTrackbar(trackbar_threshold_low, WINDOW_THRESHED, &threshold_low,
-			max_value, adjustParameters);
-
-	createTrackbar(trackbar_threshold_high, WINDOW_THRESHED, &threshold_high,
-			max_value, adjustParameters);
+	Mat frame = imread(imageName, 1);
+	pFrame = &frame;
+	imshow(WINDOW_IMAGE_ANALYSER, frame);
 
 	/// Call the function to initialize
-	adjustParameters(0, 0);
+	adjustParameters(0, this);
 
 	waitKey(0);
 }
@@ -185,91 +185,97 @@ void ImageAnalyser::analyse(std::string imageName,
 /**
  * @function adjustParameters
  */
-void adjustParameters(int, void*) {
+void adjustParameters(int, void* callbackObject) {
 
-	ImageAnalyser::instance().detectObjectPosition(src);
+	ImageAnalyser* pImageAnalyser = static_cast<ImageAnalyser*>(callbackObject);
+	pImageAnalyser->detectObjectPosition();
 }
 
-Size ImageAnalyser::getSize() {
-	return size;
-}
+// --- rest ist not used ---
 
-void ImageAnalyser::update() {
+/*
+ *
+ Size ImageAnalyser::getSize() {
+ return size;
+ }
 
-	if (pos == Point2f(0, 0))
-		return;
+ void ImageAnalyser::update() {
 
-	//	radian = degree * (pi/180);
-	double radian = dir * (pi / 180);
+ if (pos == Point2f(0, 0))
+ return;
 
-	double incX = cos(radian);
-	double incY = -sin(radian);
+ //	radian = degree * (pi/180);
+ double radian = dir * (pi / 180);
 
-	if (dir > 90) {
-		incX = cos(pi / 180 - radian);
-		incY = sin(pi / 180 - radian);
-	}
-	if (dir > 180) {
-		incX = cos(radian);
-		incY = -sin(radian);
-	}
-	if (dir > 270) {
-		incX = cos(radian);
-		incY = -sin(radian);
-	}
+ double incX = cos(radian);
+ double incY = -sin(radian);
 
-	pos.x += incX * velocity;
-	pos.y += incY * velocity;
+ if (dir > 90) {
+ incX = cos(pi / 180 - radian);
+ incY = sin(pi / 180 - radian);
+ }
+ if (dir > 180) {
+ incX = cos(radian);
+ incY = -sin(radian);
+ }
+ if (dir > 270) {
+ incX = cos(radian);
+ incY = -sin(radian);
+ }
 
-	if (pos.x < 0)
-		pos.x = 0;
-	if (pos.y < 0)
-		pos.y = 0;
-	if (pos.x > 500)
-		pos.x = 500;
-	if (pos.y > 500)
-		pos.y = 500;
+ pos.x += incX * velocity;
+ pos.y += incY * velocity;
 
-	// print();
-	adjustParameters(0,0);
-}
+ if (pos.x < 0)
+ pos.x = 0;
+ if (pos.y < 0)
+ pos.y = 0;
+ if (pos.x > 500)
+ pos.x = 500;
+ if (pos.y > 500)
+ pos.y = 500;
 
-void ImageAnalyser::draw(cv::Mat &frame) {
-	if (pos == Point2f(0, 0))
-		return;
-	rectangle(frame, cvPoint(pos.x - size.width, pos.y - size.height),
-			cvPoint(pos.x + size.width, pos.y + size.height), color, -1, 8, 0);
-	if (lastpos == Point2f(0, 0))
-		return;
-	line(frame, lastpos, pos, cvScalar(255, 0, 0), 2);
-	circle(frame, pos, 4, cvScalar(255, 0, 0), 2);
-}
+ // print();
+ adjustParameters(0,0);
+ }
 
-Point2f ImageAnalyser::getPosition() {
-	return pos;
-}
+ void ImageAnalyser::draw(cv::Mat &frame) {
+ if (pos == Point2f(0, 0))
+ return;
+ rectangle(frame, cvPoint(pos.x - size.width, pos.y - size.height),
+ cvPoint(pos.x + size.width, pos.y + size.height), color, -1, 8, 0);
+ if (lastpos == Point2f(0, 0))
+ return;
+ line(frame, lastpos, pos, cvScalar(255, 0, 0), 2);
+ circle(frame, pos, 4, cvScalar(255, 0, 0), 2);
+ }
 
-void ImageAnalyser::setPosition(Point2f newPos) {
-	pos = newPos;
-}
+ Point2f ImageAnalyser::getPosition() {
+ return pos;
+ }
 
-void ImageAnalyser::rotate(double dt) {
-	dir += dt;
-	if (dir > 360)
-		dir = dir - 360;
-	if (dir < 0)
-		dir = dir + 360;
-}
+ void ImageAnalyser::setPosition(Point2f newPos) {
+ pos = newPos;
+ }
 
-void ImageAnalyser::speedUp() {
-	velocity++;
-}
+ void ImageAnalyser::rotate(double dt) {
+ dir += dt;
+ if (dir > 360)
+ dir = dir - 360;
+ if (dir < 0)
+ dir = dir + 360;
+ }
 
-void ImageAnalyser::slowDown() {
-	velocity--;
-}
+ void ImageAnalyser::speedUp() {
+ velocity++;
+ }
 
-void ImageAnalyser::print() {
-	printf("sheep (%.0f,%.0f): v=%d, d=%d\n", pos.x, pos.y, velocity, dir);
-}
+ void ImageAnalyser::slowDown() {
+ velocity--;
+ }
 
+ void ImageAnalyser::print() {
+ printf("sheep (%.0f,%.0f): v=%d, d=%d\n", pos.x, pos.y, velocity, dir);
+ }
+
+ */
