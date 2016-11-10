@@ -34,6 +34,9 @@ int const max_BINARY_value = 255;
 void adjustParameters(int, void*);
 
 ImageAnalyser::ImageAnalyser() {
+	pTrackedObject = NULL;
+	pFrame = NULL;
+	algorithm = ALGORITHM_DETECTBYCONTOURS;
 }
 
 ImageAnalyser::~ImageAnalyser() {
@@ -55,6 +58,16 @@ bool ImageAnalyser::detectObjectPosition() {
 
 bool ImageAnalyser::detectObjectPosition(Mat& frame,
 		TrackedObject& trackedObject) {
+	if (algorithm == ALGORITHM_DETECTBYMOMENTS)
+		detectByMoments(frame, trackedObject);
+	else
+		detectByContours(frame, trackedObject);
+
+}
+
+bool ImageAnalyser::detectByContours(Mat &frame,
+		TrackedObject& trackedObject)
+{
 
 	// store parameters for callback function
 	pFrame = &frame;
@@ -168,6 +181,37 @@ bool ImageAnalyser::detectObjectPosition(Mat& frame,
 	return true;
 }
 
+bool ImageAnalyser::detectByMoments(Mat &frame,
+		TrackedObject& trackedObject){
+
+	Mat imgHSV;
+	Mat imgThreshed;
+	Scalar treshColorLow(20, 100, 100);
+	Scalar treshColorHi(30, 255, 255);
+
+	// change to HSV color space
+	cvtColor(frame, imgHSV, CV_BGR2HSV);
+
+	// treshhold
+	inRange(imgHSV, treshColorLow, treshColorHi, imgThreshed);
+
+	// Calculate the moments to estimate sheep position
+	Moments mu;
+	mu = moments(imgThreshed, false);
+
+	// The actual moment values
+	double moment10 = mu.m10;
+	double moment01 = mu.m01;
+	double area = mu.m00; // cvGetCentralMoment(moments, 0, 0);
+
+	trackedObject.setAktualPos(Point_<int>(moment10 / area, moment01 / area));
+
+	return true;
+
+}
+
+
+
 void ImageAnalyser::analyse(std::string imageName,
 		TrackedObject& aTrackedObject) {
 
@@ -182,6 +226,8 @@ void ImageAnalyser::analyse(std::string imageName,
 	waitKey(0);
 }
 
+
+
 /**
  * @function adjustParameters
  */
@@ -191,91 +237,3 @@ void adjustParameters(int, void* callbackObject) {
 	pImageAnalyser->detectObjectPosition();
 }
 
-// --- rest ist not used ---
-
-/*
- *
- Size ImageAnalyser::getSize() {
- return size;
- }
-
- void ImageAnalyser::update() {
-
- if (pos == Point2f(0, 0))
- return;
-
- //	radian = degree * (pi/180);
- double radian = dir * (pi / 180);
-
- double incX = cos(radian);
- double incY = -sin(radian);
-
- if (dir > 90) {
- incX = cos(pi / 180 - radian);
- incY = sin(pi / 180 - radian);
- }
- if (dir > 180) {
- incX = cos(radian);
- incY = -sin(radian);
- }
- if (dir > 270) {
- incX = cos(radian);
- incY = -sin(radian);
- }
-
- pos.x += incX * velocity;
- pos.y += incY * velocity;
-
- if (pos.x < 0)
- pos.x = 0;
- if (pos.y < 0)
- pos.y = 0;
- if (pos.x > 500)
- pos.x = 500;
- if (pos.y > 500)
- pos.y = 500;
-
- // print();
- adjustParameters(0,0);
- }
-
- void ImageAnalyser::draw(cv::Mat &frame) {
- if (pos == Point2f(0, 0))
- return;
- rectangle(frame, cvPoint(pos.x - size.width, pos.y - size.height),
- cvPoint(pos.x + size.width, pos.y + size.height), color, -1, 8, 0);
- if (lastpos == Point2f(0, 0))
- return;
- line(frame, lastpos, pos, cvScalar(255, 0, 0), 2);
- circle(frame, pos, 4, cvScalar(255, 0, 0), 2);
- }
-
- Point2f ImageAnalyser::getPosition() {
- return pos;
- }
-
- void ImageAnalyser::setPosition(Point2f newPos) {
- pos = newPos;
- }
-
- void ImageAnalyser::rotate(double dt) {
- dir += dt;
- if (dir > 360)
- dir = dir - 360;
- if (dir < 0)
- dir = dir + 360;
- }
-
- void ImageAnalyser::speedUp() {
- velocity++;
- }
-
- void ImageAnalyser::slowDown() {
- velocity--;
- }
-
- void ImageAnalyser::print() {
- printf("sheep (%.0f,%.0f): v=%d, d=%d\n", pos.x, pos.y, velocity, dir);
- }
-
- */

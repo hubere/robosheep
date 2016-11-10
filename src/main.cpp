@@ -19,6 +19,7 @@
 #include "Garden.h"
 #include "GUI.h"
 #include "VirtualSheep.h"
+#include "Planer.h"
 
 using namespace std;
 using namespace cv;
@@ -29,7 +30,6 @@ VirtualSheep sheep;
 OpenCVUtils util;
 
 static int idx = 0;
-static double dist2aim = std::numeric_limits<double>::max();
 
 void mouseHandler(int event, int x, int y, int flags, void *param) {
 	switch (event) {
@@ -53,57 +53,9 @@ void showRoute(Mat &image, vector<vector<Point> > &contours) {
 	}
 }
 
-Point_<int> detectSheepPosition2(Mat &frame) {
-	Mat imgHSV;
-	Mat imgThreshed;
-	Scalar treshColorLow(20, 100, 100);
-	Scalar treshColorHi(30, 255, 255);
 
-	// change to HSV color space
-	cvtColor(frame, imgHSV, CV_BGR2HSV);
 
-	// treshhold
-	inRange(imgHSV, treshColorLow, treshColorHi, imgThreshed);
 
-	// Calculate the moments to estimate sheep position
-	Moments mu;
-	mu = moments(imgThreshed, false);
-
-	// The actual moment values
-	double moment10 = mu.m10;
-	double moment01 = mu.m01;
-	double area = mu.m00; // cvGetCentralMoment(moments, 0, 0);
-
-	return Point_<int>(moment10 / area, moment01 / area);
-}
-
-const int w = 500;
-
-bool useDistance = false;
-
-bool isRoutePointReached(Point_<int> aim, Point_<int> pos) {
-	// using proximity
-	int proximity = 5;
-	if (aim.x > pos.x - proximity and aim.x < pos.x + proximity
-			and aim.y > pos.y - proximity and aim.y < pos.y + proximity) {
-		// we are in proximity
-
-		if (!useDistance) {
-			return true;
-		} else {
-
-			// using min distance
-			double dist = sqrt(
-					exp(fabs(pos.x - aim.x)) + exp(fabs(pos.y - aim.y)));
-			printf("dist2aim: %.0f\n", dist);
-			if (dist > dist2aim) {
-				return true;
-			}
-			dist2aim = dist;
-		}
-	}
-	return false;
-}
 
 int main(int argc, char** argv) {
 
@@ -213,6 +165,7 @@ int main(int argc, char** argv) {
 		VideoCamera videoCamera;
 		TrackedObject trackedObject;
 		ImageAnalyser imageAnalyser;
+		Planer planer;
 
 		Mat frame;
 		Mat mowed;
@@ -228,7 +181,8 @@ int main(int argc, char** argv) {
 
 		RNG rng(12345);
 
-		Point_<int> aim = garden.getRoutePoint(routeIdx);
+		// tell planer to where sheep should move
+		planer.setAim(garden.getRoutePoint(routeIdx));
 
 		//
 		// initialize images
@@ -292,60 +246,22 @@ int main(int argc, char** argv) {
 			//
 			// get next aim
 			//
-			if (isRoutePointReached(aim, roboPos)) {
+			if (planer.isRoutePointReached(roboPos)) {
 				routeIdx++;
 				if (routeIdx >= (int) garden.getRouteSize())
 					stop = true;
-				aim = garden.getRoutePoint(routeIdx);
-				dist2aim = std::numeric_limits<double>::max();
+				Point2f aim = garden.getRoutePoint(routeIdx);
+				planer.setAim(aim);
 				circle(mowed, aim, 5, cvScalar(0, 255, 255), 1);
-				printf("\nnew aim: (%i,%i)\n", aim.x, aim.y);
-
 			}
 
 			//
-			// calc steering command
+			// calc and issue steering command
 			//
-			// double dist = pointPolygonTest(green, roboPos, 1);
-			// printf(" dist = %f\n", dist);
-			// if (dist < 0){
-			// turn
-			//}
-
-			// 1. calc direction to head
-			int tiDegree = util.getKurswinkelDegree(lastPos, roboPos); // Kurswinkel ist
-			int tsDegree = util.getKurswinkelDegree(roboPos, aim); // Kurswinkel soll
-
-			// 2. calc movement commands
-			int rotate = (tsDegree - tiDegree);
-			if (rotate > 180)
-				rotate = rotate - 360;
-			if (rotate < -180)
-				rotate = 360 + rotate;
+			int rotate = planer.plan(lastPos, roboPos);
 			sheep.rotate(rotate);
-
-			// sheep.rotate(tdDegree);
-
-			printf(" aim=(%d,%d) ti=%d ts=%d => rotate:%d ", aim.x, aim.y,
-					tiDegree, tsDegree, rotate);
 			sheep.print();
-
-			//		cvtColor(frame, src_gray, CV_BGR2GRAY);
-			//		blur(src_gray, src_gray, Size(3, 3));
-
-			//		/// Detect edges using canny
-			//		Canny(src_gray, result, thresh, thresh * 2, 3);
-			//		/// Find contours
-			//		findContours(result, contours, hierarchy, CV_RETR_TREE,
-			//				CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
-
-			//		imshow("result", drawing);
-
-			//getCommand(frame);
-
-			//
-			// issue steering command
-			//
+			// TODO FIXME HU also calc speed.
 			//moveRobo();
 
 			//-------------------------------------------------------------------------
