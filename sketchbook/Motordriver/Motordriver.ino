@@ -1,3 +1,6 @@
+
+
+
 #include "DualMC33926MotorShield.h"
 
 DualMC33926MotorShield md;
@@ -29,24 +32,6 @@ void loop()
     adjustSpeedM1(cmdSpeed + cmdDir);
     adjustSpeedM2(cmdSpeed - cmdDir);
     
-  /*  
-    if (command > 300){
-      // M1 forward
-      adjustSpeedM1(command % 100);
-    }
-    else if (command > 200){
-      // M1 backward
-      adjustSpeedM1(-(command % 100));
-    }
-    else if (command > 100){
-      // M2 forward
-      adjustSpeedM2(command % 100);
-    }
-    else{
-      // M2 backward
-      adjustSpeedM2(-(command % 100));
-    }
-   */
     Serial.print("M1: ");
     Serial.print(md.getM1CurrentMilliamps());
     Serial.print(" M2: ");
