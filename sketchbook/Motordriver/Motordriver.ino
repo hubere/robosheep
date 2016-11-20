@@ -29,8 +29,14 @@
 #include <ESP8266WiFi.h>
 
 
+//
+// programm behavior
+//
+#define LOG_ALIVE   0
 
+//
 // WiFi connection configuration
+//
 //#define WIFI_PASSWORD   "LeInternetUwant11"
 //#define WIFI_SSID       "Buergernetz-WLAN"
 #define WIFI_PASSWORD   "Welpenspiel"
@@ -53,9 +59,15 @@ const int ledPin = 13;
 //
 // global variables
 // 
-int speedM1 = 0;
-int speedM2 = 0;
 int loopCount = 0;
+unsigned long lastMillis = millis();
+int speedM1 = 0;    // actual speed of motor 1 (PWM)
+int speedM2 = 0;    // actual speed of motor 2 (PWM)
+int desiredSpeedM1 = 0;    // desired speed of motor 1 (PWM)
+int desiredSpeedM2 = 0;    // desired speed of motor 2 (PWM)
+int cmdSpeed = 0;   // desired speed 
+int cmdDir = 0;     // desired dir
+
 
 WiFiServer server(80);
 DualMC33926MotorShield md;
@@ -93,93 +105,96 @@ void setup()
   Serial.println("/sheep?speed=<speed>&dir=<dir>");
   Serial.println("");
   Serial.println("where");
-  Serial.println("  <speed> : -400 to 400");
-  Serial.println("  <dir>   : |speed| + |dir| < 400");
+  Serial.println("  <speed> : -100 to 100");
+  Serial.println("  <dir>   : |speed| + |dir| < 100");
+  Serial.println("");
+  Serial.println("or ");
+  Serial.print("http://");
+  Serial.print(WiFi.localIP());
+  Serial.println("/motor?m1=<speedM1>&m2=<speedM2>");
+  Serial.println("");
+  Serial.println("where");
+  Serial.println("  <speedM1> : -100 to 100");
+  Serial.println("  <speedM2> : -100 to 100");
   Serial.println("");
 
 }
 
 void loop()
 {
+  unsigned long currentMillis = millis();
+
+  //
+  // adjust motors
+  //
+  adjustMotorSpeeds();
+  delay(10);
+
+
+  //
+  // only each second do further processing
+  //
+  if (currentMillis - lastMillis < 1000)
+    return;    
+  lastMillis = currentMillis;
+  
+  //
   // Check if a client has connected
+  //
   WiFiClient client = server.available();
   if (!client) {
-    Serial.print(".");
-    loopCount = loopCount+1;
-    if (loopCount > 50)
+    if (LOG_ALIVE)
     {
-      loopCount =0;
-      Serial.println();       
+      Serial.print(".");
+      loopCount = loopCount+1;
+      if (loopCount > 50)
+      {
+        loopCount =0;
+        Serial.println();       
+      }
     }
-    delay(1000);    
     return;
   }
   loopCount =0;
 
+  //
   // Wait until the client sends some data
+  //
   Serial.println("\n\nnew client");
   while(!client.available()){
     delay(1);
   }
 
+  //
   // Read the first line of the request
-  String req = client.readStringUntil('\r');
-  Serial.println(req);
+  //
+  String request = client.readStringUntil('\r');
+  Serial.println(request);
   client.flush();
+
+  //
+  // received valid request?
+  //
+  if (request.indexOf("/sheep") > 0){
+    extractSpeedAndDir(request);
   
-  // Match the request
-  int cmdSpeed = 0;
-  int cmdDir = 0;
-
-  if (req.indexOf("/sheep") != -1){
-    /*
-    int locationQuestionmark = req.find("?");
-    String params = req.substr(locationQuestionmark+1, req.size());
-    int locationEquals = req.find("=");
-    String speedString = req.substr(locationEquals+1, req.size());
-    int cmdSpeed = std::stoi(speedString);
-    */
-
-    int posSpeed = req.indexOf("speed=");
-    int posDir = req.indexOf("dir=");
-    if (posSpeed != -1)
-    {
-      String speedString = req.substring(posSpeed+6, req.length());
-      cmdSpeed =  speedString.toInt();
-    }
-    if (posDir != -1)
-    {
-      String dirString = req.substring(posDir+4, req.length());
-      cmdDir =  dirString.toInt();
-    }
-
-  }
-  else {
-    Serial.println("invalid request");
+  }else if (request.indexOf("/motor") > 0){
+    extractMotorSpeeds(request);    
+    
+  }else{
+    client.print(buildPage());
     client.stop();
     return;
   }
-
-  adjustSpeedM1(cmdSpeed + cmdDir);
-  adjustSpeedM2(cmdSpeed - cmdDir);
-
-  Serial.print("M1: ");
-  Serial.print(md.getM1CurrentMilliamps());
-  Serial.print(" M2: ");
-  Serial.println(md.getM2CurrentMilliamps());
-
-  client.flush();
-
-  // Prepare the response
-  String s = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<!DOCTYPE HTML>\r\n<html>\r\nSpeed-dir is now ";
-  s += md.getM1CurrentMilliamps();
-  s += " - ";
-  s += md.getM2CurrentMilliamps();
-  s += "</html>\n";
-
+  
+  //
   // Send the response to the client
+  //
+  String s = String("M1: ") + desiredSpeedM1 + " M2: " + desiredSpeedM2; 
+  client.flush();
   client.print(s);
   delay(1);
+  Serial.println(s);
   Serial.println("Client disonnected");
 
   // The client will actually be disconnected 
@@ -188,50 +203,51 @@ void loop()
   // delay(1000);
 }
 
-void adjustSpeedM1(int newSpeed){
-  Serial.print("adjustSpeedM1 to  ");
-  Serial.println(newSpeed);
-  if (newSpeed < speedM1){
-     decelerate("M1", speedM1, newSpeed*4); 
-  }else{
-     accelerate("M1", speedM1, newSpeed*4); 
-  }
-  speedM1 = newSpeed; 
-}
-
-void adjustSpeedM2(int newSpeed){
-  Serial.print("adjustSpeedM2 to ");
-  Serial.println(newSpeed);
-  if (newSpeed < speedM2){
-     decelerate("M2", speedM2, newSpeed*4);
-  }else{
-     accelerate("M2", speedM2, newSpeed*4); 
-  }
-  speedM2 = newSpeed; 
-}
-
-void accelerate(String motor, int from, int to){  
-  for (int i = from; i < to; i++)
+/*
+ * Match the request, i.e. extract speed and dir
+ */
+void extractSpeedAndDir(String request){
+  int posSpeed = request.indexOf("speed=");
+  int posDir = request.indexOf("dir=");
+  if (posSpeed != -1)
   {
-    if (motor.equals("M1")){
-      md.setM1Speed(i);
-    }else{
-      md.setM2Speed(i);
-    }
-    delay(2);
+    String speedString = request.substring(posSpeed+6, request.length());
+    cmdSpeed =  speedString.toInt();
+  }
+  if (posDir != -1)
+  {
+    String dirString = request.substring(posDir+4, request.length());
+    cmdDir =  dirString.toInt();
+  }
+
+  desiredSpeedM1 = cmdSpeed + cmdDir;
+  desiredSpeedM2 = cmdSpeed - cmdDir;  
+}
+
+/*
+ * Match the request, i.e. extract speed for both motors,e.g. motor?m1=-10&m2=20
+ */
+void extractMotorSpeeds(String request){
+  int posM1 = request.indexOf("m1=");
+  int posM2 = request.indexOf("m2=");
+  if (posM1 != -1)
+  {
+    String speedM1 = request.substring(posM1+3, request.length());
+    desiredSpeedM1 =  speedM1.toInt();
+  }
+  if (posM2 != -1)
+  {
+    String speedM1 = request.substring(posM2+3, request.length());
+    desiredSpeedM2 =  speedM1.toInt();
   }
 }
 
-void decelerate(String motor, int from, int to){  
-  for (int i = from; i > to; i--)
-  {
-    if (motor.equals("M1")){
-      md.setM1Speed(i);
-    }else{
-      md.setM2Speed(i);
-    }
-    delay(2);
-  }
+void adjustMotorSpeeds(){
+  if (speedM1 < desiredSpeedM1)     speedM1++;
+  if (speedM1 > desiredSpeedM1)     speedM1--;
+  if (speedM2 < desiredSpeedM2)     speedM2++;
+  if (speedM2 > desiredSpeedM2)     speedM2--;
+  md.setSpeeds(speedM1, speedM2);
 }
 
 
@@ -254,5 +270,72 @@ void connectWiFi()
   // Print the IP address
   Serial.println(WiFi.localIP());
 }
+
+
+String buildPage(){
+const char *text =
+"<!DOCTYPE HTML>\n"
+"<html>\n"
+"<head>\n"
+"<style>\n"
+"div {\n"
+"    width: 100px;\n"
+"    height: 200px;\n"
+"    border: 1px solid black;\n"
+"}\n"
+"</style>\n"
+"</head>\n"
+"<body>\n"
+"\n"
+"<h1>Motordriver</h1>\n"
+"\n"
+"<p><strong>Tip:</strong> Try to click different places in the box to speed up motors.<br>\n "
+"Center means 0,0 i.e. stop. Click towards top runs forward, a click towards bottom runs backward.\n"
+"Once the mouse moves out of the box, motors come to a still.\n"
+"</p>\n"
+"\n"
+"<div onclick=\"sendMotor(event)\" onmousemove=\"showCoords(event)\" onmouseout=\"clearCoor()\"></div>\n"
+"\n"
+"<p id=\"Motordriver\"></p>\n"
+"\n"
+"<script>\n"
+"\n"
+"function showCoords(event) {\n"
+"    var x = event.clientX - 60;\n"
+"    var y = event.clientY - 100;\n"
+"    var m1 = 100 - y + x ;\n"
+"    var m2 = 100 - y - x;\n"
+"    var response = \"x:\"+x+\" y:\"+y+\" m1:\"+m1+\" m2:\"+m2;\n"
+"    document.getElementById('Motordriver').innerHTML = response;\n"
+"}\n"
+"\n"
+"\n"
+"function sendMotor(event) {\n"
+"    var x = event.clientX - 60;\n"
+"    var y = event.clientY - 100;\n"
+"    var m1 = 100 - y + x ;\n"
+"    var m2 = 100 - y - x;\n"
+"    return send(m1, m2);\n"
+"}\n"
+"\n"
+"function clearCoor() {\n"
+"    return send(0, 0);\n"
+"}\n"
+"\n"
+"function send(m1, m2) {\n"
+"  var xmlHttp = new XMLHttpRequest();\n"
+"  xmlHttp.open( \"GET\", \"http://192.168.0.112/motor?m1=\"+m1+\"&m2=\"+m2, false ); // false for synchronous request\n"
+"  xmlHttp.send( null );\n"
+"  var response = xmlHttp.responseText;\n"
+"  document.getElementById('Motordriver').innerHTML = response;\n"
+"  return response;\n"
+"}\n"
+"\n"
+"</script>\n"
+"</body>\n"
+"</html>\n";
+  return text;
+}
+
 
 

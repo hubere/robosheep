@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<style>
+div {
+    width: 100px;
+    height: 200px;
+    border: 1px solid black;
+}
+</style>
+</head>
+<body>
+
+<h1>Motordriver</h1>
+
+<p><strong>Tip:</strong> Try to click different places in the box to speed up motors.<br> 
+Center means 0,0 i.e. stop. Click towards top runs forward, a click towards bottom runs backward.
+Once the mouse moves out of the box, motors come to a still.
+</p>
+
+<div onclick="sendMotor(event)" onmousemove="showCoords(event)" onmouseout="clearCoor()"></div>
+
+<p id="demo"></p>
+
+<script>
+
+function showCoords(event) {
+    var x = event.clientX - 60;
+    var y = event.clientY - 100;
+    var m1 = 100 - y + x ;
+    var m2 = 100 - y - x;
+    return send(m1, m2);
+}
+
+function showCoords(event) {
+    var x = event.clientX - 60;
+    var y = event.clientY - 100;
+    var m1 = 100 - y + x ;
+    var m2 = 100 - y - x;
+    var response = "x:"+x+" y:"+y+" m1:"+m1+" m2:"+m2;
+    document.getElementById('demo').innerHTML = response;
+}
+
+function clearCoor() {
+    return send(0, 0);
+}
+
+function send(m1, m2) {
+  var xmlHttp = new XMLHttpRequest();
+  xmlHttp.open( "GET", "http://192.168.0.112/motor?m1="+m1+"&m2="+m2, false ); // false for synchronous request
+  xmlHttp.send( null );
+  var response = xmlHttp.responseText;
+  document.getElementById('demo').innerHTML = response;
+  return response;
+}
+
+</script>
+</body>
+</html>
