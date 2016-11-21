@@ -7,10 +7,10 @@
 class DualMC33926MotorShield
 {
   private:
-    unsigned char _M1DIR  = D0;
-    unsigned char _M1PWM  = D1;
-    unsigned char _M2DIR  = D5;
-    unsigned char _M2PWM  = D6;
+    unsigned char _M1IN1  = D0;
+    unsigned char _M1IN2  = D1;
+    unsigned char _M2IN1  = D5;
+    unsigned char _M2IN2  = D6;
     unsigned char _nD2    = D4;
     unsigned char _nSF    = D8;
 
@@ -24,17 +24,17 @@ class DualMC33926MotorShield
   // Public Methods //////////////////////////////////////////////////////////////
   void init(){
     
-    pinMode(_M1DIR,OUTPUT);
-    Serial.println("pinMode(_M1DIR (D0),OUTPUT)"); delay(10);    
+    pinMode(_M1IN1,OUTPUT);
+    Serial.println("pinMode(_M1IN1 (D0),OUTPUT)"); delay(10);    
     
-    pinMode(_M1PWM,OUTPUT);
-    Serial.println("pinMode(_M1PWM (D1),OUTPUT)"); delay(10);    
+    pinMode(_M1IN2,OUTPUT);
+    Serial.println("pinMode(_M1IN2 (D1),OUTPUT)"); delay(10);    
     
-    pinMode(_M2DIR,OUTPUT);
-    Serial.println("pinMode(_M2DIR (D5),OUTPUT)"); delay(10);    
+    pinMode(_M2IN1,OUTPUT);
+    Serial.println("pinMode(_M2IN1 (D5),OUTPUT)"); delay(10);    
     
-    pinMode(_M2PWM,OUTPUT);
-    Serial.println("pinMode(_M2PWM (D6),OUTPUT)"); delay(10);    
+    pinMode(_M2IN2,OUTPUT);
+    Serial.println("pinMode(_M2IN2 (D6),OUTPUT)"); delay(10);    
     
     pinMode(_nD2,OUTPUT);
     Serial.println("pinMode(_nD2 (D4),OUTPUT)"); delay(10);    
@@ -46,18 +46,21 @@ class DualMC33926MotorShield
     Serial.println("digitalWrite(_nD2,HIGH)"); delay(10);    
   }
 
-  void setSpeed(unsigned char pwmPin, unsigned char dirPin, int speed)
+  void setSpeed(unsigned char pinForward, unsigned char pinBackward, int speed)
   {
-    unsigned char dir = LOW;
-    if (speed < 0)
-    {
-      speed = -speed;  // Make speed a positive quantity
-      dir = HIGH;  // Preserve the direction
+    if (speed > 0){
+      digitalWrite(pinBackward, LOW);
+      setPosSpeed(pinForward, speed);
+    }else{
+      digitalWrite(pinForward, LOW);
+      setPosSpeed(pinBackward, -speed);
     }
-    digitalWrite(dirPin, dir);
+  }
 
+  void setPosSpeed(unsigned char pin, int speed)
+  {
     if (speed > 100) speed = 100;
-    analogWrite(pwmPin, speed * PWMRANGE / 100); // default to using analogWrite, mapping 400 to PWMRANGE (1023)
+    analogWrite(pin, speed * PWMRANGE / 100); // default to using analogWrite, mapping 400 to PWMRANGE (1023)
   }
 
   //
@@ -65,8 +68,8 @@ class DualMC33926MotorShield
   //
   void setSpeeds(int m1Speed, int m2Speed)
   {
-    setSpeed(_M1PWM, _M1DIR, m1Speed);
-    setSpeed(_M2PWM, _M2DIR, m2Speed);  
+    setSpeed(_M1IN1, _M1IN2, m1Speed);
+    setSpeed(_M2IN1, _M2IN2, m2Speed);  
   }
 
   //
