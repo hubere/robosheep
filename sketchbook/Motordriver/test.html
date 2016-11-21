@@ -18,40 +18,64 @@ Center means 0,0 i.e. stop. Click towards top runs forward, a click towards bott
 Once the mouse moves out of the box, motors come to a still.
 </p>
 
-<div onclick="sendMotor(event)" onmousemove="showCoords(event)" onmouseout="clearCoor()"></div>
+Enable Motor: <input type="checkbox" id="enableMotor">
+
+
+<div onclick="setMousePosition(event)" onmousemove="speedMotors(event)" onmouseout="stop()"></div>
 
 <p id="demo"></p>
 
 <script>
 
-function showCoords(event) {
-    var x = event.clientX - 60;
-    var y = event.clientY - 100;
-    var m1 = 100 - y + x ;
-    var m2 = 100 - y - x;
-    return send(m1, m2);
-}
+var offsetX ;
+var offsetY ;
+var x;
+var y;
 
-function showCoords(event) {
-    var x = event.clientX - 60;
-    var y = event.clientY - 100;
-    var m1 = 100 - y + x ;
-    var m2 = 100 - y - x;
-    var response = "x:"+x+" y:"+y+" m1:"+m1+" m2:"+m2;
+function setMousePosition(event) {
+	console.log("setMousePosition called ");
+    x = event.clientX;
+    y = event.clientY;
+    offsetX = x ;
+    offsetY = y ;
+    var response = "Offest ("+x+"/"+y+")";
     document.getElementById('demo').innerHTML = response;
 }
 
-function clearCoor() {
-    return send(0, 0);
+function speedMotors(event) {
+    x = event.clientX;
+    y = event.clientY;
+	var m1 = 0;
+	var m2 = 0;
+	if (offsetX != 0)
+	{
+		var divX = offsetX - x;
+		var divY = offsetY - y;
+		m1 = divY  + divX;
+		m2 = divY  - divX;
+	}
+	send(m1,m2);
+}
+
+function stop() {
+    offsetX = 0;
+    offsetY = 0;
+	x = 0;
+	y = 0;
+	send(0,0);
 }
 
 function send(m1, m2) {
-  var xmlHttp = new XMLHttpRequest();
-  xmlHttp.open( "GET", "http://192.168.0.112/motor?m1="+m1+"&m2="+m2, false ); // false for synchronous request
-  xmlHttp.send( null );
-  var response = xmlHttp.responseText;
+  var motorsEnabled = document.getElementById("enableMotor").checked;
+  var response = "Offest ("+offsetX+"/"+offsetY+") m1:"+m1+" m2:"+m2;
+  if (motorsEnabled)
+  {
+	  var xmlHttp = new XMLHttpRequest();
+	  xmlHttp.open( "GET", "http://192.168.0.112/motor?m1="+m1+"&m2="+m2, false ); // false for synchronous request
+	  xmlHttp.send( null );
+	  response = xmlHttp.responseText;
+  }
   document.getElementById('demo').innerHTML = response;
-  return response;
 }
 
 </script>

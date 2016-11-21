@@ -26,6 +26,7 @@
 
 
 #include "DualMC33926MotorShield.h"
+#include "HTML.h"
 #include <ESP8266WiFi.h>
 
 
@@ -182,7 +183,7 @@ void loop()
     extractMotorSpeeds(request);    
     
   }else{
-    client.print(buildPage());
+    client.print(page1);
     client.stop();
     return;
   }
@@ -272,70 +273,6 @@ void connectWiFi()
 }
 
 
-String buildPage(){
-const char *text =
-"<!DOCTYPE HTML>\n"
-"<html>\n"
-"<head>\n"
-"<style>\n"
-"div {\n"
-"    width: 100px;\n"
-"    height: 200px;\n"
-"    border: 1px solid black;\n"
-"}\n"
-"</style>\n"
-"</head>\n"
-"<body>\n"
-"\n"
-"<h1>Motordriver</h1>\n"
-"\n"
-"<p><strong>Tip:</strong> Try to click different places in the box to speed up motors.<br>\n "
-"Center means 0,0 i.e. stop. Click towards top runs forward, a click towards bottom runs backward.\n"
-"Once the mouse moves out of the box, motors come to a still.\n"
-"</p>\n"
-"\n"
-"<div onclick=\"sendMotor(event)\" onmousemove=\"showCoords(event)\" onmouseout=\"clearCoor()\"></div>\n"
-"\n"
-"<p id=\"Motordriver\"></p>\n"
-"\n"
-"<script>\n"
-"\n"
-"function showCoords(event) {\n"
-"    var x = event.clientX - 60;\n"
-"    var y = event.clientY - 100;\n"
-"    var m1 = 100 - y + x ;\n"
-"    var m2 = 100 - y - x;\n"
-"    var response = \"x:\"+x+\" y:\"+y+\" m1:\"+m1+\" m2:\"+m2;\n"
-"    document.getElementById('Motordriver').innerHTML = response;\n"
-"}\n"
-"\n"
-"\n"
-"function sendMotor(event) {\n"
-"    var x = event.clientX - 60;\n"
-"    var y = event.clientY - 100;\n"
-"    var m1 = 100 - y + x ;\n"
-"    var m2 = 100 - y - x;\n"
-"    return send(m1, m2);\n"
-"}\n"
-"\n"
-"function clearCoor() {\n"
-"    return send(0, 0);\n"
-"}\n"
-"\n"
-"function send(m1, m2) {\n"
-"  var xmlHttp = new XMLHttpRequest();\n"
-"  xmlHttp.open( \"GET\", \"http://192.168.0.112/motor?m1=\"+m1+\"&m2=\"+m2, false ); // false for synchronous request\n"
-"  xmlHttp.send( null );\n"
-"  var response = xmlHttp.responseText;\n"
-"  document.getElementById('Motordriver').innerHTML = response;\n"
-"  return response;\n"
-"}\n"
-"\n"
-"</script>\n"
-"</body>\n"
-"</html>\n";
-  return text;
-}
 
 
 
