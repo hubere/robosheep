@@ -17,7 +17,6 @@ using namespace std;
 using namespace cv;
 using namespace robosheep;
 
-#define pi 3.14159265
 
 static const string WINDOW_IMAGE_ANALYSER = "ImageAnalyser - inRange";
 static const string WINDOW_CONTOURS = "ImageAnalyser - contours";

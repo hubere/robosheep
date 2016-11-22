@@ -18,6 +18,7 @@ using namespace cv;
 namespace robosheep {
 
 
+static const string WINDOW_PLANER = "Planer";
 const bool useDistance = false;
 static double dist2aim = std::numeric_limits<double>::max();
 
@@ -29,6 +30,10 @@ Planer::Planer() : aim(0,0), proximity(5) {
 
 Planer::~Planer() {
 	// TODO Auto-generated destructor stub
+}
+
+void Planer::show(GUI& gui) {
+	gui.addWindow(WINDOW_PLANER);
 }
 
 void Planer::setAim(Point2f newAim)

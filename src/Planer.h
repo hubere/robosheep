@@ -8,6 +8,8 @@
 #ifndef PLANER_H_
 #define PLANER_H_
 
+#include "GUI.h"
+
 #include "opencv2/core/core.hpp"
 
 using namespace cv;
@@ -22,6 +24,7 @@ class Planer {
 public:
 	Planer();
 	virtual ~Planer();
+	void show(GUI& gui);
 	int plan(Point2f lastPos, Point2f aktPos);
 	void setAim(Point2f newAim);
 	bool isRoutePointReached(Point2f pos);

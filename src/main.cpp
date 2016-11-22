@@ -161,11 +161,17 @@ int main(int argc, char** argv) {
 		// control the mower
 		//
 
+		GUI gui;
 		Garden garden;
 		VideoCamera videoCamera;
 		TrackedObject trackedObject;
 		ImageAnalyser imageAnalyser;
 		Planer planer;
+
+
+		imageAnalyser.show(gui);
+		// planer.show(gui);
+
 
 		Mat frame;
 		Mat mowed;
