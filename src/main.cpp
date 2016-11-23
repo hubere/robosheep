@@ -60,32 +60,6 @@ void showRoute(Mat &image, vector<vector<Point> > &contours) {
 	}
 }
 
-void moveRobo(int m1, int m2) {
-	// TODO FIXME call webserver
-
-	int sd, ret;
-	struct sockaddr_in server;
-	struct in_addr ipv4addr;
-	struct hostent *hp;
-
-	string message = "motor?m1=10&m2=30";
-
-	sd = socket(AF_INET, SOCK_STREAM, 0);
-	server.sin_family = AF_INET;
-
-	// server.sin_port = htons(80);
-
-//	inet_pton(AF_INET, "192.168.0.112", &ipv4addr);
-	inet_pton(AF_INET, "localhost", &ipv4addr);
-
-	connect(sd, (const sockaddr *)&server, sizeof(server));
-	send(sd, (char *)message.c_str(), strlen((char *)message.c_str()), 0);
-
-
-
-}
-
-
 
 
 int main(int argc, char** argv) {
@@ -124,7 +98,6 @@ int main(int argc, char** argv) {
 
 			HTTPClient client;
 			client.sendMessage("motor?m1=10&m2=50");
-
 			exit(0);
 		}
 
@@ -206,7 +179,7 @@ int main(int argc, char** argv) {
 		TrackedObject trackedObject;
 		ImageAnalyser imageAnalyser;
 		Planer planer;
-
+		HTTPClient client;
 
 		imageAnalyser.show(gui);
 		// planer.show(gui);
@@ -308,7 +281,10 @@ int main(int argc, char** argv) {
 			sheep.setSpeed(planer.getMotorSpeed1(), planer.getMotorSpeed2());
 			sheep.print();
 
-			moveRobo(planer.getMotorSpeed1(), planer.getMotorSpeed2());
+			char command[255];
+			sprintf(command, "motor?m1=%d&m2=%d\0", planer.getMotorSpeed1(), planer.getMotorSpeed2());
+			// string command = string("motor?m1=") + planer.getMotorSpeed1() + "&m2=" + planer.getMotorSpeed2();
+			client.sendMessage(command);
 
 
 			//-------------------------------------------------------------------------
