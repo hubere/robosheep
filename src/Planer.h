@@ -21,14 +21,19 @@ class Planer {
 	Point2f aim;
 	int proximity;
 
+	int speed;
+	int motorSpeed1;
+	int motorSpeed2;
+
 public:
 	Planer();
 	virtual ~Planer();
 	void show(GUI& gui);
-	int plan(Point2f lastPos, Point2f aktPos);
 	void setAim(Point2f newAim);
 	bool isRoutePointReached(Point2f pos);
-
+	int plan(Point2f lastPos, Point2f aktPos);
+	int getMotorSpeed1();
+	int getMotorSpeed2();
 };
 
 } /* namespace robosheep */

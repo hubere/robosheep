@@ -9,6 +9,7 @@
 #include "OpenCVUtils.h"
 
 #include <stdio.h>
+#include <math.h>
 
 
 using namespace std;
@@ -24,8 +25,7 @@ static double dist2aim = std::numeric_limits<double>::max();
 
 
 
-Planer::Planer() : aim(0,0), proximity(5) {
-
+Planer::Planer() : aim(0,0), proximity(5), speed(0), motorSpeed1(0), motorSpeed2(0) {
 }
 
 Planer::~Planer() {
@@ -42,6 +42,14 @@ void Planer::setAim(Point2f newAim)
 	printf("\nPlaner::setAim(%i,%i)\n", aim.x, aim.y);
 }
 
+int  Planer::getMotorSpeed1(){
+	return motorSpeed1;
+}
+
+int  Planer::getMotorSpeed2(){
+	return motorSpeed2;
+}
+
 int Planer::plan(Point2f lastPos, Point2f aktPos){
 	OpenCVUtils util;
 
@@ -56,8 +64,15 @@ int Planer::plan(Point2f lastPos, Point2f aktPos){
 	if (rotate < -180)
 		rotate = 360 + rotate;
 
-	printf("\nPlaner::plan aim=(%d,%d) ti=%d ts=%d => rotate:%d ", aim.x, aim.y,
-			tiDegree, tsDegree, rotate);
+	// 3. calc motor speeds
+	int dist = (int)sqrt((lastPos.x - aktPos.x)*(lastPos.x - aktPos.x) + (lastPos.y-aktPos.y)*(lastPos.y-aktPos.y));
+	motorSpeed1 = dist + rotate/10;
+	motorSpeed2 = dist - rotate/10;
+
+
+	printf("\nPlaner::plan aim=(%d,%d)\n", (int)aim.x, (int)aim.y);
+	printf("	ti=%d ts=%d => rotate:%d\n", tiDegree, tsDegree, rotate);
+	printf("	dist=%d m1=%d m2=%d\n", dist, motorSpeed1, motorSpeed2);
 
 	return rotate;
 }

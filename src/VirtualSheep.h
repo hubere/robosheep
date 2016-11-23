@@ -24,6 +24,8 @@ class VirtualSheep {
 	int velocity;
 	Size size;
 	Scalar color;
+	int speedM1;
+	int speedM2;
 
 public:
 	VirtualSheep();
@@ -35,6 +37,7 @@ public:
 	Scalar getColor();
 	void setPosition(Point2f newPos);
 	void rotate(double dt);
+	void setSpeed(int m1, int m2);
 	void speedUp();
 	void slowDown();
 	void update();

@@ -131,6 +131,12 @@ void VirtualSheep::rotate(double dt) {
 		dir = dir + 360;
 }
 
+void VirtualSheep::setSpeed(int m1, int m2)
+{
+	speedM1 = m1;
+	speedM2 = m2;
+}
+
 void VirtualSheep::speedUp() {
 	velocity++;
 }

@@ -12,6 +12,12 @@
 #include <string>
 #include <vector>
 
+// Network related include
+#include <sys/socket.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+
+
 #include "MainWindow.h"
 #include "OpenCVUtils.h"
 #include "ImageAnalyser.h"
@@ -20,6 +26,7 @@
 #include "GUI.h"
 #include "VirtualSheep.h"
 #include "Planer.h"
+#include "HTTPClient.h"
 
 using namespace std;
 using namespace cv;
@@ -53,6 +60,30 @@ void showRoute(Mat &image, vector<vector<Point> > &contours) {
 	}
 }
 
+void moveRobo(int m1, int m2) {
+	// TODO FIXME call webserver
+
+	int sd, ret;
+	struct sockaddr_in server;
+	struct in_addr ipv4addr;
+	struct hostent *hp;
+
+	string message = "motor?m1=10&m2=30";
+
+	sd = socket(AF_INET, SOCK_STREAM, 0);
+	server.sin_family = AF_INET;
+
+	// server.sin_port = htons(80);
+
+//	inet_pton(AF_INET, "192.168.0.112", &ipv4addr);
+	inet_pton(AF_INET, "localhost", &ipv4addr);
+
+	connect(sd, (const sockaddr *)&server, sizeof(server));
+	send(sd, (char *)message.c_str(), strlen((char *)message.c_str()), 0);
+
+
+
+}
 
 
 
@@ -88,6 +119,14 @@ int main(int argc, char** argv) {
 
 	} else if (argc > 1) {
 		std::string arg1 = argv[1];
+
+		if (arg1 == "--testHTTP") {
+
+			HTTPClient client;
+			client.sendMessage("motor?m1=10&m2=50");
+
+			exit(0);
+		}
 
 		if ((arg1 == "-t") || (arg1 == "--track")) {
 
@@ -265,10 +304,12 @@ int main(int argc, char** argv) {
 			// calc and issue steering command
 			//
 			int rotate = planer.plan(lastPos, roboPos);
-			sheep.rotate(rotate);
+			// sheep.rotate(rotate);
+			sheep.setSpeed(planer.getMotorSpeed1(), planer.getMotorSpeed2());
 			sheep.print();
-			// TODO FIXME HU also calc speed.
-			//moveRobo();
+
+			moveRobo(planer.getMotorSpeed1(), planer.getMotorSpeed2());
+
 
 			//-------------------------------------------------------------------------
 			// Algorithm Done
