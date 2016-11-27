@@ -38,10 +38,12 @@
 //
 // WiFi connection configuration
 //
-//#define WIFI_PASSWORD   "LeInternetUwant11"
-//#define WIFI_SSID       "Buergernetz-WLAN"
-#define WIFI_PASSWORD   "Welpenspiel"
-#define WIFI_SSID       "TP-Huabas"
+#define WIFI_PASS1       "Welpenspiel"
+#define WIFI_SSID1       "Huabas"
+#define WIFI_PASS2       "LeInternetUwant11"
+#define WIFI_SSID2       "Buergernetz-WLAN"
+#define WIFI_PASS3       "Welpenspiel"
+#define WIFI_SSID3       "TP-Huabas"
 // maximum number of tries during wifi connection setup
 #define WIFI_MAX_TRIES  30
 // delay in ms between checks during wifi connection setup
@@ -254,25 +256,35 @@ void adjustMotorSpeeds(){
 
 void connectWiFi()
 {
+  if (connectWIFI(WIFI_SSID1, WIFI_PASS1)) return;
+  if (connectWIFI(WIFI_SSID2, WIFI_PASS2)) return;
+  if (connectWIFI(WIFI_SSID3, WIFI_PASS3)) return;  
+}
+
+
+boolean connectWIFI(const char* ssid, const char* passwd)
+{
   Serial.println();
   Serial.println();
   Serial.print("Connecting to ");
-  Serial.println(WIFI_SSID);
+  Serial.println(ssid);
   
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  WiFi.begin(ssid, passwd);
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
-  Serial.println("");
-  Serial.println("WiFi connected");
-
-  // Print the IP address
-  Serial.println(WiFi.localIP());
+  
+  if (WiFi.status() == WL_CONNECTED){
+    Serial.println("");
+    Serial.println("WiFi connected");
+    // Print the IP address
+    Serial.println(WiFi.localIP());
+    return true;   
+  }
+ 
+  return false;
 }
-
-
-
 
 
