@@ -84,7 +84,7 @@ function send(m1, m2) {\
   if (motorsEnabled)\ 
   {\ 
 	  var xmlHttp = new XMLHttpRequest();\ 
-	  xmlHttp.open( \"GET\", \"http://192.168.0.112/motor?m1=\"+m1+\"&m2=\"+m2, false ); // false for synchronous request\ 
+	  xmlHttp.open( \"GET\", \"http://192.168.0.112/motor?m1=\"+m1+\"&m2=\"+m2, false ); \ 
 	  xmlHttp.send( null );\ 
 	  response = xmlHttp.responseText;\ 
   }\ 
