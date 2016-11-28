@@ -1,6 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
+<meta charset="utf-8"/>
 <style>
 div {
     width: 100px;
@@ -23,9 +24,75 @@ Enable Motor: <input type="checkbox" id="enableMotor">
 
 <div onclick="setMousePosition(event)" onmousemove="speedMotors(event)" onmouseout="stop()"></div>
 
+
+<TABLE BORDER="0">
+<TR>
+<TD></TD>
+<TD><button onclick="forward()">forward</button></TD>
+<TD></TD>
+</TR>
+<TR>
+<TD><button onclick="left()">left</button></TD>
+<TD><button onclick="stop()">stop</button></TD>
+<TD><button onclick="right()">right</button></TD>
+</TR>
+<TR>
+<TD></TD>
+<TD><button onclick="backward()">backward</button></TD>
+<TD></TD>
+</TR>
+<TR>
+<TD><button onclick="speed1()">speed1</button></TD>
+<TD><button onclick="speed2()">speed2</button></TD>
+<TD><button onclick="speed3()">speed3</button></TD>
+</TR>
+
+</TABLE>
+
+
+
 <p id="demo"></p>
 
 <script>
+
+var speed = 0;
+
+function speed1() {
+	speed = 25;
+}
+
+function speed2() {
+	speed = 50;
+}
+
+function speed3() {
+	speed = 100;
+}
+
+function stop() {
+	send(0, 0);
+}
+
+function forward() {
+	send(speed, speed);
+}
+
+function left() {
+	send(0, speed);
+}
+
+function right() {
+	send(speed, 0);
+}
+
+function backward() {
+	send(-speed, -speed);
+}
+
+
+
+
+
 
 var offsetX ;
 var offsetY ;
@@ -68,6 +135,7 @@ function stop() {
 function send(m1, m2) {
   var motorsEnabled = document.getElementById("enableMotor").checked;
   var response = "Offest ("+offsetX+"/"+offsetY+") m1:"+m1+" m2:"+m2;
+  console.log("send() called" + response);
   if (motorsEnabled)
   {
 	  var xmlHttp = new XMLHttpRequest();
