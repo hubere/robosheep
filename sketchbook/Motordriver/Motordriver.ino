@@ -29,15 +29,18 @@
 #include "HTML.h"
 #include <ESP8266WiFi.h>
 
-
 //
 // programm behavior
 //
-#define LOG_ALIVE   0
 
-//
+// When there was no command for MAX_ALIVE_DELAY ms, motors stop 
+#define MAX_ALIVE_DELAY   3000    
+
+// The loops delay. Each loop delays for at least LOOP_DELAY ms.
+#define LOOP_DELAY         20 
+
+
 // WiFi connection configuration
-//
 #define WIFI_PASS1       "Welpenspiel"
 #define WIFI_SSID1       "Huabas"
 #define WIFI_PASS2       "LeInternetUwant11"
@@ -64,13 +67,13 @@ const int ledPin = 13;
 // 
 int loopCount = 0;
 unsigned long lastMillis = millis();
+unsigned long lastCommandTimestamp = millis();
 int speedM1 = 0;    // actual speed of motor 1 (PWM)
 int speedM2 = 0;    // actual speed of motor 2 (PWM)
 int desiredSpeedM1 = 0;    // desired speed of motor 1 (PWM)
 int desiredSpeedM2 = 0;    // desired speed of motor 2 (PWM)
 int cmdSpeed = 0;   // desired speed 
 int cmdDir = 0;     // desired dir
-
 
 WiFiServer server(80);
 DualMC33926MotorShield md;
@@ -101,6 +104,9 @@ void setup()
   server.begin();
   delay(10);
 
+  //
+  // print usage on serial monitor
+  //
   Serial.println("Usage:");
   Serial.println("");
   Serial.print("http://");
@@ -121,44 +127,39 @@ void setup()
   Serial.println("  <speedM2> : -100 to 100");
   Serial.println("");
 
+  lastMillis = millis();
 }
 
 void loop()
 {
   unsigned long currentMillis = millis();
 
+  // make every loop take LOOP_DELAY ms
+  delay(LOOP_DELAY - (currentMillis - lastMillis));
+
+  //
+  // Alive check
+  //
+  if (currentMillis - lastCommandTimestamp > MAX_ALIVE_DELAY)
+  {
+    // lost communication -> stop motors
+    desiredSpeedM1 = 0;
+    desiredSpeedM2 = 0;
+  }
+    
   //
   // adjust motors
   //
   adjustMotorSpeeds();
-  delay(10);
-
-
-  //
-  // only each second do further processing
-  //
-  if (currentMillis - lastMillis < 1000)
-    return;    
-  lastMillis = currentMillis;
-  
+ 
   //
   // Check if a client has connected
   //
   WiFiClient client = server.available();
   if (!client) {
-    if (LOG_ALIVE)
-    {
-      Serial.print(".");
-      loopCount = loopCount+1;
-      if (loopCount > 50)
-      {
-        loopCount =0;
-        Serial.println();       
-      }
-    }
+    lastMillis = millis();
     return;
   }
-  loopCount =0;
 
   //
   // Wait until the client sends some data
@@ -187,8 +188,12 @@ void loop()
   }else{
     client.print(page1);
     client.stop();
+    lastMillis = millis();
     return;
   }
+
+  // A command was issued, reset alive check timer
+  lastCommandTimestamp = millis();
   
   //
   // Send the response to the client
@@ -203,7 +208,7 @@ void loop()
   // The client will actually be disconnected 
   // when the function returns and 'client' object is detroyed
   
-  // delay(1000);
+  lastMillis = millis();
 }
 
 /*
