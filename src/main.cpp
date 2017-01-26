@@ -30,7 +30,6 @@
 
 using namespace std;
 using namespace cv;
-using namespace robosheep;
 
 // our virtual sheep
 VirtualSheep sheep;
@@ -166,6 +165,10 @@ int main(int argc, char** argv) {
 			}
 
 			exit(0);
+		} else if (arg1 == "--analyse") {
+
+			MainWindow mainWindow;
+			mainWindow.start();
 		}
 	} else {
 
@@ -282,8 +285,7 @@ int main(int argc, char** argv) {
 			sheep.print();
 
 			char command[255];
-			sprintf(command, "motor?m1=%d&m2=%d\0", planer.getMotorSpeed1(), planer.getMotorSpeed2());
-			// string command = string("motor?m1=") + planer.getMotorSpeed1() + "&m2=" + planer.getMotorSpeed2();
+			sprintf(command, "motor?m1=%d&m2=%d", planer.getMotorSpeed1(), planer.getMotorSpeed2());
 			client.sendMessage(command);
 
 

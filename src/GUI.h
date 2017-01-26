@@ -14,10 +14,7 @@
 
 using namespace std;
 using namespace cv;
-using namespace cv;
 
-
-namespace robosheep {
 
 class GUI {
 	int nextWindowX, nextWindowY;
@@ -26,7 +23,5 @@ public:
 	virtual ~GUI();
 	void addWindow(const string& winname);
 };
-
-} /* namespace robosheep */
 
 #endif /* SRC_GUI_H_ */

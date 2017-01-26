@@ -15,8 +15,6 @@
 
 using namespace std;
 using namespace cv;
-using namespace robosheep;
-
 
 static const string ALGORITHM_DETECTBYMOMENTS = "ALGORITHM_DETECTBYMOMENTS";
 static const string ALGORITHM_DETECTBYCONTOURS = "ALGORITHM_DETECTBYCONTOURS";
@@ -38,7 +36,8 @@ public:
 	void show(GUI& gui);
 	bool detectObjectPosition(Mat& frame, TrackedObject& trackedObject);
 	bool detectObjectPosition();
-	void analyse(std::string imageName, TrackedObject& aTrackedObject);
+	void analyse(string imageName, TrackedObject& aTrackedObject);
+	void analyse(Mat& frame, TrackedObject& aTrackedObject);
 
 private:
 	bool detectByContours(Mat &frame, TrackedObject& trackedObject);

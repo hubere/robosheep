@@ -15,8 +15,6 @@
 using namespace cv;
 
 
-namespace robosheep {
-
 class Planer {
 	Point2f aim;
 	int proximity;
@@ -35,7 +33,5 @@ public:
 	int getMotorSpeed1();
 	int getMotorSpeed2();
 };
-
-} /* namespace robosheep */
 
 #endif /* PLANER_H_ */

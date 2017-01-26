@@ -16,8 +16,6 @@ using namespace std;
 using namespace cv;
 
 
-namespace robosheep {
-
 
 static const string WINDOW_PLANER = "Planer";
 const bool useDistance = false;
@@ -102,4 +100,3 @@ bool Planer::isRoutePointReached(Point2f pos) {
 
 
 
-} /* namespace robosheep */

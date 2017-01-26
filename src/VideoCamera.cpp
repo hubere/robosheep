@@ -13,39 +13,52 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
-
 using namespace std;
 using namespace cv;
-using namespace robosheep;
 
+static const string WINDOW_VIDEO = "Camera";
 
-VideoCamera::VideoCamera()  {
+VideoCamera::VideoCamera() {
 
 	OpenCVUtils util;
 
 	//
 	// open camera
 	//
-//	cap.open(0);
-	//cap.open("http://iris.not.iac.es/axis-cgi/mjpg/video.cgi?resolution=320x240");
-//	cap.open("http://88.53.197.250/axis-cgi/mjpg/video.cgi?resolution=320x240");
+	string url;
 
-	string filename =
-			"/home/edi/workspace/robosheep/resources/M20120703_200959.avi";
-	cap.open(filename);
+	// --- URLs ---
+	// url = "http://iris.not.iac.es/axis-cgi/mjpg/video.cgi?resolution=320x240";
+	//	url = "http://88.53.197.250/axis-cgi/mjpg/video.cgi?resolution=320x240";
+	// url = "http://192.168.0.115/image/jpeg.cgi";
+	url = "http://admin:hubercek@192.168.0.115/video.cgi";
+	//url = "http://192.168.0.115/video.cgi";
 
+	// --- files ---
+	//	 url =		"/home/edi/workspace/robosheep/resources/M20120703_200959.avi";
+
+	url = "http://192.168.0.115/video.cgi";
+	printf("\nTry to open '%1$s' ...", url.c_str());
+	cap.open("http://192.168.0.115/video.cgi");
 	if (!cap.isOpened()) {
-		if (util.isFileReadable(filename.c_str())) {
-			printf(
-					"\n\n!Error! - File is readable but not vor cap.\n probably OpenCV does not support ffmpeg\n hit a key\n");
-		} else {
-			printf(
-					"\n\n!Error! - Faild to connect to web camera\n hit a key\n");
-		}
+		printf("failed\n");
 
-		// cv::waitKey();
-		// return 0;
+		url = "http://admin:hubercek@192.168.0.115/video.cgi";
+		printf("\nTry to open '%1$s' ...", url.c_str());
+		cap.open("http://admin:hubercek@192.168.0.115/video.cgi");
+		if (!cap.isOpened()) {
+			printf("failed\n");
+
+			url = "http://192.168.0.115/video.cgi?x.mjpg";
+			printf("\nTry to open '%1$s' ...", url.c_str());
+			cap.open(url.c_str());
+			if (!cap.isOpened()) {
+				printf("failed\n");
+				return;
+			}
+		}
 	}
+	printf("succeeded\n");
 
 	printf("\n\nVideoCapture properties:\n");
 	printf("CV_CAP_PROP_FRAME_WIDTH properties:  %f\n",
@@ -80,13 +93,19 @@ VideoCamera::~VideoCamera() {
 	// TODO Auto-generated destructor stub
 }
 
+void VideoCamera::show(GUI& gui) {
+	gui.addWindow(WINDOW_VIDEO);
+}
+
 bool VideoCamera::read(Mat& frame) {
-	return cap.read(frame);
+	bool result = cap.read(frame);
+	imshow(WINDOW_VIDEO, frame);
+	return result;
 }
 
 bool VideoCamera::read(Mat& frame, int frameDelay) {
-	if (!cap.read(frame))
-			return false;
+	if (!read(frame))
+		return false;
 
 	char key = waitKey(frameDelay);
 	switch (key) {
@@ -95,6 +114,11 @@ bool VideoCamera::read(Mat& frame, int frameDelay) {
 		break;
 	}
 	return true;
+}
+
+bool VideoCamera::takeSnapshot(Mat& frame) {
+	bool result = cap.read(frame);
+	return result;
 }
 
 

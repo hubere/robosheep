@@ -6,9 +6,17 @@
  */
 
 #include "MainWindow.h"
+#include "GUI.h"
+#include "ImageAnalyser.h"
+#include "VideoCamera.h"
+#include "Garden.h"
+#include "VirtualSheep.h"
+#include "Planer.h"
+#include "HTTPClient.h"
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <iostream>
 
 
 using namespace cv;
@@ -20,6 +28,60 @@ MainWindow::MainWindow() {
 
 MainWindow::~MainWindow() {
 	// TODO Auto-generated destructor stub
+}
+
+
+
+void MainWindow::start(){
+
+
+	GUI gui;
+	VideoCamera videoCamera;
+	ImageAnalyser imageAnalyser;
+
+	Garden garden;
+	TrackedObject trackedObject;
+//	Planer planer;
+
+	Mat frame;
+
+	videoCamera.show(gui);
+
+
+	std::cout << "\n\n\nUsage:" << std::endl
+			<< "	't'		take snapshot" << std::endl
+			<< "	'a'		analyse snapshot" << std::endl
+			<< "	't'		take snapshot" << std::endl
+			<< "	't'		take snapshot" << std::endl
+			<< "	'ESC'	exit" << std::endl
+			<< std::endl;
+
+
+	bool stop(false);
+	int framedelay = 1000;
+
+	while (!stop) {
+
+		char key = waitKey(framedelay);
+		switch (key) {
+		case 27:
+			stop = true;
+			break;
+		case 'a':
+			Mat snapshot;
+			videoCamera.takeSnapshot(snapshot);
+			imageAnalyser.show(gui);
+			imageAnalyser.analyse(snapshot, trackedObject);
+			break;
+		}
+
+		if (!videoCamera.read(frame)) {
+			std::cerr << "Could not read frame\n" << std::endl;
+			continue;
+		}
+
+
+	}
 }
 
 void MainWindow::show(){

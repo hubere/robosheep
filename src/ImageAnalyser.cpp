@@ -15,7 +15,6 @@
 
 using namespace std;
 using namespace cv;
-using namespace robosheep;
 
 
 static const string WINDOW_IMAGE_ANALYSER = "ImageAnalyser - inRange";
@@ -217,12 +216,23 @@ void ImageAnalyser::analyse(std::string imageName,
 	/// Load an image
 	Mat frame = imread(imageName, 1);
 	pFrame = &frame;
+	pTrackedObject = &aTrackedObject;
 	imshow(WINDOW_IMAGE_ANALYSER, frame);
 
 	/// Call the function to initialize
 	adjustParameters(0, this);
 
 	waitKey(0);
+}
+
+void ImageAnalyser::analyse(Mat& frame,
+		TrackedObject& aTrackedObject) {
+	pFrame = &frame;
+	pTrackedObject = &aTrackedObject;
+	imshow(WINDOW_IMAGE_ANALYSER, frame);
+
+	/// Call the function to initialize
+	adjustParameters(0, this);
 }
 
 
