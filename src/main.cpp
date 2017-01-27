@@ -60,17 +60,26 @@ void showRoute(Mat &image, vector<vector<Point> > &contours) {
 }
 
 
+string evaluateArgs(int argc, char** argv, string tag, string defaultValue) {
+	for (int i=0; i< argc; i++)
+	{
+		if (argv[i] == tag)
+			return argv[i+1];
+	}
+}
 
 int main(int argc, char** argv) {
 
 	printf("Working directory (argv[0]): %s\n", argv[0]);
-	util.printWorkingDirectory();
 
-	std::string imageName;
+	string imageName;
 
 	//
 	// evaluate arguments
 	//
+	string cameraURL = evaluateArgs(argc, argv, "--cameraURL", "http://192.168.0.115/video.cgi");
+
+
 	if (argc > 2) {
 		std::string arg1 = argv[1];
 		std::string arg2 = argv[2];
@@ -184,7 +193,9 @@ int main(int argc, char** argv) {
 		Planer planer;
 		HTTPClient client;
 
+		videoCamera.show(gui);
 		imageAnalyser.show(gui);
+		trackedObject.show();
 		// planer.show(gui);
 
 
@@ -194,7 +205,7 @@ int main(int argc, char** argv) {
 
 		bool stop(false);
 		int frametime = 0;
-		int framedelay = 0;
+		int framedelay = 100;
 		int framecount = 0;
 		int algtime = 0;
 		int thresh = 100;
@@ -203,7 +214,7 @@ int main(int argc, char** argv) {
 		RNG rng(12345);
 
 		// tell planer to where sheep should move
-		planer.setAim(garden.getRoutePoint(routeIdx));
+		// planer.setAim(garden.getRoutePoint(routeIdx));
 
 		//
 		// initialize images
@@ -224,37 +235,57 @@ int main(int argc, char** argv) {
 		createTrackbar(" Canny thresh:", "result", &thresh, 255);
 
 		//
-		// for all frames in video
+		// for ever....
 		//
 		while (!stop) {
+
+			//
+			// user keyboard control
+			//
+			char key = cv::waitKey(framedelay);
+			switch (key) {
+			case 27:
+				stop = true;
+				break;
+			case 'n':
+				// unmow
+				frame.copyTo(mowed);
+				showGreens(mowed, garden.getGreenContours());
+				showRoute(mowed, garden.getRoutes());
+				break;
+			case 'i':
+				// TODO
+				break;
+			case 's': // set sheep to start position
+				sheep.setPosition(Point2f(250, 300));
+				break;
+			case '+': // speed up sheep
+				sheep.speedUp();
+				break;
+			case '-': // slow down sheep
+				sheep.slowDown();
+				break;
+			}
 
 			// read next frame if any
 			if (!videoCamera.read(frame)) {
 				break;
 			}
-			framecount++;
 
 			// just for simulation: draw shepp in camera frame
-			sheep.update();
-			//	sheep.draw(frame);
-
-			//-------------------------------------------------------------------------
-			// Insert Algorithm here
-			//-------------------------------------------------------------------------
-
-			//
-			// only each X th frame:
-			//
-			if (framecount < 10)
-				continue;
-			framecount = 0;
+			// sheep.update();
+			// sheep.draw(frame);
 
 			//
 			// get position of tracked object
 			//
-			imageAnalyser.detectObjectPosition(frame, trackedObject);
+			if (!imageAnalyser.detectObjectPosition(frame, trackedObject))
+				continue;
 			Point_<int> roboPos = trackedObject.getAktualPos();
 			Point_<int> lastPos = trackedObject.getLastPos();
+
+			if (planer.getAim().x == 0)
+				continue;
 
 			//
 			// update mowed image
@@ -294,48 +325,16 @@ int main(int argc, char** argv) {
 			//-------------------------------------------------------------------------
 
 			// show foreground
-			imshow("video", frame);
+			// imshow("video", frame);
 			imshow("mowed", mowed);
 
 			// introduce a delay
 			// or press key to stop
-			//printf(" frametime = %d", frametime, algtime);
 			if (frametime > algtime)
 				framedelay = frametime - algtime;
 			else
 				framedelay = 10;
 			// printf(" framedelay = %d\n", framedelay);
-
-			framedelay = 1000;
-
-			//
-			// user keyboard control
-			//
-			char key = cv::waitKey(framedelay);
-			// printf(" key = %c\n", key);
-			switch (key) {
-			case 27:
-				stop = true;
-				break;
-			case 'n':
-				// unmow
-				frame.copyTo(mowed);
-				showGreens(mowed, garden.getGreenContours());
-				showRoute(mowed, garden.getRoutes());
-				break;
-			case 'i':
-				// TODO
-				break;
-			case 's': // set sheep to start position
-				sheep.setPosition(Point2f(250, 300));
-				break;
-			case '+': // speed up sheep
-				sheep.speedUp();
-				break;
-			case '-': // slow down sheep
-				sheep.slowDown();
-				break;
-			}
 
 		}
 	};

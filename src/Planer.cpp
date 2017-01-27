@@ -40,6 +40,11 @@ void Planer::setAim(Point2f newAim)
 	printf("\nPlaner::setAim(%i,%i)\n", aim.x, aim.y);
 }
 
+Point2f Planer::getAim()
+{
+	return aim;
+}
+
 int  Planer::getMotorSpeed1(){
 	return motorSpeed1;
 }

@@ -48,8 +48,15 @@ TrackedObject::TrackedObject() {
 	color_S = 30;
 	color_V = 97;
 	color_range = 20;
-
 	size = Size(10,15);
+
+	// yellow in cellar
+	color_H = 35; //30-40
+	color_S = 30; // 30-30
+	color_V = 90; // 80-100
+	color_range = 20;
+
+	size = Size(100,50);
 
 }
 

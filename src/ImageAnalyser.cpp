@@ -10,6 +10,7 @@
 #include "OpenCVUtils.h"
 
 #include <stdio.h>
+#include <iostream>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
@@ -28,8 +29,13 @@ int const max_value = 255;
 int const max_type = 4;
 int const max_BINARY_value = 255;
 
+Mat cnt_img;
+
+
 // callback and callback parameters
 void adjustParameters(int, void*);
+void mouseCallBackFunc(int event, int x, int y, int flags, void* userdata);
+
 
 ImageAnalyser::ImageAnalyser() {
 	pTrackedObject = NULL;
@@ -51,15 +57,16 @@ void ImageAnalyser::show(GUI& gui) {
 
 bool ImageAnalyser::detectObjectPosition() {
 	if (pFrame != NULL && pTrackedObject != NULL)
-		detectObjectPosition(*pFrame, *pTrackedObject);
+		return detectObjectPosition(*pFrame, *pTrackedObject);
+	return false;
 }
 
 bool ImageAnalyser::detectObjectPosition(Mat& frame,
 		TrackedObject& trackedObject) {
 	if (algorithm == ALGORITHM_DETECTBYMOMENTS)
-		detectByMoments(frame, trackedObject);
+		return detectByMoments(frame, trackedObject);
 	else
-		detectByContours(frame, trackedObject);
+		return detectByContours(frame, trackedObject);
 
 }
 
@@ -140,7 +147,6 @@ bool ImageAnalyser::detectByContours(Mat &frame,
 	//
 	// draw contours into image cnt_img
 	//
-	Mat cnt_img;
 	frame.copyTo(cnt_img);
 
 	RNG rng(12345);
@@ -170,6 +176,10 @@ bool ImageAnalyser::detectByContours(Mat &frame,
 	putText(cnt_img, text.str(), Point(40, 100), FONT_HERSHEY_COMPLEX_SMALL, 1,
 			Scalar::all(255), 1, 8);
 	imshow(WINDOW_CONTOURS, cnt_img);
+
+	setMouseCallback(WINDOW_CONTOURS, mouseCallBackFunc, &cnt_img);
+
+
 
 	//
 	// update tracked objects position
@@ -245,4 +255,37 @@ void adjustParameters(int, void* callbackObject) {
 	ImageAnalyser* pImageAnalyser = static_cast<ImageAnalyser*>(callbackObject);
 	pImageAnalyser->detectObjectPosition();
 }
+
+void mouseCallBackFunc(int event, int x, int y, int flags, void* userdata)
+{
+	Mat* rgb = (Mat*) userdata;
+    if  ( event == EVENT_LBUTTONDOWN )
+    {
+        // cout << "Left button of the mouse is clicked - position (" << x << ", " << y << ")" << endl;
+
+    	Mat imgHSV;
+    	cvtColor(*rgb, imgHSV, CV_BGR2HSV);
+
+        Vec3b p1 = (*rgb).at<Vec3b>(x, y); //Vec3b - Array of 3 uchar numbers
+        Vec3b p2 = imgHSV.at<Vec3b>(x, y); //Vec3b - Array of 3 uchar numbers
+
+        //p[0] - H, p[1] - S, p[2] - V
+        cout << endl << "Color (RGB): " << (int)p1[0] << ", " << (int)p1[1] << ", " << (int)p1[2] << ")" << endl;
+        cout << "Color (HSV): " << (int)p2[0] << ", " << (int)p2[1] << ", " << (int)p2[2] << ")" << endl;
+
+    }
+    else if  ( event == EVENT_RBUTTONDOWN )
+    {
+        cout << "Right button of the mouse is clicked - position (" << x << ", " << y << ")" << endl;
+    }
+    else if  ( event == EVENT_MBUTTONDOWN )
+    {
+        cout << "Middle button of the mouse is clicked - position (" << x << ", " << y << ")" << endl;
+    }
+    else if ( event == EVENT_MOUSEMOVE )
+    {
+        // cout << "Mouse move over the window - position (" << x << ", " << y << ")" << endl;
+    }
+}
+
 

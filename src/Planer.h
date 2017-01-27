@@ -28,6 +28,7 @@ public:
 	virtual ~Planer();
 	void show(GUI& gui);
 	void setAim(Point2f newAim);
+	Point2f getAim();
 	bool isRoutePointReached(Point2f pos);
 	int plan(Point2f lastPos, Point2f aktPos);
 	int getMotorSpeed1();

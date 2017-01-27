@@ -37,24 +37,30 @@ VideoCamera::VideoCamera() {
 	// --- files ---
 	//	 url =		"/home/edi/workspace/robosheep/resources/M20120703_200959.avi";
 
-	url = "http://192.168.0.115/video.cgi";
-	printf("\nTry to open '%1$s' ...", url.c_str());
-	cap.open("http://192.168.0.115/video.cgi");
+	printf("\nTry to open '0' ...");
+	cap.open(0);
 	if (!cap.isOpened()) {
 		printf("failed\n");
 
-		url = "http://admin:hubercek@192.168.0.115/video.cgi";
+		url = "http://192.168.0.115/video.cgi";
 		printf("\nTry to open '%1$s' ...", url.c_str());
-		cap.open("http://admin:hubercek@192.168.0.115/video.cgi");
+		cap.open("http://192.168.0.115/video.cgi");
 		if (!cap.isOpened()) {
 			printf("failed\n");
 
-			url = "http://192.168.0.115/video.cgi?x.mjpg";
+			url = "http://admin:hubercek@192.168.0.115/video.cgi";
 			printf("\nTry to open '%1$s' ...", url.c_str());
-			cap.open(url.c_str());
+			cap.open("http://admin:hubercek@192.168.0.115/video.cgi");
 			if (!cap.isOpened()) {
 				printf("failed\n");
-				return;
+
+				url = "http://192.168.0.115/video.cgi?x.mjpg";
+				printf("\nTry to open '%1$s' ...", url.c_str());
+				cap.open(url.c_str());
+				if (!cap.isOpened()) {
+					printf("failed\n");
+					return;
+				}
 			}
 		}
 	}
@@ -120,6 +126,4 @@ bool VideoCamera::takeSnapshot(Mat& frame) {
 	bool result = cap.read(frame);
 	return result;
 }
-
-
 
