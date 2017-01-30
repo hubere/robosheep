@@ -11,6 +11,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <time.h>
 
 // Network related include
 #include <sys/socket.h>
@@ -48,13 +49,13 @@ void mouseHandler(int event, int x, int y, int flags, void *param) {
 }
 
 void showGreens(Mat &image, vector<vector<Point> > &contours) {
-	for (unsigned i = 0; i < contours.size(); i++) {
+	for (unsigned i = 1; i < contours.size(); i++) {
 		drawContours(image, contours, i, cvScalar(0, 0, 255), 2, 8);
 	}
 }
 
 void showRoute(Mat &image, vector<vector<Point> > &contours) {
-	for (unsigned i = 0; i < contours.size(); i++) {
+	for (unsigned i = 1; i < contours.size(); i++) {
 		drawContours(image, contours, i, cvScalar(0, 255, 0), 1, 8);
 	}
 }
@@ -66,6 +67,7 @@ string evaluateArgs(int argc, char** argv, string tag, string defaultValue) {
 		if (argv[i] == tag)
 			return argv[i+1];
 	}
+	return "";
 }
 
 int main(int argc, char** argv) {
@@ -186,7 +188,7 @@ int main(int argc, char** argv) {
 		//
 
 		GUI gui;
-		Garden garden;
+		Garden garden(2);
 		VideoCamera videoCamera;
 		TrackedObject trackedObject;
 		ImageAnalyser imageAnalyser;
@@ -196,7 +198,7 @@ int main(int argc, char** argv) {
 		videoCamera.show(gui);
 		imageAnalyser.show(gui);
 		trackedObject.show();
-		// planer.show(gui);
+		planer.show(gui);
 
 
 		Mat frame;
@@ -204,17 +206,18 @@ int main(int argc, char** argv) {
 		Mat result;
 
 		bool stop(false);
-		int frametime = 0;
-		int framedelay = 100;
-		int framecount = 0;
+		int frametime = 1000; // take one frame each 1000ms
+		double frameProcessingStart = 0;
 		int algtime = 0;
+
+		int framedelay = 10; // must be more than 0 in order to not stop program
 		int thresh = 100;
 		int routeIdx = 0;
 
 		RNG rng(12345);
 
 		// tell planer to where sheep should move
-		// planer.setAim(garden.getRoutePoint(routeIdx));
+		planer.setAim(garden.getRoutePoint(routeIdx));
 
 		//
 		// initialize images
@@ -253,9 +256,6 @@ int main(int argc, char** argv) {
 				showGreens(mowed, garden.getGreenContours());
 				showRoute(mowed, garden.getRoutes());
 				break;
-			case 'i':
-				// TODO
-				break;
 			case 's': // set sheep to start position
 				sheep.setPosition(Point2f(250, 300));
 				break;
@@ -266,6 +266,9 @@ int main(int argc, char** argv) {
 				sheep.slowDown();
 				break;
 			}
+
+			// measure processing time
+			frameProcessingStart = (double)getTickCount();
 
 			// read next frame if any
 			if (!videoCamera.read(frame)) {
@@ -304,20 +307,32 @@ int main(int argc, char** argv) {
 					stop = true;
 				Point2f aim = garden.getRoutePoint(routeIdx);
 				planer.setAim(aim);
-				circle(mowed, aim, 5, cvScalar(0, 255, 255), 1);
 			}
 
 			//
 			// calc and issue steering command
 			//
+			planer.setAktualPosition(roboPos);
 			int rotate = planer.plan(lastPos, roboPos);
+
 			// sheep.rotate(rotate);
-			sheep.setSpeed(planer.getMotorSpeed1(), planer.getMotorSpeed2());
-			sheep.print();
+			// sheep.setSpeed(planer.getMotorSpeed1(), planer.getMotorSpeed2());
+			// sheep.print();
+
+			// draw direction indicator
+			int length = 50;
+			Point P2;
+			P2.x =  (int)round(roboPos.x + length * cos(rotate * CV_PI / 180.0));
+			P2.y =  (int)round(roboPos.y + length * sin(rotate * CV_PI / 180.0));
+			Point2f aim = garden.getRoutePoint(routeIdx);
+			circle(frame, aim, 5, cvScalar(0, 255, 255), 1);
+			circle(frame, roboPos, 5, cvScalar(0, 255, 0), 1);
+			line(frame, roboPos, P2, cvScalar(255, 0, 255), 5);
+			planer.show(frame);
 
 			char command[255];
-			sprintf(command, "motor?m1=%d&m2=%d", planer.getMotorSpeed1(), planer.getMotorSpeed2());
-			client.sendMessage(command);
+			// sprintf(command, "motor?m1=%d&m2=%d", planer.getMotorSpeed1(), planer.getMotorSpeed2());
+			// client.sendMessage(command);
 
 
 			//-------------------------------------------------------------------------
@@ -325,16 +340,16 @@ int main(int argc, char** argv) {
 			//-------------------------------------------------------------------------
 
 			// show foreground
-			// imshow("video", frame);
+			imshow("video", frame);
 			imshow("mowed", mowed);
 
-			// introduce a delay
-			// or press key to stop
+			// calc next framedelay
+			algtime = ((double)getTickCount() - frameProcessingStart)*1000./getTickFrequency();
 			if (frametime > algtime)
 				framedelay = frametime - algtime;
 			else
 				framedelay = 10;
-			// printf(" framedelay = %d\n", framedelay);
+			printf(" algtime=%d framedelay=%d\n", algtime, framedelay);
 
 		}
 	};

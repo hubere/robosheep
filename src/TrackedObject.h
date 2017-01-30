@@ -18,8 +18,9 @@ class TrackedObject {
 	Mat img;
 
 	// the detected position
-	Point_<int> lastPos;
-	Point_<int> pos;
+	Point2i lastPos;
+	Point2i pos;
+	vector<Point2i> lastPositions;
 
 public:
 	TrackedObject();
@@ -27,9 +28,9 @@ public:
 	void show();
 	Size getSize();
 	int getColorRange();
-	Point_<int> getLastPos();
-	Point_<int> getAktualPos();
-	Point_<int> setAktualPos(Point_<int>);
+	Point2i getLastPos();
+	Point2i getAktualPos();
+	Point2i setAktualPos(Point2i);
 	Scalar getGimpColor();
 	void setGimpColor(Scalar gimpColor);
 	void print();

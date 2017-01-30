@@ -18,6 +18,7 @@ using namespace cv;
 class Planer {
 	Point2f aim;
 	int proximity;
+	vector<Point2i> lastPositions;
 
 	int speed;
 	int motorSpeed1;
@@ -27,8 +28,10 @@ public:
 	Planer();
 	virtual ~Planer();
 	void show(GUI& gui);
+	void show(Mat& frame);
 	void setAim(Point2f newAim);
 	Point2f getAim();
+	void setAktualPosition(Point2i aktPos);
 	bool isRoutePointReached(Point2f pos);
 	int plan(Point2f lastPos, Point2f aktPos);
 	int getMotorSpeed1();

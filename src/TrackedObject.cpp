@@ -10,6 +10,7 @@
 #include "ImageAnalyser.h"
 
 #include <stdio.h>
+#include <iostream>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
@@ -40,7 +41,7 @@ int color_range = 0;
 void adjustTrackedObjectParameters(int, void*);
 
 
-TrackedObject::TrackedObject() {
+TrackedObject::TrackedObject() : lastPositions(0) {
 	theTrackedObject = this;
 
 	// yellow in terms of gimp!
@@ -101,17 +102,31 @@ int TrackedObject::getColorRange()
 }
 
 
-Point_<int> TrackedObject::getLastPos() {
+Point2i TrackedObject::getLastPos() {
 	return lastPos;
 }
 
-Point_<int> TrackedObject::getAktualPos() {
-	return pos;
+Point2i TrackedObject::getAktualPos() {
+	Scalar s = mean(lastPositions);
+	int x = s.val[0];
+	int y = s.val[1];
+	return Point2i(x,y);
 }
 
 Point_<int> TrackedObject::setAktualPos(Point_<int> newPos) {
 	lastPos = pos;
 	pos = newPos;
+
+	if (lastPositions.empty())
+	{
+		for (int i=0; i<10; i++)
+			lastPositions.push_back(newPos);
+	}
+
+	// implement ring buffer
+	lastPositions.push_back(newPos);
+	lastPositions.erase(lastPositions.begin());
+
 	print();
 	return lastPos;
 }
@@ -119,6 +134,10 @@ Point_<int> TrackedObject::setAktualPos(Point_<int> newPos) {
 void TrackedObject::print()
 {
 	printf(" TrackedObject : last=(%d,%d) detected=(%d,%d) \n", lastPos.x, lastPos.y, pos.x, pos.y);
+	printf(" TrackedObject : lastPositions: ");
+	for (std::vector<Point2i>::const_iterator i = lastPositions.begin(); i != lastPositions.end(); ++i)
+	    std::cout << *i << ", ";
+	cout << "mean=" << getAktualPos() << std::endl;
 }
 
 
