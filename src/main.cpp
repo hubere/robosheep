@@ -145,8 +145,8 @@ int main(int argc, char** argv) {
 			ImageAnalyser imageAnalyser;
 			VirtualSheep virtualSheep;
 
-			trackedObject.setGimpColor(
-					util.openCV2gimpValue(virtualSheep.getColor()));
+//			trackedObject.setGimpColor(
+//					util.openCV2gimpValue(virtualSheep.getColor()));
 
 			virtualSheep.show(gui);
 			imageAnalyser.show(gui);
@@ -213,6 +213,8 @@ int main(int argc, char** argv) {
 		int framedelay = 10; // must be more than 0 in order to not stop program
 		int thresh = 100;
 		int routeIdx = 0;
+
+		Point_<int> roboPos;
 
 		RNG rng(12345);
 
@@ -284,8 +286,8 @@ int main(int argc, char** argv) {
 			//
 			if (!imageAnalyser.detectObjectPosition(frame, trackedObject))
 				continue;
-			Point_<int> roboPos = trackedObject.getAktualPos();
-			Point_<int> lastPos = trackedObject.getLastPos();
+			Point_<int> lastPos = roboPos;
+			roboPos = trackedObject.getAktualPos();
 
 			if (planer.getAim().x == 0)
 				continue;

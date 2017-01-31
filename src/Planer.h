@@ -29,6 +29,7 @@ public:
 	virtual ~Planer();
 	void show(GUI& gui);
 	void show(Mat& frame);
+	void putText(Mat& frame, int line, const string& text);
 	void setAim(Point2f newAim);
 	Point2f getAim();
 	void setAktualPosition(Point2i aktPos);

@@ -43,16 +43,16 @@ void Planer::show(Mat& frame) {
 	circle(planned, aim, 5, cvScalar(0, 255, 255), 1);
 
 	//
-	// draw lastdetected position
+	// draw last detected position
 	Point roboPos = *lastPositions.end();
 	circle(planned, roboPos, 5, cvScalar(0, 255, 0), 1);
 
 	//
 	// draw last positions
 	//
-	int myradius=5;
+	int myradius=2;
 	for (int i=0;i<(int)lastPositions.size();i++)
-	    circle(planned,Point(lastPositions[i].x,lastPositions[i].y),myradius,CV_RGB(100,0,0),-1,8,0);
+	    circle(planned,Point(lastPositions[i].x,lastPositions[i].y),myradius,CV_RGB(100,0,0),1);
 
 	//
 	// draw direction indicator
@@ -75,19 +75,42 @@ void Planer::show(Mat& frame) {
 	clipLine(r.size(), startPoint, endPoint);
 	line(planned, startPoint, endPoint, cvScalar(255, 0, 255), 3);
 
-	//	P2.x =  (int)round(roboPos.x + length * cos(rotate * CV_PI / 180.0));
-//	P2.y =  (int)round(roboPos.y + length * sin(rotate * CV_PI / 180.0));
+	//
+	// print data
+	//
+	int line = 0;
+	ostringstream text;
+	text << "aim:       " << aim;
+	putText(planned, line++, text.str());
 
-//	circle(planned, aim, 5, cvScalar(0, 255, 255), 3);
+	text.str("");
+	text << "roboPos:   " << roboPos;
+	putText(planned, line++, text.str());
 
-	// line(frame, roboPos, P2, cvScalar(255, 0, 255), 3);
+	text.str("");
+	text << "lastPositions: ";
+	for (std::vector<Point2i>::const_iterator i = lastPositions.begin(); i != lastPositions.end(); ++i)
+		text << *i << ", ";
+	text << std::endl;
+	putText(planned, line++, text.str());
+
+	text.str("");
+	text << "boundingRect: " << r;
+	putText(planned, line++, text.str());
+
+	text.str("");
+	text << "fittedline: " << fittedline;
+	putText(planned, line++, text.str());
 
 	imshow(WINDOW_PLANER, planned);
 }
 
+void Planer::putText(Mat& frame, int line, const string& text) {
+	cv::putText(frame, text, Point(10,20+line*12), CV_FONT_HERSHEY_PLAIN, 1.0, Scalar::all(255), 1, CV_AA);
+}
+
 void Planer::setAim(Point2f newAim) {
 	aim = newAim;
-	printf("\nPlaner::setAim(%i,%i)\n", (int) aim.x, (int) aim.y);
 }
 
 Point2f Planer::getAim() {

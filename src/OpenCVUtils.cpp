@@ -195,8 +195,8 @@ bool OpenCVUtils::isFileReadable(const char* filename) {
  * In                 OpenCV, H = 0-180, S = 0-255, V = 0-255.
  */
 Scalar OpenCVUtils::gimpValue2OpenCV(Scalar gimpValue, int range) {
-	Scalar opencvValue(gimpValue[0] * 180 / 360 + range,
-			gimpValue[1] * 255 / 100 + range, gimpValue[2] * 255 / 100 + range);
+	Scalar opencvValue(max(gimpValue[0] * 180 / 360 + range, 0.0),
+			max(gimpValue[1] * 255 / 100 + range, 0.0), max(gimpValue[2] * 255 / 100 + range, 0.0));
 	return opencvValue;
 }
 
