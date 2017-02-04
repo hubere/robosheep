@@ -34,7 +34,7 @@
 //
 
 // When there was no command for MAX_ALIVE_DELAY ms, motors stop 
-#define MAX_ALIVE_DELAY   3000    
+#define MAX_ALIVE_DELAY   5000    
 
 // The loops delay. Each loop delays for at least LOOP_DELAY ms.
 #define LOOP_DELAY         20 
