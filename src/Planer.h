@@ -15,11 +15,10 @@
 using namespace cv;
 
 
-namespace robosheep {
-
 class Planer {
 	Point2f aim;
 	int proximity;
+	vector<Point2i> lastPositions;
 
 	int speed;
 	int motorSpeed1;
@@ -29,13 +28,15 @@ public:
 	Planer();
 	virtual ~Planer();
 	void show(GUI& gui);
+	void show(Mat& frame);
+	void putText(Mat& frame, int line, const string& text);
 	void setAim(Point2f newAim);
+	Point2f getAim();
+	void setAktualPosition(Point2i aktPos);
 	bool isRoutePointReached(Point2f pos);
 	int plan(Point2f lastPos, Point2f aktPos);
 	int getMotorSpeed1();
 	int getMotorSpeed2();
 };
-
-} /* namespace robosheep */
 
 #endif /* PLANER_H_ */

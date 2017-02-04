@@ -23,6 +23,7 @@ class Garden {
 
 public:
 	Garden();
+	Garden(int gardenIdx);
 	virtual ~Garden();
 	Point_<int> getRoutePoint(int id);
 	vector<vector<Point> > &getGreenContours();

@@ -14,7 +14,6 @@
 
 using namespace std;
 using namespace cv;
-using namespace robosheep;
 
 class VirtualSheep {
 	// position and direction of sheep

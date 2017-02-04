@@ -7,7 +7,6 @@
 
 #include "GUI.h"
 
-namespace robosheep {
 
 GUI::GUI() : nextWindowX(0), nextWindowY(0)
 {
@@ -39,4 +38,3 @@ void GUI::addWindow(const string& winname){
 }
 
 
-} /* namespace robosheep */

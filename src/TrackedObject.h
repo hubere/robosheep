@@ -8,31 +8,32 @@
 #ifndef SRC_TRACKEDOBJECT_H_
 #define SRC_TRACKEDOBJECT_H_
 
+#include "TrackedColorBlob.h"
+
 #include <opencv2/highgui/highgui.hpp>
 
 using namespace cv;
 
 
 class TrackedObject {
-	Size size;
-	Mat img;
 
-	// the detected position
-	Point_<int> lastPos;
-	Point_<int> pos;
+	vector<TrackedColorBlob> colorBlobs;
+	vector<Point2i> positions;
 
 public:
 	TrackedObject();
 	virtual ~TrackedObject();
 	void show();
-	Size getSize();
-	int getColorRange();
-	Point_<int> getLastPos();
-	Point_<int> getAktualPos();
-	Point_<int> setAktualPos(Point_<int>);
-	Scalar getGimpColor();
-	void setGimpColor(Scalar gimpColor);
+	vector<TrackedColorBlob> getColorBlobs();
+	Point2i getAktualPos();
+	Point2i getAktualPosMean();
+	void setAktualPos(Point2i);
 	void print();
+	static void onChange(int v, void *ptr) {
+		TrackedObject *that = (TrackedObject*) ptr;
+		that->doOnChange(v);
+	}
+	void doOnChange(int v);
 };
 
 #endif /* SRC_TRACKEDOBJECT_H_ */

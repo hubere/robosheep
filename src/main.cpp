@@ -11,6 +11,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <time.h>
 
 // Network related include
 #include <sys/socket.h>
@@ -30,7 +31,6 @@
 
 using namespace std;
 using namespace cv;
-using namespace robosheep;
 
 // our virtual sheep
 VirtualSheep sheep;
@@ -49,29 +49,39 @@ void mouseHandler(int event, int x, int y, int flags, void *param) {
 }
 
 void showGreens(Mat &image, vector<vector<Point> > &contours) {
-	for (unsigned i = 0; i < contours.size(); i++) {
+	for (unsigned i = 1; i < contours.size(); i++) {
 		drawContours(image, contours, i, cvScalar(0, 0, 255), 2, 8);
 	}
 }
 
 void showRoute(Mat &image, vector<vector<Point> > &contours) {
-	for (unsigned i = 0; i < contours.size(); i++) {
+	for (unsigned i = 1; i < contours.size(); i++) {
 		drawContours(image, contours, i, cvScalar(0, 255, 0), 1, 8);
 	}
 }
 
 
+string evaluateArgs(int argc, char** argv, string tag, string defaultValue) {
+	for (int i=0; i< argc; i++)
+	{
+		if (argv[i] == tag)
+			return argv[i+1];
+	}
+	return "";
+}
 
 int main(int argc, char** argv) {
 
 	printf("Working directory (argv[0]): %s\n", argv[0]);
-	util.printWorkingDirectory();
 
-	std::string imageName;
+	string imageName;
 
 	//
 	// evaluate arguments
 	//
+	string cameraURL = evaluateArgs(argc, argv, "--cameraURL", "http://192.168.0.115/video.cgi");
+
+
 	if (argc > 2) {
 		std::string arg1 = argv[1];
 		std::string arg2 = argv[2];
@@ -135,8 +145,8 @@ int main(int argc, char** argv) {
 			ImageAnalyser imageAnalyser;
 			VirtualSheep virtualSheep;
 
-			trackedObject.setGimpColor(
-					util.openCV2gimpValue(virtualSheep.getColor()));
+//			trackedObject.setGimpColor(
+//					util.openCV2gimpValue(virtualSheep.getColor()));
 
 			virtualSheep.show(gui);
 			imageAnalyser.show(gui);
@@ -166,6 +176,10 @@ int main(int argc, char** argv) {
 			}
 
 			exit(0);
+		} else if (arg1 == "--analyse") {
+
+			MainWindow mainWindow;
+			mainWindow.start();
 		}
 	} else {
 
@@ -174,15 +188,17 @@ int main(int argc, char** argv) {
 		//
 
 		GUI gui;
-		Garden garden;
+		Garden garden(2);
 		VideoCamera videoCamera;
 		TrackedObject trackedObject;
 		ImageAnalyser imageAnalyser;
 		Planer planer;
 		HTTPClient client;
 
+		videoCamera.show(gui);
 		imageAnalyser.show(gui);
-		// planer.show(gui);
+		trackedObject.show();
+		planer.show(gui);
 
 
 		Mat frame;
@@ -190,12 +206,15 @@ int main(int argc, char** argv) {
 		Mat result;
 
 		bool stop(false);
-		int frametime = 0;
-		int framedelay = 0;
-		int framecount = 0;
+		int frametime = 1000; // take one frame each 1000ms
+		double frameProcessingStart = 0;
 		int algtime = 0;
+
+		int framedelay = 10; // must be more than 0 in order to not stop program
 		int thresh = 100;
 		int routeIdx = 0;
+
+		Point_<int> roboPos;
 
 		RNG rng(12345);
 
@@ -221,37 +240,57 @@ int main(int argc, char** argv) {
 		createTrackbar(" Canny thresh:", "result", &thresh, 255);
 
 		//
-		// for all frames in video
+		// for ever....
 		//
 		while (!stop) {
+
+			//
+			// user keyboard control
+			//
+			char key = cv::waitKey(framedelay);
+			switch (key) {
+			case 27:
+				stop = true;
+				break;
+			case 'n':
+				// unmow
+				frame.copyTo(mowed);
+				showGreens(mowed, garden.getGreenContours());
+				showRoute(mowed, garden.getRoutes());
+				break;
+			case 's': // set sheep to start position
+				sheep.setPosition(Point2f(250, 300));
+				break;
+			case '+': // speed up sheep
+				sheep.speedUp();
+				break;
+			case '-': // slow down sheep
+				sheep.slowDown();
+				break;
+			}
+
+			// measure processing time
+			frameProcessingStart = (double)getTickCount();
 
 			// read next frame if any
 			if (!videoCamera.read(frame)) {
 				break;
 			}
-			framecount++;
 
 			// just for simulation: draw shepp in camera frame
-			sheep.update();
-			//	sheep.draw(frame);
-
-			//-------------------------------------------------------------------------
-			// Insert Algorithm here
-			//-------------------------------------------------------------------------
-
-			//
-			// only each X th frame:
-			//
-			if (framecount < 10)
-				continue;
-			framecount = 0;
+			// sheep.update();
+			// sheep.draw(frame);
 
 			//
 			// get position of tracked object
 			//
-			imageAnalyser.detectObjectPosition(frame, trackedObject);
-			Point_<int> roboPos = trackedObject.getAktualPos();
-			Point_<int> lastPos = trackedObject.getLastPos();
+			if (!imageAnalyser.detectObjectPosition(frame, trackedObject))
+				continue;
+			Point_<int> lastPos = roboPos;
+			roboPos = trackedObject.getAktualPos();
+
+			if (planer.getAim().x == 0)
+				continue;
 
 			//
 			// update mowed image
@@ -270,21 +309,32 @@ int main(int argc, char** argv) {
 					stop = true;
 				Point2f aim = garden.getRoutePoint(routeIdx);
 				planer.setAim(aim);
-				circle(mowed, aim, 5, cvScalar(0, 255, 255), 1);
 			}
 
 			//
 			// calc and issue steering command
 			//
+			planer.setAktualPosition(roboPos);
 			int rotate = planer.plan(lastPos, roboPos);
+
 			// sheep.rotate(rotate);
-			sheep.setSpeed(planer.getMotorSpeed1(), planer.getMotorSpeed2());
-			sheep.print();
+			// sheep.setSpeed(planer.getMotorSpeed1(), planer.getMotorSpeed2());
+			// sheep.print();
+
+			// draw direction indicator
+			int length = 50;
+			Point P2;
+			P2.x =  (int)round(roboPos.x + length * cos(rotate * CV_PI / 180.0));
+			P2.y =  (int)round(roboPos.y + length * sin(rotate * CV_PI / 180.0));
+			Point2f aim = garden.getRoutePoint(routeIdx);
+			circle(frame, aim, 5, cvScalar(0, 255, 255), 1);
+			circle(frame, roboPos, 5, cvScalar(0, 255, 0), 1);
+			line(frame, roboPos, P2, cvScalar(255, 0, 255), 5);
+			planer.show(frame);
 
 			char command[255];
-			sprintf(command, "motor?m1=%d&m2=%d\0", planer.getMotorSpeed1(), planer.getMotorSpeed2());
-			// string command = string("motor?m1=") + planer.getMotorSpeed1() + "&m2=" + planer.getMotorSpeed2();
-			client.sendMessage(command);
+			// sprintf(command, "motor?m1=%d&m2=%d", planer.getMotorSpeed1(), planer.getMotorSpeed2());
+			// client.sendMessage(command);
 
 
 			//-------------------------------------------------------------------------
@@ -295,45 +345,13 @@ int main(int argc, char** argv) {
 			imshow("video", frame);
 			imshow("mowed", mowed);
 
-			// introduce a delay
-			// or press key to stop
-			//printf(" frametime = %d", frametime, algtime);
+			// calc next framedelay
+			algtime = ((double)getTickCount() - frameProcessingStart)*1000./getTickFrequency();
 			if (frametime > algtime)
 				framedelay = frametime - algtime;
 			else
 				framedelay = 10;
-			// printf(" framedelay = %d\n", framedelay);
-
-			framedelay = 1000;
-
-			//
-			// user keyboard control
-			//
-			char key = cv::waitKey(framedelay);
-			// printf(" key = %c\n", key);
-			switch (key) {
-			case 27:
-				stop = true;
-				break;
-			case 'n':
-				// unmow
-				frame.copyTo(mowed);
-				showGreens(mowed, garden.getGreenContours());
-				showRoute(mowed, garden.getRoutes());
-				break;
-			case 'i':
-				// TODO
-				break;
-			case 's': // set sheep to start position
-				sheep.setPosition(Point2f(250, 300));
-				break;
-			case '+': // speed up sheep
-				sheep.speedUp();
-				break;
-			case '-': // slow down sheep
-				sheep.slowDown();
-				break;
-			}
+			printf(" algtime=%d framedelay=%d\n", algtime, framedelay);
 
 		}
 	};

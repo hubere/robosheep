@@ -15,12 +15,9 @@
 
 using namespace std;
 using namespace cv;
-using namespace robosheep;
-
 
 static const string ALGORITHM_DETECTBYMOMENTS = "ALGORITHM_DETECTBYMOMENTS";
 static const string ALGORITHM_DETECTBYCONTOURS = "ALGORITHM_DETECTBYCONTOURS";
-
 
 /**
  * Analyse an image in order to find position of a trackedObject.
@@ -38,9 +35,14 @@ public:
 	void show(GUI& gui);
 	bool detectObjectPosition(Mat& frame, TrackedObject& trackedObject);
 	bool detectObjectPosition();
-	void analyse(std::string imageName, TrackedObject& aTrackedObject);
+	void analyse(string imageName, TrackedObject& aTrackedObject);
+	void analyse(Mat& frame, TrackedObject& aTrackedObject);
 
 private:
+	vector<vector<Point> > findCountours(Mat &frame,
+			TrackedColorBlob& colorBlob);
+	int findBestCountourWithMaximumArea(vector<vector<Point> > &contour);
+	int findBestCountour(vector<vector<Point> > &contour, Size objSize);
 	bool detectByContours(Mat &frame, TrackedObject& trackedObject);
 	bool detectByMoments(Mat &frame, TrackedObject& trackedObject);
 };

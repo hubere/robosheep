@@ -10,6 +10,7 @@
 
 #include <opencv2/highgui/highgui.hpp>
 
+#include "GUI.h"
 #include "OpenCVUtils.h"
 #include "TrackedObject.h"
 
@@ -22,8 +23,11 @@ class VideoCamera {
 public:
 	VideoCamera();
 	virtual ~VideoCamera();
+	void show(GUI& gui);
 	bool read(Mat& frame, int frameDelay);
 	bool read(Mat& frame);
+	bool takeSnapshot(Mat& frame);
+
 };
 
 #endif /* SRC_VIDEOCAMERA_H_ */
