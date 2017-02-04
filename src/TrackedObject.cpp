@@ -78,6 +78,11 @@ Point2i TrackedObject::getAktualPosMean() {
 	return Point2i(x, y);
 }
 
+void TrackedObject::setDirection(Point2f v)
+{
+	direction = v;
+}
+
 void TrackedObject::setAktualPos(Point_<int> newPos) {
 
 	if (positions.empty()) {
@@ -99,7 +104,7 @@ void TrackedObject::print() {
 }
 
 
-void TrackedObject::doOnChange(int v) {
+void TrackedObject::refresh() {
 	OpenCVUtils utils;
 	Mat imgHSV;
 

@@ -219,7 +219,7 @@ int main(int argc, char** argv) {
 		RNG rng(12345);
 
 		// tell planer to where sheep should move
-		planer.setAim(garden.getRoutePoint(routeIdx));
+//		planer.setAim(garden.getRoutePoint(routeIdx));
 
 		//
 		// initialize images
@@ -282,11 +282,44 @@ int main(int argc, char** argv) {
 			// sheep.draw(frame);
 
 			//
-			// get position of tracked object
+			// get position and direction of tracked object
 			//
-			if (!imageAnalyser.detectObjectPosition(frame, trackedObject))
-				continue;
-			Point_<int> lastPos = roboPos;
+			vector<TrackedColorBlob> colorBlobs = trackedObject.getColorBlobs();
+			TrackedColorBlob colorBlobYellow = colorBlobs[0];
+			TrackedColorBlob colorBlobRed = colorBlobs[1];
+
+			imageAnalyser.setFrame(frame);
+			Point2f centerYellow = imageAnalyser.detectObjectPosition(frame, colorBlobYellow);
+			Point2f centerRed = imageAnalyser.detectObjectPosition(frame, colorBlobRed);
+			Point2f center = (centerYellow + centerRed) * .5;  // in the middle of the colorBlobCenters
+
+			//
+			// calculate direction
+			//
+			Point2f v;
+			v.x = centerRed.x - centerYellow.x;
+			v.y = centerRed.y - centerYellow.y;
+			// rotate vector 90 degrees
+			float temp = v.y;
+			v.y = -v.x;
+			v.x = temp;
+
+			//
+			// update tracked objects position
+			//
+			trackedObject.setAktualPos(center);
+			trackedObject.setDirection(v);
+
+			//
+			// draw detected position of tracked object
+			//
+			circle(result, centerYellow, 10, Scalar(0, 255, 255), 4, 8, 0);
+			circle(result, centerRed, 10, Scalar(255, 0, 0), 4, 8, 0);
+			Point2f endPoint = center + v;
+			line(result, center, endPoint, cvScalar(255, 0, 255), 3);
+			imshow("result", result);
+
+			Point2i lastPos = roboPos;
 			roboPos = trackedObject.getAktualPos();
 
 			if (planer.getAim().x == 0)

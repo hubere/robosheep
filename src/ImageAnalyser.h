@@ -28,11 +28,14 @@ class ImageAnalyser {
 	TrackedObject* pTrackedObject;
 	Mat* pFrame;
 	string algorithm;
+	Mat analysedImg;
 
 public:
 	ImageAnalyser();
 	virtual ~ImageAnalyser();
 	void show(GUI& gui);
+	void setFrame(Mat &frame);
+	Point2f detectObjectPosition(Mat &frame, TrackedColorBlob& colorBlob);
 	bool detectObjectPosition(Mat& frame, TrackedObject& trackedObject);
 	bool detectObjectPosition();
 	void analyse(string imageName, TrackedObject& aTrackedObject);

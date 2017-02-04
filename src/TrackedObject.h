@@ -19,6 +19,7 @@ class TrackedObject {
 
 	vector<TrackedColorBlob> colorBlobs;
 	vector<Point2i> positions;
+	Point2f direction;
 
 public:
 	TrackedObject();
@@ -28,12 +29,14 @@ public:
 	Point2i getAktualPos();
 	Point2i getAktualPosMean();
 	void setAktualPos(Point2i);
+	void setDirection(Point2f v);
 	void print();
+
 	static void onChange(int v, void *ptr) {
 		TrackedObject *that = (TrackedObject*) ptr;
-		that->doOnChange(v);
+		that->refresh();
 	}
-	void doOnChange(int v);
+	void refresh();
 };
 
 #endif /* SRC_TRACKEDOBJECT_H_ */
