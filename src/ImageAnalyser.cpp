@@ -10,12 +10,12 @@
 #include "OpenCVUtils.h"
 
 #include <stdio.h>
-#include <iostream>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
 using namespace std;
 using namespace cv;
+
 
 static const string WINDOW_IMAGE_ANALYSER = "ImageAnalyser - inRange";
 static const string WINDOW_CONTOURS = "ImageAnalyser - contours";
@@ -276,7 +276,48 @@ int ImageAnalyser::findBestCountour(vector<vector<Point> > &contour,
 			bestContour = contours[i];
 		}
 	}
-	return rightCountourIdx;
+
+	//
+	// draw contours into image cnt_img
+	//
+	Mat cnt_img;
+	frame.copyTo(cnt_img);
+
+	RNG rng(12345);
+	int _levels = 3;
+	Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255),
+			rng.uniform(0, 255));
+	for (uint i = 0; i < contours.size(); i++) {
+		drawContours(cnt_img, contours, i, Scalar(128, 255, 255), 1, CV_AA,
+				hierarchy, std::abs(_levels));
+//		circle(cnt_img, center[i], (int) radius[i], color, 2, 8, 0);
+	}
+
+	if (rightCountourIdx == -1) {
+		printf("Could not find rightCountourIdx\n");
+		return false;
+	}
+
+	drawContours(cnt_img, contours, rightCountourIdx, Scalar(255, 128, 255), 3,
+	CV_AA, hierarchy, std::abs(_levels));
+	circle(cnt_img, center[rightCountourIdx], 10, color, 4, 8, 0);
+
+	//
+	// show contours image cnt_img
+	//
+	ostringstream text;
+	text << "contours: " << contours0.size();
+	putText(cnt_img, text.str(), Point(40, 100), FONT_HERSHEY_COMPLEX_SMALL, 1,
+			Scalar::all(255), 1, 8);
+	imshow(WINDOW_CONTOURS, cnt_img);
+
+	//
+	// update tracked objects position
+	//
+	trackedObject.setAktualPos(center[rightCountourIdx]);
+
+	return true;
+}
 }
 
 bool ImageAnalyser::detectByMoments(Mat &frame, TrackedObject& trackedObject) {
@@ -322,7 +363,8 @@ void ImageAnalyser::analyse(std::string imageName,
 	waitKey(0);
 }
 
-void ImageAnalyser::analyse(Mat& frame, TrackedObject& aTrackedObject) {
+void ImageAnalyser::analyse(Mat& frame,
+		TrackedObject& aTrackedObject) {
 	pFrame = &frame;
 	pTrackedObject = &aTrackedObject;
 	imshow(WINDOW_IMAGE_ANALYSER, frame);
@@ -330,6 +372,8 @@ void ImageAnalyser::analyse(Mat& frame, TrackedObject& aTrackedObject) {
 	/// Call the function to initialize
 	adjustParameters(0, this);
 }
+
+
 
 /**
  * @function adjustParameters

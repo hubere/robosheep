@@ -16,6 +16,8 @@
 using namespace std;
 using namespace cv;
 
+
+
 static const string WINDOW_PLANER = "Planer";
 const bool useDistance = false;
 static double dist2aim = std::numeric_limits<double>::max();
@@ -191,4 +193,6 @@ bool Planer::isRoutePointReached(Point2f pos) {
 	}
 	return false;
 }
+
+
 

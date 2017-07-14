@@ -30,33 +30,33 @@ VideoCamera::VideoCamera() {
 	// --- URLs ---
 	// url = "http://iris.not.iac.es/axis-cgi/mjpg/video.cgi?resolution=320x240";
 	//	url = "http://88.53.197.250/axis-cgi/mjpg/video.cgi?resolution=320x240";
-	// url = "http://192.168.0.115/image/jpeg.cgi";
-	url = "http://admin:hubercek@192.168.0.115/video.cgi";
-	//url = "http://192.168.0.115/video.cgi";
+	// url = "http://192.168.1.105/image/jpeg.cgi";
+	url = "http://admin:hubercek@192.168.1.105/video.cgi";
+	//url = "http://192.168.1.105/video.cgi";
 
 	// --- files ---
 	//	 url =		"/home/edi/workspace/robosheep/resources/M20120703_200959.avi";
 
-	printf("\nTry to open '0' ...");
-	cap.open(0);
+	url = "http://192.168.1.105/video.cgi";
+	printf("\nTry to open '%1$s' ...", url.c_str());
+	cap.open("http://192.168.1.105/video.cgi");
 	if (!cap.isOpened()) {
 		printf("failed\n");
 
-		url = "http://192.168.0.115/video.cgi";
+		url = "http://admin:hubercek@192.168.1.105/video.cgi";
 		printf("\nTry to open '%1$s' ...", url.c_str());
-		cap.open("http://192.168.0.115/video.cgi");
+		cap.open("http://admin:hubercek@192.168.1.105/video.cgi");
 		if (!cap.isOpened()) {
 			printf("failed\n");
 
-			url = "http://admin:hubercek@192.168.0.115/video.cgi";
+			url = "http://192.168.1.105/video.cgi?x.mjpg";
 			printf("\nTry to open '%1$s' ...", url.c_str());
-			cap.open("http://admin:hubercek@192.168.0.115/video.cgi");
+			cap.open(url.c_str());
 			if (!cap.isOpened()) {
 				printf("failed\n");
 
-				url = "http://192.168.0.115/video.cgi?x.mjpg";
-				printf("\nTry to open '%1$s' ...", url.c_str());
-				cap.open(url.c_str());
+				printf("\nTry to open USB0 ...");
+				cap.open(0 + CV_CAP_PVAPI);
 				if (!cap.isOpened()) {
 					printf("failed\n");
 					return;
@@ -126,4 +126,6 @@ bool VideoCamera::takeSnapshot(Mat& frame) {
 	bool result = cap.read(frame);
 	return result;
 }
+
+
 

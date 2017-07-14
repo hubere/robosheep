@@ -124,11 +124,8 @@ int main(int argc, char** argv) {
 			Mat frame;
 			int framedelay = 1000;
 
-			namedWindow("video", 1);
-
 			while (videoCamera.read(frame, framedelay)) {
 				imageAnalyser.detectObjectPosition(frame, trackedObject);
-				imshow("video", frame);
 			}
 
 			exit(0);
@@ -199,7 +196,6 @@ int main(int argc, char** argv) {
 		imageAnalyser.show(gui);
 		trackedObject.show();
 		planer.show(gui);
-
 
 		Mat frame;
 		Mat mowed;
@@ -307,23 +303,17 @@ int main(int argc, char** argv) {
 			//
 			// update tracked objects position
 			//
-			trackedObject.setAktualPos(center);
-			trackedObject.setDirection(v);
-
-			//
-			// draw detected position of tracked object
-			//
-			circle(result, centerYellow, 10, Scalar(0, 255, 255), 4, 8, 0);
-			circle(result, centerRed, 10, Scalar(255, 0, 0), 4, 8, 0);
-			Point2f endPoint = center + v;
-			line(result, center, endPoint, cvScalar(255, 0, 255), 3);
-			imshow("result", result);
-
-			Point2i lastPos = roboPos;
-			roboPos = trackedObject.getAktualPos();
-
-			if (planer.getAim().x == 0)
+			if (framecount < 10)
 				continue;
+			framecount = 0;
+
+			//
+			// get position of tracked object
+			//
+			bool objectDetected = imageAnalyser.detectObjectPosition(frame, trackedObject);
+			// if (!objectDetected) continue;
+			Point_<int> roboPos = trackedObject.getAktualPos();
+			Point_<int> lastPos = trackedObject.getLastPos();
 
 			//
 			// update mowed image
@@ -366,8 +356,8 @@ int main(int argc, char** argv) {
 			planer.show(frame);
 
 			char command[255];
-			// sprintf(command, "motor?m1=%d&m2=%d", planer.getMotorSpeed1(), planer.getMotorSpeed2());
-			// client.sendMessage(command);
+			sprintf(command, "motor?m1=%d&m2=%d", planer.getMotorSpeed1(), planer.getMotorSpeed2());
+			client.sendMessage(command);
 
 
 			//-------------------------------------------------------------------------
@@ -375,7 +365,6 @@ int main(int argc, char** argv) {
 			//-------------------------------------------------------------------------
 
 			// show foreground
-			imshow("video", frame);
 			imshow("mowed", mowed);
 
 			// calc next framedelay
