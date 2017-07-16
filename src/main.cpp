@@ -67,14 +67,12 @@ string evaluateArgs(int argc, char** argv, string tag, string defaultValue) {
 		if (argv[i] == tag)
 			return argv[i+1];
 	}
-	return "";
+	return defaultValue;
 }
 
 int main(int argc, char** argv) {
 
 	printf("Working directory (argv[0]): %s\n", argv[0]);
-
-	string imageName;
 
 	//
 	// evaluate arguments
@@ -159,7 +157,6 @@ int main(int argc, char** argv) {
 
 			while (!stop) {
 
-
 				origFrame.copyTo(frame);
 				virtualSheep.update();
 				virtualSheep.print();
@@ -184,6 +181,34 @@ int main(int argc, char** argv) {
 		// control the mower
 		//
 
+		//
+		// initialize variables
+		//
+		Mat frame;	// actual image of camera
+		Mat mowed;	// actual image of already mowed garden
+		//Mat result;	// no idea
+
+		// Each frame should be processes in same amount of time, the 'frametime'. The time
+		// consumed by a frame processing round trip is substracted from 'frametime' and stored
+		// in 'framedelay'. The next round trip will start by waiting 'framedelay' ms. Hence
+		// a frame will be processed each 'frametime' ms.
+		int frametime = 1000; 			 	// take one frame each 1000ms
+		double frameProcessingStart = 0; 	// for measuring duration of frame processing loop
+		int framedelay = 10; 				// the delay for next round trip in oder to reach a 'frametime'
+											// (must be more than 0 in order to not stop program)
+
+		bool stop(false);		// flag to stop the endless loop
+		int routeIdx = 0;		// index into sequence of rout points, starting with first rout point
+		Point_<int> roboPos;	// actual position of sheep
+
+		// These are not used?!
+		// RNG rng(12345);
+		// int thresh = 100;
+
+
+		//
+		// instantiate classes
+		//
 		GUI gui;
 		Garden garden(2);
 		VideoCamera videoCamera;
@@ -192,26 +217,12 @@ int main(int argc, char** argv) {
 		Planer planer;
 		HTTPClient client;
 
-//		imageAnalyser.show(gui);
-//		trackedObject.show();
+		vector<TrackedColorBlob> colorBlobs = trackedObject.getColorBlobs();
+		TrackedColorBlob colorBlobYellow = colorBlobs[0];
+		TrackedColorBlob colorBlobRed = colorBlobs[1];
+
 //		planer.show(gui);
 
-		Mat frame;
-		Mat mowed;
-		Mat result;
-
-		bool stop(false);
-		int frametime = 1000; // take one frame each 1000ms
-		double frameProcessingStart = 0;
-		int algtime = 0;
-
-		int framedelay = 10; // must be more than 0 in order to not stop program
-		int thresh = 100;
-		int routeIdx = 0;
-
-		Point_<int> roboPos;
-
-		RNG rng(12345);
 
 		// tell planer to where sheep should move
 //		planer.setAim(garden.getRoutePoint(routeIdx));
@@ -222,11 +233,11 @@ int main(int argc, char** argv) {
 		// open camera stream
 		//
 		if (!videoCamera.open(cameraURL)){
-			printf("\nCould not open camera '%1$s' ...", cameraURL.c_str());
+			printf("\nCould not open camera '%1$s' \n", cameraURL.c_str());
 			videoCamera.probeUrls();
 			exit(-1);
 		}
-		printf("\nOpened camera '%1$s' ...", cameraURL.c_str());
+		printf("\nOpened camera '%1$s'\n\n", cameraURL.c_str());
 		videoCamera.show(gui);
 
 		//
@@ -236,16 +247,20 @@ int main(int argc, char** argv) {
 			return 0;
 		}
 		frame.copyTo(mowed);
-		frame.copyTo(result);
+		// frame.copyTo(result);
 
 		showGreens(mowed, garden.getGreenContours());
-		showGreens(result, garden.getGreenContours());
 		showRoute(mowed, garden.getRoutes());
+		// showGreens(result, garden.getGreenContours());
 
-		imshow("result", result);
-		setMouseCallback("result", mouseHandler);
+		imageAnalyser.show(gui);
+		trackedObject.show();
 
-		createTrackbar(" Canny thresh:", "result", &thresh, 255);
+		// TODO FIXME what is this for?
+//		imshow("result", result);
+//		setMouseCallback("result", mouseHandler);
+//
+//		createTrackbar(" Canny thresh:", "result", &thresh, 255);
 
 		//
 		// for ever....
@@ -260,21 +275,21 @@ int main(int argc, char** argv) {
 			case 27:
 				stop = true;
 				break;
-			case 'n':
-				// unmow
-				frame.copyTo(mowed);
-				showGreens(mowed, garden.getGreenContours());
-				showRoute(mowed, garden.getRoutes());
-				break;
-			case 's': // set sheep to start position
-				sheep.setPosition(Point2f(250, 300));
-				break;
-			case '+': // speed up sheep
-				sheep.speedUp();
-				break;
-			case '-': // slow down sheep
-				sheep.slowDown();
-				break;
+//			case 'n':
+//				// unmow
+//				frame.copyTo(mowed);
+//				showGreens(mowed, garden.getGreenContours());
+//				showRoute(mowed, garden.getRoutes());
+//				break;
+//			case 's': // set sheep to start position
+//				sheep.setPosition(Point2f(250, 300));
+//				break;
+//			case '+': // speed up sheep
+//				sheep.speedUp();
+//				break;
+//			case '-': // slow down sheep
+//				sheep.slowDown();
+//				break;
 			}
 
 			// measure processing time
@@ -282,6 +297,7 @@ int main(int argc, char** argv) {
 
 			// read next frame if any
 			if (!videoCamera.read(frame)) {
+				printf("Could not read frame from camera.\n");
 				break;
 			}
 
@@ -290,16 +306,16 @@ int main(int argc, char** argv) {
 			// sheep.draw(frame);
 
 			//
-			// get position and direction of tracked object
+			// get position and direction of tracked object from imageAnalyser
 			//
-			vector<TrackedColorBlob> colorBlobs = trackedObject.getColorBlobs();
-			TrackedColorBlob colorBlobYellow = colorBlobs[0];
-			TrackedColorBlob colorBlobRed = colorBlobs[1];
-
-			imageAnalyser.setFrame(frame);
 			Point2f centerYellow = imageAnalyser.detectObjectPosition(frame, colorBlobYellow);
 			Point2f centerRed = imageAnalyser.detectObjectPosition(frame, colorBlobRed);
 			Point2f center = (centerYellow + centerRed) * .5;  // in the middle of the colorBlobCenters
+			if (center.x == 0 && center.y == 0)
+			{
+				printf("Could calculate center.\n");
+				continue;
+			}
 
 			//
 			// calculate direction
@@ -316,7 +332,7 @@ int main(int argc, char** argv) {
 			// get position of tracked object
 			//
 			bool objectDetected = imageAnalyser.detectObjectPosition(frame, trackedObject);
-			// if (!objectDetected) continue;
+			if (!objectDetected) continue;
 			Point_<int> roboPos = trackedObject.getAktualPos();
 			//  TODO FIXME merge: Point_<int> lastPos = trackedObject.getLastPos();
 
@@ -375,7 +391,7 @@ int main(int argc, char** argv) {
 			imshow("mowed", mowed);
 
 			// calc next framedelay
-			algtime = ((double)getTickCount() - frameProcessingStart)*1000./getTickFrequency();
+			int algtime = ((double)getTickCount() - frameProcessingStart)*1000./getTickFrequency();
 			if (frametime > algtime)
 				framedelay = frametime - algtime;
 			else

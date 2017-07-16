@@ -9,6 +9,8 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <sstream>
+#include <string>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
@@ -70,5 +72,13 @@ int TrackedColorBlob::getColorRange() {
 	return color_range;
 }
 
+String TrackedColorBlob::toString(){
+
+	std::stringstream ss;
+	ss << "TrackedColorBlob: color: ( " << color_H << "," << color_S << "," << color_V;
+	ss << ") color_range: " << color_range << " size: " << size << endl;
+	std::string s = ss.str();
+	return s;
+}
 
 

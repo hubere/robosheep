@@ -40,6 +40,7 @@ public:
 	Scalar getGimpColor();
 	Size getSize();
 	int getColorRange();
+	String toString();
 };
 
 #endif /* SRC_TRACKEDCOLORBLOB_H_ */

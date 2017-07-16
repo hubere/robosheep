@@ -20,6 +20,8 @@ static const string WINDOW_VIRTUAL_SHEEP = "Virtual Sheep";
 VirtualSheep::VirtualSheep() {
 	pos = Point2f(250, 300);
 	lastpos = Point2f(0, 0);
+	speedM1 = 0;
+	speedM2 = 0;
 	dir = 45;
 	velocity = 1;
 	size = Size(10, 15);

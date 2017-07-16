@@ -35,7 +35,6 @@ public:
 	ImageAnalyser();
 	virtual ~ImageAnalyser();
 	void show(GUI& gui);
-	void setFrame(Mat &frame);
 	Point2f detectObjectPosition(Mat &frame, TrackedColorBlob& colorBlob);
 	bool detectObjectPosition(Mat& frame, TrackedObject& trackedObject);
 	bool detectObjectPosition();

@@ -23,7 +23,7 @@ static const string WINDOW_CONTOURS = "ImageAnalyser - contours";
 
 // the adjustable parameter
 const char* trackbar_range = "range";
-int threshold_range = 0;
+int userInputThresholdRange = 0;
 
 int const max_value = 255;
 int const max_type = 4;
@@ -47,12 +47,8 @@ void ImageAnalyser::show(GUI& gui) {
 	gui.addWindow(WINDOW_CONTOURS);
 
 	/// Create Trackbar to choose type of Threshold
-	createTrackbar(trackbar_range, WINDOW_IMAGE_ANALYSER, &threshold_range,
+	createTrackbar(trackbar_range, WINDOW_IMAGE_ANALYSER, &userInputThresholdRange,
 			max_value, adjustParameters, this);
-}
-
-void ImageAnalyser::setFrame(Mat &frame) {
-	frame.copyTo(analysedImg);
 }
 
 bool ImageAnalyser::detectObjectPosition() {
@@ -78,10 +74,13 @@ Point2f ImageAnalyser::detectObjectPosition(Mat &frame,
 
 	Point2f center;
 	float radius;
+
 	vector<vector<Point> > contours = findCountours(frame, colorBlob);
+	if (contours.size() == 0) return Point2f();
+
 	int bestIdx = findBestCountour(contours, colorBlob.getSize());
-	if (bestIdx == -1)
-		return Point2f();
+	if (bestIdx == -1)	return Point2f();
+
 	minEnclosingCircle(contours[bestIdx], center, radius);
 
 	// draw
@@ -195,7 +194,7 @@ bool ImageAnalyser::detectByContours(Mat &frame, TrackedObject& trackedObject) {
 //
 //	setMouseCallback(WINDOW_CONTOURS, mouseCallBackFunc, &cnt_img);
 //
-//	return true;
+	return true;
 }
 
 /**
@@ -204,9 +203,10 @@ bool ImageAnalyser::detectByContours(Mat &frame, TrackedObject& trackedObject) {
 vector<vector<Point> > ImageAnalyser::findCountours(Mat &frame,
 		TrackedColorBlob& colorBlob) {
 
-	int range = threshold_range;
-	if (threshold_range == 0) {
-		range = colorBlob.getColorRange();
+	// either set threshold range to user input or to the range given by colorBlob
+	int range = colorBlob.getColorRange();
+	if (userInputThresholdRange != 0) {
+		range = userInputThresholdRange;
 	}
 
 	// see http://www.instructables.com/id/How-to-Track-your-Robot-with-OpenCV/step17/OpenCV-Selecting-Your-Color/
@@ -220,7 +220,7 @@ vector<vector<Point> > ImageAnalyser::findCountours(Mat &frame,
 	Mat imgHSV;
 	Mat imgThreshed;
 	cvtColor(frame, imgHSV, CV_BGR2HSV); // change to HSV color space
-	inRange(imgHSV, treshLow, treshHi, imgThreshed); // treshhold
+	inRange(imgHSV, treshLow, treshHi, imgThreshed); // threshold
 	imshow(WINDOW_IMAGE_ANALYSER, imgThreshed);
 
 	//
@@ -230,6 +230,11 @@ vector<vector<Point> > ImageAnalyser::findCountours(Mat &frame,
 	vector<Vec4i> hierarchy;
 	findContours(imgThreshed, contours0, hierarchy, RETR_TREE,
 			CHAIN_APPROX_SIMPLE);
+
+	if (contours0.size() == 0)	{
+		cout << "ImageAnalyser::findCountours Could not find any contour for treshLow=" << treshLow << " treshHi=" << treshHi << endl;
+//		printf("ImageAnalyser::findCountours Could not find any contour for %1$s.\n", colorBlob.toString().c_str());
+	}
 
 	return contours0;
 }
@@ -285,7 +290,7 @@ int ImageAnalyser::findBestCountour(vector<vector<Point> > &contour,
 	analysedImg.copyTo(cnt_img);
 
 	RNG rng(12345);
-	int _levels = 3;
+	//	 TODO FIXME merge: 	int _levels = 3;
 	Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255),
 			rng.uniform(0, 255));
 	for (uint i = 0; i < contours.size(); i++) {
@@ -296,8 +301,8 @@ int ImageAnalyser::findBestCountour(vector<vector<Point> > &contour,
 	}
 
 	if (rightCountourIdx == -1) {
-		printf("Could not find rightCountourIdx\n");
-		return false;
+		printf("Could not find best contour for size (%1$d/%2$d).\n", objSize.width, objSize.height);
+		return -1;
 	}
 
 	drawContours(cnt_img, contours, rightCountourIdx, Scalar(255, 128, 255), 3);
@@ -318,7 +323,7 @@ int ImageAnalyser::findBestCountour(vector<vector<Point> > &contour,
 	//
 	// TODO FIXME merge: trackedObject.setAktualPos(center[rightCountourIdx]);
 
-	return true;
+	return rightCountourIdx;
 }
 
 bool ImageAnalyser::detectByMoments(Mat &frame, TrackedObject& trackedObject) {
