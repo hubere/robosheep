@@ -10,6 +10,7 @@
 #include "OpenCVUtils.h"
 
 #include <stdio.h>
+#include <iostream>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
@@ -281,15 +282,16 @@ int ImageAnalyser::findBestCountour(vector<vector<Point> > &contour,
 	// draw contours into image cnt_img
 	//
 	Mat cnt_img;
-	frame.copyTo(cnt_img);
+	analysedImg.copyTo(cnt_img);
 
 	RNG rng(12345);
 	int _levels = 3;
 	Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255),
 			rng.uniform(0, 255));
 	for (uint i = 0; i < contours.size(); i++) {
-		drawContours(cnt_img, contours, i, Scalar(128, 255, 255), 1, CV_AA,
-				hierarchy, std::abs(_levels));
+		drawContours(cnt_img, contours, i, Scalar(128, 255, 255), 1);
+//	 TODO FIXME merge: 	drawContours(cnt_img, contours, i, Scalar(128, 255, 255), 1, CV_AA,
+				//hierarchy, std::abs(_levels));
 //		circle(cnt_img, center[i], (int) radius[i], color, 2, 8, 0);
 	}
 
@@ -298,15 +300,15 @@ int ImageAnalyser::findBestCountour(vector<vector<Point> > &contour,
 		return false;
 	}
 
-	drawContours(cnt_img, contours, rightCountourIdx, Scalar(255, 128, 255), 3,
-	CV_AA, hierarchy, std::abs(_levels));
+	drawContours(cnt_img, contours, rightCountourIdx, Scalar(255, 128, 255), 3);
+// TODO FIXME merge: 	drawContours(cnt_img, contours, rightCountourIdx, Scalar(255, 128, 255), 3,	CV_AA, hierarchy, std::abs(_levels));
 	circle(cnt_img, center[rightCountourIdx], 10, color, 4, 8, 0);
 
 	//
 	// show contours image cnt_img
 	//
 	ostringstream text;
-	text << "contours: " << contours0.size();
+	text << "contours: " << contours.size();
 	putText(cnt_img, text.str(), Point(40, 100), FONT_HERSHEY_COMPLEX_SMALL, 1,
 			Scalar::all(255), 1, 8);
 	imshow(WINDOW_CONTOURS, cnt_img);
@@ -314,10 +316,9 @@ int ImageAnalyser::findBestCountour(vector<vector<Point> > &contour,
 	//
 	// update tracked objects position
 	//
-	trackedObject.setAktualPos(center[rightCountourIdx]);
+	// TODO FIXME merge: trackedObject.setAktualPos(center[rightCountourIdx]);
 
 	return true;
-}
 }
 
 bool ImageAnalyser::detectByMoments(Mat &frame, TrackedObject& trackedObject) {
