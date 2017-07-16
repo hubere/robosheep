@@ -23,6 +23,8 @@ class VideoCamera {
 public:
 	VideoCamera();
 	virtual ~VideoCamera();
+	bool open(String& url);
+	void probeUrls();
 	void show(GUI& gui);
 	bool read(Mat& frame, int frameDelay);
 	bool read(Mat& frame);

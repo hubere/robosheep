@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
 	//
 	// evaluate arguments
 	//
-	string cameraURL = evaluateArgs(argc, argv, "--cameraURL", "http://192.168.0.115/video.cgi");
+	string cameraURL = evaluateArgs(argc, argv, "--cameraURL", "http://192.168.1.105/video.cgi?x.mjpg");
 
 
 	if (argc > 2) {
@@ -192,10 +192,9 @@ int main(int argc, char** argv) {
 		Planer planer;
 		HTTPClient client;
 
-		videoCamera.show(gui);
-		imageAnalyser.show(gui);
-		trackedObject.show();
-		planer.show(gui);
+//		imageAnalyser.show(gui);
+//		trackedObject.show();
+//		planer.show(gui);
 
 		Mat frame;
 		Mat mowed;
@@ -216,6 +215,19 @@ int main(int argc, char** argv) {
 
 		// tell planer to where sheep should move
 //		planer.setAim(garden.getRoutePoint(routeIdx));
+
+
+
+		//
+		// open camera stream
+		//
+		if (!videoCamera.open(cameraURL)){
+			printf("\nCould not open camera '%1$s' ...", cameraURL.c_str());
+			videoCamera.probeUrls();
+			exit(-1);
+		}
+		printf("\nOpened camera '%1$s' ...", cameraURL.c_str());
+		videoCamera.show(gui);
 
 		//
 		// initialize images

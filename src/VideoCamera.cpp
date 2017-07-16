@@ -19,25 +19,29 @@ using namespace cv;
 static const string WINDOW_VIDEO = "Camera";
 
 VideoCamera::VideoCamera() {
+}
 
-	OpenCVUtils util;
+//
+// open camera stream
+//
+bool VideoCamera::open(String& url) {
+	return cap.open(url);
+}
 
-	//
-	// open camera
-	//
+void VideoCamera::probeUrls() {
+
 	string url;
 
 	// --- URLs ---
 	// url = "http://iris.not.iac.es/axis-cgi/mjpg/video.cgi?resolution=320x240";
 	//	url = "http://88.53.197.250/axis-cgi/mjpg/video.cgi?resolution=320x240";
 	// url = "http://192.168.1.105/image/jpeg.cgi";
-	url = "http://admin:hubercek@192.168.1.105/video.cgi";
+	// url = "http://admin:hubercek@192.168.1.105/video.cgi";
 	//url = "http://192.168.1.105/video.cgi";
 
 	// --- files ---
 	//	 url =		"/home/edi/workspace/robosheep/resources/M20120703_200959.avi";
 
-	url = "http://192.168.1.105/video.cgi";
 	printf("\nTry to open '%1$s' ...", url.c_str());
 	cap.open("http://192.168.1.105/video.cgi");
 	if (!cap.isOpened()) {
