@@ -301,27 +301,21 @@ int main(int argc, char** argv) {
 			v.x = temp;
 
 			//
-			// update tracked objects position
-			//
-			if (framecount < 10)
-				continue;
-			framecount = 0;
-
-			//
 			// get position of tracked object
 			//
 			bool objectDetected = imageAnalyser.detectObjectPosition(frame, trackedObject);
 			// if (!objectDetected) continue;
 			Point_<int> roboPos = trackedObject.getAktualPos();
-			Point_<int> lastPos = trackedObject.getLastPos();
+			//  TODO FIXME merge: Point_<int> lastPos = trackedObject.getLastPos();
 
 			//
 			// update mowed image
 			//
-			if (lastPos.x > 0 && lastPos.y > 0 && roboPos.x > 0
-					&& roboPos.y > 0) {
-				line(mowed, roboPos, lastPos, cvScalar(255, 255, 255), 10);
-			}
+//  TODO FIXME merge:
+//			if (lastPos.x > 0 && lastPos.y > 0 && roboPos.x > 0
+//					&& roboPos.y > 0) {
+//				line(mowed, roboPos, lastPos, cvScalar(255, 255, 255), 10);
+//			}
 
 			//
 			// get next aim
@@ -338,26 +332,27 @@ int main(int argc, char** argv) {
 			// calc and issue steering command
 			//
 			planer.setAktualPosition(roboPos);
-			int rotate = planer.plan(lastPos, roboPos);
+			//  TODO FIXME merge: int rotate = planer.plan(lastPos, roboPos);
 
 			// sheep.rotate(rotate);
 			// sheep.setSpeed(planer.getMotorSpeed1(), planer.getMotorSpeed2());
 			// sheep.print();
 
 			// draw direction indicator
-			int length = 50;
-			Point P2;
-			P2.x =  (int)round(roboPos.x + length * cos(rotate * CV_PI / 180.0));
-			P2.y =  (int)round(roboPos.y + length * sin(rotate * CV_PI / 180.0));
-			Point2f aim = garden.getRoutePoint(routeIdx);
-			circle(frame, aim, 5, cvScalar(0, 255, 255), 1);
-			circle(frame, roboPos, 5, cvScalar(0, 255, 0), 1);
-			line(frame, roboPos, P2, cvScalar(255, 0, 255), 5);
-			planer.show(frame);
-
-			char command[255];
-			sprintf(command, "motor?m1=%d&m2=%d", planer.getMotorSpeed1(), planer.getMotorSpeed2());
-			client.sendMessage(command);
+			//  TODO FIXME merge:
+//			int length = 50;
+//			Point P2;
+//			P2.x =  (int)round(roboPos.x + length * cos(rotate * CV_PI / 180.0));
+//			P2.y =  (int)round(roboPos.y + length * sin(rotate * CV_PI / 180.0));
+//			Point2f aim = garden.getRoutePoint(routeIdx);
+//			circle(frame, aim, 5, cvScalar(0, 255, 255), 1);
+//			circle(frame, roboPos, 5, cvScalar(0, 255, 0), 1);
+//			line(frame, roboPos, P2, cvScalar(255, 0, 255), 5);
+//			planer.show(frame);
+//
+//			char command[255];
+//			sprintf(command, "motor?m1=%d&m2=%d", planer.getMotorSpeed1(), planer.getMotorSpeed2());
+//			client.sendMessage(command);
 
 
 			//-------------------------------------------------------------------------

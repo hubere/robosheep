@@ -12,6 +12,7 @@
 
 #include "GUI.h"
 #include "TrackedObject.h"
+#include "TrackedColorBlob.h"
 
 using namespace std;
 using namespace cv;
