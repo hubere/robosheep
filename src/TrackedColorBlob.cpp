@@ -26,6 +26,7 @@ TrackedColorBlob::TrackedColorBlob(int datasetidx) {
 		color_V = 97;
 		color_range = 20;
 		size = Size(10, 15);
+		name = "GARDEN_YELLOW_DINA4";
 		break;
 	}
 	case CELLAR_YELLOW_DINA4: {
@@ -34,6 +35,7 @@ TrackedColorBlob::TrackedColorBlob(int datasetidx) {
 		color_V = 90; // 80-100
 		color_range = 20;
 		size = Size(100, 50);
+		name = "CELLAR_YELLOW_DINA4";
 		break;
 	}
 	case CELLAR_YELLOW_CIRCLE: {
@@ -42,6 +44,7 @@ TrackedColorBlob::TrackedColorBlob(int datasetidx) {
 		color_V = 90; // 80-90
 		color_range = 20;
 		size = Size(40, 30);
+		name = "CELLAR_YELLOW_CIRCLE";
 		break;
 	}
 	case CELLAR_RED_CIRCLE: {
@@ -50,6 +53,7 @@ TrackedColorBlob::TrackedColorBlob(int datasetidx) {
 		color_V = 90; // 80-90
 		color_range = 20;
 		size = Size(40, 30);
+		name = "CELLAR_RED_CIRCLE";
 		break;
 	}
 	}
@@ -58,6 +62,10 @@ TrackedColorBlob::TrackedColorBlob(int datasetidx) {
 TrackedColorBlob::~TrackedColorBlob() {
 }
 
+
+//String TrackedColorBlob::getName() {
+//	return name;
+//}
 
 Scalar TrackedColorBlob::getGimpColor() {
 	return Scalar(color_H, color_S, color_V);
@@ -75,6 +83,7 @@ int TrackedColorBlob::getColorRange() {
 String TrackedColorBlob::toString(){
 
 	std::stringstream ss;
+//	ss << "TrackedColorBlob: color: " << name <<" ( " << color_H << "," << color_S << "," << color_V;
 	ss << "TrackedColorBlob: color: ( " << color_H << "," << color_S << "," << color_V;
 	ss << ") color_range: " << color_range << " size: " << size << endl;
 	std::string s = ss.str();

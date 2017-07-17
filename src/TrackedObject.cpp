@@ -41,6 +41,10 @@ TrackedObject::TrackedObject() :
 	// colorBlobs.push_back(TrackedColorBlob(CELLAR_YELLOW_DINA4));
 	colorBlobs.push_back(TrackedColorBlob(CELLAR_YELLOW_CIRCLE));
 	colorBlobs.push_back(TrackedColorBlob(CELLAR_RED_CIRCLE));
+
+	cout << "mean=" << getAktualPos() << std::endl;
+
+
 }
 
 TrackedObject::~TrackedObject() {

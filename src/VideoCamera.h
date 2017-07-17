@@ -29,6 +29,8 @@ public:
 	bool read(Mat& frame, int frameDelay);
 	bool read(Mat& frame);
 	bool takeSnapshot(Mat& frame);
+	bool saveFrame();
+
 
 };
 

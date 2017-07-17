@@ -20,6 +20,7 @@
 
 
 using namespace cv;
+using namespace std;
 
 
 MainWindow::MainWindow() {
@@ -45,14 +46,18 @@ void MainWindow::start(){
 
 	Mat frame;
 
+	//
+	// open camera stream
+	//
+// TODO FIXME 	string cameraURL = evaluateArgs(argc, argv, "--cameraURL", "http://192.168.1.105/video.cgi?x.mjpg");
+	string cameraURL = "http://192.168.1.105/video.cgi?x.mjpg";
+	if (!videoCamera.open(cameraURL)) exit(-1);
 	videoCamera.show(gui);
 
 
 	std::cout << "\n\n\nUsage:" << std::endl
 			<< "	't'		take snapshot" << std::endl
 			<< "	'a'		analyse snapshot" << std::endl
-			<< "	't'		take snapshot" << std::endl
-			<< "	't'		take snapshot" << std::endl
 			<< "	'ESC'	exit" << std::endl
 			<< std::endl;
 
@@ -67,6 +72,11 @@ void MainWindow::start(){
 		case 27:
 			stop = true;
 			break;
+
+		case 't':
+			videoCamera.saveFrame();
+			break;
+
 		case 'a':
 			Mat snapshot;
 			videoCamera.takeSnapshot(snapshot);

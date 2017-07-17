@@ -10,6 +10,8 @@
 #include "OpenCVUtils.h"
 #include "GUI.h"
 #include <stdio.h>
+#include <iostream>
+#include <time.h>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
@@ -25,7 +27,15 @@ VideoCamera::VideoCamera() {
 // open camera stream
 //
 bool VideoCamera::open(String& url) {
-	return cap.open(url);
+
+	cout << endl << "VideoCamera::open(" << url << ") -> ";
+	if (!cap.open(url)){
+		cout << "FAILED!" << endl;
+		probeUrls();
+		return false;
+	}
+	cout << "succeeded." << endl;
+	return true;
 }
 
 void VideoCamera::probeUrls() {
@@ -109,7 +119,7 @@ void VideoCamera::show(GUI& gui) {
 
 bool VideoCamera::read(Mat& frame) {
 	bool result = cap.read(frame);
-	imshow(WINDOW_VIDEO, frame);
+	if (result) imshow(WINDOW_VIDEO, frame);
 	return result;
 }
 
@@ -129,6 +139,32 @@ bool VideoCamera::read(Mat& frame, int frameDelay) {
 bool VideoCamera::takeSnapshot(Mat& frame) {
 	bool result = cap.read(frame);
 	return result;
+}
+
+bool VideoCamera::saveFrame() {
+	Mat image;
+	if (!cap.read(image)){
+		cout << "VideoCamera::saveFrame:	Could not read image" << endl;
+		return false;
+	}
+
+	time_t now;
+	char filename[40];
+	filename[0] = '\0';
+	now = time(NULL);
+
+
+	   if (now != -1)
+	   {
+		   strftime(filename, sizeof(filename), "snapshot_%Y-%m-%d_%H:%M:%S.jpg", gmtime(&now));
+	   }
+
+
+	imwrite( filename, image );
+	cout << "VideoCamera::saveFrame:	saved image to " << filename << endl;
+
+
+	return true;
 }
 
 

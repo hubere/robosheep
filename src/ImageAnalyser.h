@@ -27,7 +27,7 @@ static const string ALGORITHM_DETECTBYCONTOURS = "ALGORITHM_DETECTBYCONTOURS";
 class ImageAnalyser {
 
 	TrackedObject* pTrackedObject;
-	Mat* pFrame;
+	Mat imageToAnalyse;
 	string algorithm;
 	Mat analysedImg;
 

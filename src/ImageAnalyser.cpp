@@ -29,13 +29,15 @@ int const max_value = 255;
 int const max_type = 4;
 int const max_BINARY_value = 255;
 
+Mat cnt_img;
+
 // callback and callback parameters
 void adjustParameters(int, void*);
 void mouseCallBackFunc(int event, int x, int y, int flags, void* userdata);
 
 ImageAnalyser::ImageAnalyser() {
 	pTrackedObject = NULL;
-	pFrame = NULL;
+	imageToAnalyse = Mat();
 	algorithm = ALGORITHM_DETECTBYCONTOURS;
 }
 
@@ -52,8 +54,8 @@ void ImageAnalyser::show(GUI& gui) {
 }
 
 bool ImageAnalyser::detectObjectPosition() {
-	if (pFrame != NULL && pTrackedObject != NULL)
-		return detectObjectPosition(*pFrame, *pTrackedObject);
+	if (pTrackedObject != NULL)
+		return detectObjectPosition(imageToAnalyse, *pTrackedObject);
 	return false;
 }
 
@@ -97,103 +99,103 @@ Point2f ImageAnalyser::detectObjectPosition(Mat &frame,
 bool ImageAnalyser::detectByContours(Mat &frame, TrackedObject& trackedObject) {
 
 	// store parameters for callback function
-//	pFrame = &frame;
-//	pTrackedObject = &trackedObject;
+	frame.copyTo(imageToAnalyse);
+	pTrackedObject = &trackedObject;
+
+	vector<TrackedColorBlob> colorBlobs = trackedObject.getColorBlobs();
+	TrackedColorBlob colorBlob = colorBlobs[0];
+
+	vector<vector<Point> > contours = findCountours(frame, colorBlob);
+
+	int bestContourIdx = findBestCountour(contours, colorBlob.getSize());
+//	int bestContourIdx = findBestCountourWithMaximumArea(contours);
+
 //
-//	vector<TrackedColorBlob> colorBlobs = trackedObject.getColorBlobs();
-//	TrackedColorBlob colorBlob = colorBlobs[0];
+// draw contours into image cnt_img
 //
-//	vector<vector<Point> > contours = findCountours(frame, colorBlob);
-//
-//	int bestContourIdx = findBestCountour(contours, colorBlob.getSize());
-////	int bestContourIdx = findBestCountourWithMaximumArea(contours);
-//
-////
-//// draw contours into image cnt_img
-////
-//	frame.copyTo(cnt_img);
-//
-//	for (uint i = 0; i < contours.size(); i++) {
-//		drawContours(cnt_img, contours, i, Scalar(128, 255, 255), 1);
-//	}
-//
-//	if (bestContourIdx == -1) {
-//		printf("Could not find rightCountourIdx\n");
-//		return true;
-//	}
-//
-//	//
-//	// find center
-//	//
-//	Point2f center;
-//	float radius;
-//	minEnclosingCircle(contours[bestContourIdx], center, radius);
-//	circle(cnt_img, center, 10, Scalar(0, 255, 255), 4, 8, 0);
-//
-//	drawContours(cnt_img, contours, bestContourIdx, Scalar(255, 128, 255), 3);
-//
-//	if (colorBlobs.size() > 1) {
-//		colorBlob = colorBlobs[1];
-//		contours = findCountours(frame, colorBlob);
-//		int bestContour2Idx = findBestCountour(contours, colorBlob.getSize());
-//
-//		for (uint i = 0; i < contours.size(); i++) {
-//			drawContours(cnt_img, contours, i, Scalar(128, 255, 255), 1);
-//		}
-//
-//		if (bestContour2Idx == -1) {
-//			printf("Could not find bestContour2Idx\n");
-//			return true;
-//		}
-//
-//		drawContours(cnt_img, contours, bestContour2Idx, Scalar(255, 128, 255),
-//				3);
-//
-//		Point2f center2;
-//		minEnclosingCircle(contours[bestContour2Idx], center2, radius);
-//		circle(cnt_img, center2, 10, Scalar(255, 0, 0), 4, 8, 0);
-//
-//		//
-//		// calculate direction
-//		//
-//		Point2f v;
-//		v.x = center2.x - center.x;
-//		v.y = center2.y - center.y;
-//		// rotate vector 90 degrees
-//		float temp = v.y;
-//		v.y = -v.x;
-//		v.x = temp;
-//
-//		//
-//		// update tracked objects position
-//		//
-//		trackedObject.setAktualPos(center);
-//		trackedObject.setDirection(v);
-//
-//		Point2f startPoint = (center + center2) * .5;
-//		Point2f endPoint = startPoint + v;
-//		line(cnt_img, startPoint, endPoint, cvScalar(255, 0, 255), 3);
-//
-//	} else {
-//		//
-//		// update tracked objects position
-//		//
-//		trackedObject.setAktualPos(center);
-//
-//		//
-//		// show contours image cnt_img
-//		//
-//		ostringstream text;
-//		text << "contours: " << contours.size();
-//		putText(cnt_img, text.str(), Point(40, 100), FONT_HERSHEY_COMPLEX_SMALL,
-//				1, Scalar::all(255), 1, 8);
-//
-//	}
-//
-//	imshow(WINDOW_CONTOURS, cnt_img);
-//
-//	setMouseCallback(WINDOW_CONTOURS, mouseCallBackFunc, &cnt_img);
-//
+	frame.copyTo(cnt_img);
+
+	for (uint i = 0; i < contours.size(); i++) {
+		drawContours(cnt_img, contours, i, Scalar(128, 255, 255), 1);
+	}
+
+	if (bestContourIdx == -1) {
+		printf("Could not find rightCountourIdx\n");
+		return true;
+	}
+
+	//
+	// find center
+	//
+	Point2f center;
+	float radius;
+	minEnclosingCircle(contours[bestContourIdx], center, radius);
+	circle(cnt_img, center, 10, Scalar(0, 255, 255), 4, 8, 0);
+
+	drawContours(cnt_img, contours, bestContourIdx, Scalar(255, 128, 255), 3);
+
+	if (colorBlobs.size() > 1) {
+		colorBlob = colorBlobs[1];
+		contours = findCountours(frame, colorBlob);
+		int bestContour2Idx = findBestCountour(contours, colorBlob.getSize());
+
+		for (uint i = 0; i < contours.size(); i++) {
+			drawContours(cnt_img, contours, i, Scalar(128, 255, 255), 1);
+		}
+
+		if (bestContour2Idx == -1) {
+			printf("Could not find bestContour2Idx\n");
+			return true;
+		}
+
+		drawContours(cnt_img, contours, bestContour2Idx, Scalar(255, 128, 255),
+				3);
+
+		Point2f center2;
+		minEnclosingCircle(contours[bestContour2Idx], center2, radius);
+		circle(cnt_img, center2, 10, Scalar(255, 0, 0), 4, 8, 0);
+
+		//
+		// calculate direction
+		//
+		Point2f v;
+		v.x = center2.x - center.x;
+		v.y = center2.y - center.y;
+		// rotate vector 90 degrees
+		float temp = v.y;
+		v.y = -v.x;
+		v.x = temp;
+
+		//
+		// update tracked objects position
+		//
+		trackedObject.setAktualPos(center);
+		trackedObject.setDirection(v);
+
+		Point2f startPoint = (center + center2) * .5;
+		Point2f endPoint = startPoint + v;
+		line(cnt_img, startPoint, endPoint, cvScalar(255, 0, 255), 3);
+
+	} else {
+		//
+		// update tracked objects position
+		//
+		trackedObject.setAktualPos(center);
+
+		//
+		// show contours image cnt_img
+		//
+		ostringstream text;
+		text << "contours: " << contours.size();
+		putText(cnt_img, text.str(), Point(40, 100), FONT_HERSHEY_COMPLEX_SMALL,
+				1, Scalar::all(255), 1, 8);
+
+	}
+
+	imshow(WINDOW_CONTOURS, cnt_img);
+
+	setMouseCallback(WINDOW_CONTOURS, mouseCallBackFunc, &cnt_img);
+
 	return true;
 }
 
@@ -283,45 +285,45 @@ int ImageAnalyser::findBestCountour(vector<vector<Point> > &contour,
 		}
 	}
 
-	//
-	// draw contours into image cnt_img
-	//
-	Mat cnt_img;
-	analysedImg.copyTo(cnt_img);
-
-	RNG rng(12345);
-	//	 TODO FIXME merge: 	int _levels = 3;
-	Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255),
-			rng.uniform(0, 255));
-	for (uint i = 0; i < contours.size(); i++) {
-		drawContours(cnt_img, contours, i, Scalar(128, 255, 255), 1);
-//	 TODO FIXME merge: 	drawContours(cnt_img, contours, i, Scalar(128, 255, 255), 1, CV_AA,
-				//hierarchy, std::abs(_levels));
-//		circle(cnt_img, center[i], (int) radius[i], color, 2, 8, 0);
-	}
+//	//
+//	// draw contours into image cnt_img
+//	//
+//	Mat cnt_img;
+//	analysedImg.copyTo(cnt_img);
+//
+//	RNG rng(12345);
+//	//	 TODO FIXME merge: 	int _levels = 3;
+//	Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255),
+//			rng.uniform(0, 255));
+//	for (uint i = 0; i < contours.size(); i++) {
+//		drawContours(cnt_img, contours, i, Scalar(128, 255, 255), 1);
+////	 TODO FIXME merge: 	drawContours(cnt_img, contours, i, Scalar(128, 255, 255), 1, CV_AA,
+//				//hierarchy, std::abs(_levels));
+////		circle(cnt_img, center[i], (int) radius[i], color, 2, 8, 0);
+//	}
 
 	if (rightCountourIdx == -1) {
 		printf("Could not find best contour for size (%1$d/%2$d).\n", objSize.width, objSize.height);
 		return -1;
 	}
 
-	drawContours(cnt_img, contours, rightCountourIdx, Scalar(255, 128, 255), 3);
-// TODO FIXME merge: 	drawContours(cnt_img, contours, rightCountourIdx, Scalar(255, 128, 255), 3,	CV_AA, hierarchy, std::abs(_levels));
-	circle(cnt_img, center[rightCountourIdx], 10, color, 4, 8, 0);
-
-	//
-	// show contours image cnt_img
-	//
-	ostringstream text;
-	text << "contours: " << contours.size();
-	putText(cnt_img, text.str(), Point(40, 100), FONT_HERSHEY_COMPLEX_SMALL, 1,
-			Scalar::all(255), 1, 8);
-	imshow(WINDOW_CONTOURS, cnt_img);
-
-	//
-	// update tracked objects position
-	//
-	// TODO FIXME merge: trackedObject.setAktualPos(center[rightCountourIdx]);
+//	drawContours(cnt_img, contours, rightCountourIdx, Scalar(255, 128, 255), 3);
+//// TODO FIXME merge: 	drawContours(cnt_img, contours, rightCountourIdx, Scalar(255, 128, 255), 3,	CV_AA, hierarchy, std::abs(_levels));
+//	circle(cnt_img, center[rightCountourIdx], 10, color, 4, 8, 0);
+//
+//	//
+//	// show contours image cnt_img
+//	//
+//	ostringstream text;
+//	text << "contours: " << contours.size();
+//	putText(cnt_img, text.str(), Point(40, 100), FONT_HERSHEY_COMPLEX_SMALL, 1,
+//			Scalar::all(255), 1, 8);
+//	imshow(WINDOW_CONTOURS, cnt_img);
+//
+//	//
+//	// update tracked objects position
+//	//
+//	// TODO FIXME merge: trackedObject.setAktualPos(center[rightCountourIdx]);
 
 	return rightCountourIdx;
 }
@@ -358,10 +360,9 @@ void ImageAnalyser::analyse(std::string imageName,
 		TrackedObject& aTrackedObject) {
 
 	/// Load an image
-	Mat frame = imread(imageName, 1);
-	pFrame = &frame;
+	Mat imageToAnalyse = imread(imageName, 1);
 	pTrackedObject = &aTrackedObject;
-	imshow(WINDOW_IMAGE_ANALYSER, frame);
+	imshow(WINDOW_IMAGE_ANALYSER, imageToAnalyse);
 
 	/// Call the function to initialize
 	adjustParameters(0, this);
@@ -371,7 +372,7 @@ void ImageAnalyser::analyse(std::string imageName,
 
 void ImageAnalyser::analyse(Mat& frame,
 		TrackedObject& aTrackedObject) {
-	pFrame = &frame;
+	frame.copyTo(imageToAnalyse);
 	pTrackedObject = &aTrackedObject;
 	imshow(WINDOW_IMAGE_ANALYSER, frame);
 

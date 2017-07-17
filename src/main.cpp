@@ -232,12 +232,7 @@ int main(int argc, char** argv) {
 		//
 		// open camera stream
 		//
-		if (!videoCamera.open(cameraURL)){
-			printf("\nCould not open camera '%1$s' \n", cameraURL.c_str());
-			videoCamera.probeUrls();
-			exit(-1);
-		}
-		printf("\nOpened camera '%1$s'\n\n", cameraURL.c_str());
+		if (!videoCamera.open(cameraURL)) exit(-1);
 		videoCamera.show(gui);
 
 		//
@@ -253,8 +248,8 @@ int main(int argc, char** argv) {
 		showRoute(mowed, garden.getRoutes());
 		// showGreens(result, garden.getGreenContours());
 
-		imageAnalyser.show(gui);
 		trackedObject.show();
+		imageAnalyser.show(gui);
 
 		// TODO FIXME what is this for?
 //		imshow("result", result);
@@ -268,6 +263,17 @@ int main(int argc, char** argv) {
 		while (!stop) {
 
 			//
+			// calc new framedelay
+			//
+			int algtime = ((double)getTickCount() - frameProcessingStart)*1000./getTickFrequency();
+			frameProcessingStart = (double)getTickCount();
+			if (frametime > algtime)
+				framedelay = frametime - algtime;
+			else
+				framedelay = 10;	// minimal framedelay
+			// printf(" algtime=%d framedelay=%d\n", algtime, framedelay);
+
+			//
 			// user keyboard control
 			//
 			char key = cv::waitKey(framedelay);
@@ -275,27 +281,26 @@ int main(int argc, char** argv) {
 			case 27:
 				stop = true;
 				break;
-//			case 'n':
-//				// unmow
-//				frame.copyTo(mowed);
-//				showGreens(mowed, garden.getGreenContours());
-//				showRoute(mowed, garden.getRoutes());
-//				break;
-//			case 's': // set sheep to start position
-//				sheep.setPosition(Point2f(250, 300));
-//				break;
-//			case '+': // speed up sheep
-//				sheep.speedUp();
-//				break;
-//			case '-': // slow down sheep
-//				sheep.slowDown();
-//				break;
+			case 'n':
+				// unmow
+				frame.copyTo(mowed);
+				showGreens(mowed, garden.getGreenContours());
+				showRoute(mowed, garden.getRoutes());
+				break;
+			case 's': // set sheep to start position
+				sheep.setPosition(Point2f(250, 300));
+				break;
+			case '+': // speed up sheep
+				sheep.speedUp();
+				break;
+			case '-': // slow down sheep
+				sheep.slowDown();
+				break;
 			}
 
-			// measure processing time
-			frameProcessingStart = (double)getTickCount();
-
+			//
 			// read next frame if any
+			//
 			if (!videoCamera.read(frame)) {
 				printf("Could not read frame from camera.\n");
 				break;
@@ -390,13 +395,6 @@ int main(int argc, char** argv) {
 			// show foreground
 			imshow("mowed", mowed);
 
-			// calc next framedelay
-			int algtime = ((double)getTickCount() - frameProcessingStart)*1000./getTickFrequency();
-			if (frametime > algtime)
-				framedelay = frametime - algtime;
-			else
-				framedelay = 10;
-			printf(" algtime=%d framedelay=%d\n", algtime, framedelay);
 
 		}
 	};

@@ -33,10 +33,12 @@ class TrackedColorBlob {
 	int color_V;
 	int color_range;
 	Size size;
+	string name;
 
 public:
 	TrackedColorBlob(int datasetidx);
 	virtual ~TrackedColorBlob();
+	//String getName();
 	Scalar getGimpColor();
 	Size getSize();
 	int getColorRange();
