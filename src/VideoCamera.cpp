@@ -49,6 +49,9 @@ void VideoCamera::probeUrls() {
 	// url = "http://admin:hubercek@192.168.1.105/video.cgi";
 	//url = "http://192.168.1.105/video.cgi";
 
+//	Auflösung 1280x720: rtsp://192.168.1.111:554/onvif1 
+//	Auflösung 320x180: rtsp://192.168.1.111:554/onvif2
+
 	// --- files ---
 	//	 url =		"/home/edi/workspace/robosheep/resources/M20120703_200959.avi";
 

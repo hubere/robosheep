@@ -10,6 +10,8 @@
 
 #include <opencv2/highgui/highgui.hpp>
 
+#include "GUI.h"
+
 using namespace cv;
 
 /* Datasets of color blobs.
@@ -23,26 +25,55 @@ enum
 	GARDEN_YELLOW_DINA4 =0,
 	CELLAR_YELLOW_DINA4 =1,
 	CELLAR_YELLOW_CIRCLE  =2,
-	CELLAR_RED_CIRCLE =3
+	CELLAR_RED_CIRCLE =3,
+	GARDEN_YELLOW_CIRLCE,
+	GARDEN_RED_CIRLCE,
+	GARDEN_LED_RED,
+	GARDEN_LED_YELLOW,
+	GARDEN_BIKE_WHITE,
+	GARDEN_BIKE_RED,
+	GARDEN_BIKE_RED_AND_WHITE
+
 };
 
 
+
+
 class TrackedColorBlob {
-	int color_H;
-	int color_S;
-	int color_V;
+	int high_H;
+	int high_S;
+	int high_V;
+	int low_H;
+	int low_S;
+	int low_V;
 	int color_range;
 	Size size;
 	string name;
 
 public:
 	TrackedColorBlob(int datasetidx);
+	TrackedColorBlob(string name, int H, int S, int V, int range, Size size);
+	TrackedColorBlob(string name, int highH, int highS, int highV, int lowH, int lowS, int lowV, int range, Size size);
+	void init(string pName, int highH, int highS, int highV, int range, Size pSize);
+	void init(string pName, int highH, int highS, int highV, int lowH, int lowS, int lowV, int range, Size pSize);
 	virtual ~TrackedColorBlob();
-	//String getName();
+	void show(GUI& gui);
+	String getName();
 	Scalar getGimpColor();
+	Scalar getGimpColorHigh();
+	Scalar getGimpColorLow();
+	Scalar getGimpColorHigh(int range);
+	Scalar getGimpColorLow(int range);
 	Size getSize();
 	int getColorRange();
 	String toString();
+
+	static void onChange(int v, void *ptr) {
+		TrackedColorBlob *that = (TrackedColorBlob*) ptr;
+		that->refresh();
+	}
+	void refresh();
+
 };
 
 #endif /* SRC_TRACKEDCOLORBLOB_H_ */

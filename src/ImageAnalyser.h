@@ -30,6 +30,7 @@ class ImageAnalyser {
 	Mat imageToAnalyse;
 	string algorithm;
 	Mat analysedImg;
+	Mat contourImg;
 
 public:
 	ImageAnalyser();

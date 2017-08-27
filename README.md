@@ -12,4 +12,7 @@ If no contour can be found, adjust colorBlobs.
 	
 		1. Run robosheep --analyse
 		2. Hit 't' to take a snapshot with mover in each corner of garden
+		3. Open the snapshot in gimp
+		4. Choose color picker tool, pick a color and doubleclick on selected color. That will open a color wheel.
+		5. Read HSV values and put them in TrackedColorBlob.cpp
 

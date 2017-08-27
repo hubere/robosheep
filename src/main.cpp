@@ -72,12 +72,23 @@ string evaluateArgs(int argc, char** argv, string tag, string defaultValue) {
 
 int main(int argc, char** argv) {
 
-	printf("Working directory (argv[0]): %s\n", argv[0]);
+	//
+	// print calling arguments
+	//
+	cout << "main: === startet robosheep ===" << endl;
+	for (int i=0; i<argc; i++)
+		cout << "main: arg[" << i << "] " << argv[i] << endl;
+	cout << endl;
 
 	//
 	// evaluate arguments
 	//
-	string cameraURL = evaluateArgs(argc, argv, "--cameraURL", "http://192.168.1.105/video.cgi?x.mjpg");
+	string argCameraURL = evaluateArgs(argc, argv, "--cameraURL", "http://192.168.1.105/video.cgi?x.mjpg");
+//	string argCameraURL = evaluateArgs(argc, argv, "--cameraURL", "rtsp://192.168.1.111:554/onvif1");
+
+	string argImageName = evaluateArgs(argc, argv, "--image", "snapshot");
+//	string argBlob1 = evaluateArgs(argc, argv, "--blob1", TrackedColorBlob);
+//	string argBlob2 = evaluateArgs(argc, argv, "--blob2", "snapshot");
 
 
 	if (argc > 2) {
@@ -94,6 +105,8 @@ int main(int argc, char** argv) {
 			TrackedObject trackedObject;
 			ImageAnalyser imageAnalyser;
 
+			trackedObject.show(gui);
+			imageAnalyser.show(gui);
 			imageAnalyser.analyse(arg2, trackedObject);
 
 			exit(0);
@@ -192,7 +205,7 @@ int main(int argc, char** argv) {
 		// consumed by a frame processing round trip is substracted from 'frametime' and stored
 		// in 'framedelay'. The next round trip will start by waiting 'framedelay' ms. Hence
 		// a frame will be processed each 'frametime' ms.
-		int frametime = 1000; 			 	// take one frame each 1000ms
+		int frametime = 5000; 			 	// take one frame each 1000ms
 		double frameProcessingStart = 0; 	// for measuring duration of frame processing loop
 		int framedelay = 10; 				// the delay for next round trip in oder to reach a 'frametime'
 											// (must be more than 0 in order to not stop program)
@@ -232,7 +245,7 @@ int main(int argc, char** argv) {
 		//
 		// open camera stream
 		//
-		if (!videoCamera.open(cameraURL)) exit(-1);
+		if (!videoCamera.open(argCameraURL)) exit(-1);
 		videoCamera.show(gui);
 
 		//
@@ -248,7 +261,7 @@ int main(int argc, char** argv) {
 		showRoute(mowed, garden.getRoutes());
 		// showGreens(result, garden.getGreenContours());
 
-		trackedObject.show();
+		trackedObject.show(gui);
 		imageAnalyser.show(gui);
 
 		// TODO FIXME what is this for?
@@ -271,7 +284,7 @@ int main(int argc, char** argv) {
 				framedelay = frametime - algtime;
 			else
 				framedelay = 10;	// minimal framedelay
-			// printf(" algtime=%d framedelay=%d\n", algtime, framedelay);
+			printf("\n\n algtime=%d framedelay=%d\n", algtime, framedelay);
 
 			//
 			// user keyboard control

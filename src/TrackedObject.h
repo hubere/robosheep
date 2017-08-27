@@ -9,7 +9,7 @@
 #define SRC_TRACKEDOBJECT_H_
 
 #include "TrackedColorBlob.h"
-
+#include "GUI.h"
 #include <opencv2/highgui/highgui.hpp>
 
 using namespace cv;
@@ -24,13 +24,13 @@ class TrackedObject {
 public:
 	TrackedObject();
 	virtual ~TrackedObject();
-	void show();
+	void show(GUI& gui);
 	vector<TrackedColorBlob> getColorBlobs();
 	Point2i getAktualPos();
 	Point2i getAktualPosMean();
 	void setAktualPos(Point2i);
 	void setDirection(Point2f v);
-	void print();
+	void toString();
 
 	static void onChange(int v, void *ptr) {
 		TrackedObject *that = (TrackedObject*) ptr;
