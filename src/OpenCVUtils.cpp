@@ -87,30 +87,18 @@ VideoCapture OpenCVUtils::openVideoCapture() {
 	}
 
 	printf("\n\nVideoCapture properties:\n");
-	printf("CV_CAP_PROP_FRAME_WIDTH properties:  %d\n",
-			cap.get(CV_CAP_PROP_FRAME_WIDTH));
-	printf("CV_CAP_PROP_FRAME_HEIGHT properties: %d\n",
-			cap.get(CV_CAP_PROP_FRAME_HEIGHT));
-	printf("CV_CAP_PROP_FPS properties:          %d\n",
-			cap.get(CV_CAP_PROP_FPS));
-	printf("CV_CAP_PROP_FORMAT properties:       %d\n",
-			cap.get(CV_CAP_PROP_FORMAT));
-	printf("CV_CAP_PROP_MODE properties:         %d\n",
-			cap.get(CV_CAP_PROP_MODE));
-	printf("CV_CAP_PROP_BRIGHTNESS properties:   %d\n",
-			cap.get(CV_CAP_PROP_BRIGHTNESS));
-	printf("CV_CAP_PROP_CONTRAST properties:     %d\n",
-			cap.get(CV_CAP_PROP_CONTRAST));
-	printf("CV_CAP_PROP_SATURATION properties:   %d\n",
-			cap.get(CV_CAP_PROP_SATURATION));
-	printf("CV_CAP_PROP_HUE properties:          %d\n",
-			cap.get(CV_CAP_PROP_HUE));
-	printf("CV_CAP_PROP_GAIN properties:         %d\n",
-			cap.get(CV_CAP_PROP_GAIN));
-	printf("CV_CAP_PROP_EXPOSURE properties:     %d\n",
-			cap.get(CV_CAP_PROP_EXPOSURE));
-	printf("CV_CAP_PROP_CONVERT_RGB properties:  %d\n",
-			cap.get(CV_CAP_PROP_CONVERT_RGB));
+	printf("CV_CAP_PROP_FRAME_WIDTH properties:  %f\n",			cap.get(CV_CAP_PROP_FRAME_WIDTH));
+	printf("CV_CAP_PROP_FRAME_HEIGHT properties: %f\n",			cap.get(CV_CAP_PROP_FRAME_HEIGHT));
+	printf("CV_CAP_PROP_FPS properties:          %f\n",			cap.get(CV_CAP_PROP_FPS));
+	printf("CV_CAP_PROP_FORMAT properties:       %f\n",			cap.get(CV_CAP_PROP_FORMAT));
+	printf("CV_CAP_PROP_MODE properties:         %f\n",			cap.get(CV_CAP_PROP_MODE));
+	printf("CV_CAP_PROP_BRIGHTNESS properties:   %f\n",			cap.get(CV_CAP_PROP_BRIGHTNESS));
+	printf("CV_CAP_PROP_CONTRAST properties:     %f\n",			cap.get(CV_CAP_PROP_CONTRAST));
+	printf("CV_CAP_PROP_SATURATION properties:   %f\n",			cap.get(CV_CAP_PROP_SATURATION));
+	printf("CV_CAP_PROP_HUE properties:          %f\n",			cap.get(CV_CAP_PROP_HUE));
+	printf("CV_CAP_PROP_GAIN properties:         %f\n",			cap.get(CV_CAP_PROP_GAIN));
+	printf("CV_CAP_PROP_EXPOSURE properties:     %f\n",			cap.get(CV_CAP_PROP_EXPOSURE));
+	printf("CV_CAP_PROP_CONVERT_RGB properties:  %f\n",			cap.get(CV_CAP_PROP_CONVERT_RGB));
 	printf("\n\n");
 
 	return cap;

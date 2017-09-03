@@ -43,10 +43,9 @@ public:
 	void analyse(Mat& frame, TrackedObject& aTrackedObject);
 
 private:
-	vector<vector<Point> > findCountours(Mat &frame,
-			TrackedColorBlob& colorBlob);
+	vector<vector<Point> > findCountours(Mat &frame, TrackedColorBlob& colorBlob);
 	int findBestCountourWithMaximumArea(vector<vector<Point> > &contour);
-	int findBestCountour(vector<vector<Point> > &contour, Size objSize);
+	int findBestCountour(vector<vector<Point> > &contour, Size minSize, Size maxSize);
 	bool detectByContours(Mat &frame, TrackedObject& trackedObject);
 	bool detectByMoments(Mat &frame, TrackedObject& trackedObject);
 };

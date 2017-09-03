@@ -26,6 +26,8 @@ enum
 	CELLAR_YELLOW_DINA4 =1,
 	CELLAR_YELLOW_CIRCLE  =2,
 	CELLAR_RED_CIRCLE =3,
+	GARDEN_BLUE_SQUARE,
+	GARDEN_ORANGE_SQUARE,
 	GARDEN_YELLOW_CIRLCE,
 	GARDEN_RED_CIRLCE,
 	GARDEN_LED_RED,
@@ -47,15 +49,16 @@ class TrackedColorBlob {
 	int low_S;
 	int low_V;
 	int color_range;
-	Size size;
+	Size maxSize;
+	Size minSize;
 	string name;
 
 public:
 	TrackedColorBlob(int datasetidx);
-	TrackedColorBlob(string name, int H, int S, int V, int range, Size size);
-	TrackedColorBlob(string name, int highH, int highS, int highV, int lowH, int lowS, int lowV, int range, Size size);
-	void init(string pName, int highH, int highS, int highV, int range, Size pSize);
-	void init(string pName, int highH, int highS, int highV, int lowH, int lowS, int lowV, int range, Size pSize);
+	TrackedColorBlob(string name, int H, int S, int V, int range, Size minSize, Size maxSize);
+	TrackedColorBlob(string name, int highH, int highS, int highV, int lowH, int lowS, int lowV, int range, Size minSize, Size maxSize);
+	void init(string pName, int highH, int highS, int highV, int range, Size minSize, Size maxSize);
+	void init(string pName, int highH, int highS, int highV, int lowH, int lowS, int lowV, int range, Size minSize, Size maxSize);
 	virtual ~TrackedColorBlob();
 	void show(GUI& gui);
 	String getName();
@@ -64,7 +67,8 @@ public:
 	Scalar getGimpColorLow();
 	Scalar getGimpColorHigh(int range);
 	Scalar getGimpColorLow(int range);
-	Size getSize();
+	Size getMinSize();
+	Size getMaxSize();
 	int getColorRange();
 	String toString();
 

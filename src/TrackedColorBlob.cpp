@@ -50,7 +50,7 @@ TrackedColorBlob::TrackedColorBlob(int datasetidx) {
 		high_S = 30;
 		high_V = 97;
 		color_range = 20;
-		size = Size(10, 15);
+		maxSize = Size(10, 15);
 		name = "GARDEN_YELLOW_DINA4";
 		break;
 	}
@@ -59,7 +59,7 @@ TrackedColorBlob::TrackedColorBlob(int datasetidx) {
 		high_S = 30; // 30-30
 		high_V = 90; // 80-100
 		color_range = 20;
-		size = Size(100, 50);
+		maxSize = Size(100, 50);
 		name = "CELLAR_YELLOW_DINA4";
 		break;
 	}
@@ -68,7 +68,7 @@ TrackedColorBlob::TrackedColorBlob(int datasetidx) {
 		high_S = 30; // 30-30
 		high_V = 90; // 80-90
 		color_range = 20;
-		size = Size(40, 30);
+		maxSize = Size(40, 30);
 		name = "CELLAR_YELLOW_CIRCLE";
 		break;
 	}
@@ -77,7 +77,7 @@ TrackedColorBlob::TrackedColorBlob(int datasetidx) {
 		high_S = 50; // 30-30
 		high_V = 90; // 80-90
 		color_range = 20;
-		size = Size(40, 30);
+		maxSize = Size(40, 30);
 		name = "CELLAR_RED_CIRCLE";
 		break;
 	}
@@ -88,7 +88,7 @@ TrackedColorBlob::TrackedColorBlob(int datasetidx) {
 		high_S = 31;   // 31   0
 		high_V = 42;   // 42  92
 		color_range = 20;
-		size = Size(40, 30);
+		maxSize = Size(40, 30);
 		name = "GARDEN_YELLOW_CIRLCE";
 		break;
 	}
@@ -99,39 +99,51 @@ TrackedColorBlob::TrackedColorBlob(int datasetidx) {
 		high_S = 28;   // 26  31
 		high_V = 97;   // 96  98
 		color_range = 20;
-		size = Size(40, 30);
+		maxSize = Size(40, 30);
 		name = "GARDEN_RED_CIRLCE";
 		break;
 	}
 
 	case GARDEN_LED_RED: {
 		//		name		   H    S   V   range  size
-		init("GARDEN_LED_RED", 352, 72, 48, 20, Size(20,20));
+		init("GARDEN_LED_RED", 352, 72, 48, 20, Size(10,10), Size(40,40));
 		break;
 	}
 
 	case GARDEN_LED_YELLOW: {
 		//		name		   H    S   V   range  size
-		init("GARDEN_LED_YELLOW", 54, 23, 95, 20, Size(20,20));
+		init("GARDEN_LED_YELLOW", 54, 23, 95, 20, Size(10,10), Size(40,40));
 		break;
 	}
 
 	case GARDEN_BIKE_WHITE: {
 		//		name		     highH highS highV lowH,lowS,lowV,range,size
-		init("GARDEN_BIKE_WHITE",  220,    1,   96, 100,   3,  43,   10, Size(-1,-1));
+		init("GARDEN_BIKE_WHITE",  220,    1,   96, 100,   3,  43,   10, Size(-1,-1), Size(-1,-1));
 		break;
 	}
 
 	case GARDEN_BIKE_RED: {
 		//		name		     highH,highS,highV,lowH,lowS,lowV,range, size
 //		init("GARDEN_BIKE_RED",   19,   15,  100,  13,  34,  48,   20, Size(-1,-1));
-		init("GARDEN_BIKE_RED",   19,   63,  255,  6,  34,  180,   10, Size(-1,-1));
+		init("GARDEN_BIKE_RED",   19,   63,  255,  6,  34,  180,   10, Size(-1,-1), Size(-1,-1));
 		break;
 	}
 
 	case GARDEN_BIKE_RED_AND_WHITE: {
 		//		name		             highH,highS,highV,lowH,lowS,lowV,range, size
-		init("GARDEN_BIKE_RED_AND_WHITE",  255,   40,  100,   0,   0,  80,    0, Size(-1,-1));
+		init("GARDEN_BIKE_RED_AND_WHITE",  255,   40,  100,   0,   0,  80,    0, Size(-1,-1), Size(-1,-1));
+		break;
+	}
+
+	case GARDEN_BLUE_SQUARE: {
+		//		name		      highH,highS,highV,lowH,lowS,lowV,range, size
+		init("GARDEN_BLUE_SQUARE",  219,   28,   93, 183,  24,  87,   10, Size(5,5), Size(90, 90) );
+		break;
+	}
+
+	case GARDEN_ORANGE_SQUARE: {
+		//		name		        highH,highS,highV,lowH,lowS,lowV,range, minSize, maxSize
+		init("GARDEN_ORANGE_SQUARE",   14,   34,   98,  13,  26,  73,   10, Size(5,5), Size(90, 90) );
 		break;
 	}
 
@@ -139,20 +151,20 @@ TrackedColorBlob::TrackedColorBlob(int datasetidx) {
 	}
 }
 
-TrackedColorBlob::TrackedColorBlob(string name, int H, int S, int V, int range, Size size)
+TrackedColorBlob::TrackedColorBlob(string name, int H, int S, int V, int range, Size pMinSize, Size pMaxSize)
 {
 	theTrackedObject = this;
-	init(name, H,S,V, range,size);
+	init(name, H,S,V, range, pMinSize, pMaxSize);
 }
 
-TrackedColorBlob::TrackedColorBlob(string name, int highH, int highS, int highV, int lowH, int lowS, int lowV, int range, Size size)
+TrackedColorBlob::TrackedColorBlob(string name, int highH, int highS, int highV, int lowH, int lowS, int lowV, int range, Size pMinSize, Size pMaxSize)
 {
 	theTrackedObject = this;
-	init(name, highH,highS,highV,lowH,lowS,lowV,range,size);
+	init(name, highH,highS,highV,lowH,lowS,lowV,range, pMinSize, pMaxSize);
 }
 
 
-void TrackedColorBlob::init(string pName, int highH, int highS, int highV, int range, Size pSize)
+void TrackedColorBlob::init(string pName, int highH, int highS, int highV, int range, Size pMinSize, Size pMaxSize)
 {
 	name = pName;
 	high_H = highH;
@@ -162,10 +174,11 @@ void TrackedColorBlob::init(string pName, int highH, int highS, int highV, int r
 	low_S = -1;
 	low_V = -1;
 	color_range = range;
-	size = pSize;
+	minSize = pMinSize;
+	maxSize = pMaxSize;
 }
 
-void TrackedColorBlob::init(string pName, int highH, int highS, int highV, int lowH, int lowS, int lowV, int range, Size pSize)
+void TrackedColorBlob::init(string pName, int highH, int highS, int highV, int lowH, int lowS, int lowV, int range, Size pMinSize, Size pMaxSize)
 {
 	name = pName;
 	high_H = highH;
@@ -175,7 +188,8 @@ void TrackedColorBlob::init(string pName, int highH, int highS, int highV, int l
 	low_S = lowS;
 	low_V = lowV;
 	color_range = range;
-	size = pSize;
+	minSize = pMinSize;
+	maxSize = pMaxSize;
 }
 
 
@@ -235,8 +249,12 @@ Scalar TrackedColorBlob::getGimpColorLow(int range) {
 }
 
 
-Size TrackedColorBlob::getSize() {
-	return size;
+Size TrackedColorBlob::getMinSize() {
+	return minSize;
+}
+
+Size TrackedColorBlob::getMaxSize() {
+	return maxSize;
 }
 
 int TrackedColorBlob::getColorRange() {
@@ -247,8 +265,9 @@ String TrackedColorBlob::toString(){
 
 	std::stringstream ss;
 //	ss << "TrackedColorBlob: color: " << name <<" ( " << high_H << "," << high_S << "," << high_V;
-	ss << "TrackedColorBlob: color: ( " << high_H << "," << high_S << "," << high_V;
-	ss << ") color_range: " << color_range << " size: " << size << endl;
+	ss << "TrackedColorBlob: colorH: ( " << high_H << "," << high_S << "," << high_V << ") ";
+	ss << "colorL: ( " << low_H << "," << low_S << "," << low_V << ") ";
+	ss << "color_range: " << color_range << " minSize: " << minSize << " maxSize: " << maxSize << endl;
 	std::string s = ss.str();
 	return s;
 }
@@ -260,21 +279,22 @@ void TrackedColorBlob::refresh() {
 	Mat imgRgb(140, 170, CV_8UC3, Scalar::all(0));
 	cvtColor(imgRgb, imgHSV, CV_BGR2HSV); // change to HSV color space
 
-//	Scalar colorLow = utils.gimpValue2OpenCV(getGimpColorLow(), -color_range);
-//	Scalar colorHigh = utils.gimpValue2OpenCV(getGimpColorHigh(), color_range);
-	Scalar colorLow = getGimpColorLow(0);
-	Scalar colorHigh = getGimpColorHigh(0);
+	Scalar colorLow = utils.gimpValue2OpenCV(getGimpColorLow(), -color_range);
+	Scalar colorHigh = utils.gimpValue2OpenCV(getGimpColorHigh(), color_range);
+//	Scalar colorLow = getGimpColorLow(0);
+//	Scalar colorHigh = getGimpColorHigh(0);
 
 	cout << "colorLow: " << colorLow << endl;
 	cout << "colorHigh: " << colorHigh << endl;
 
 
-	Size theSize = getSize();
+	Size minSize = getMinSize();
+	Size maxSize = getMaxSize();
 	rectangle(imgHSV, Point( 10, 10), Point(90, 90), colorLow, -1, 8, 0);
-	rectangle(imgHSV, Point( 10, 10), Point(10  + theSize.width, 10 + theSize.height), Scalar( 0, 0, 0), 2, 8, 0); // indicate size
+	rectangle(imgHSV, Point( 10, 10), Point(10  + maxSize.width, 10 + maxSize.height), Scalar( 0, 0, 0), 2, 8, 0); // indicate size
 
 	rectangle(imgHSV, Point(100, 10), Point(190, 90), colorHigh, -1, 8, 0);
-	rectangle(imgHSV, Point(100, 10), Point(100 + theSize.width, 10 + theSize.height), Scalar(0,0,0), 2, 8, 0); // indicate size
+	rectangle(imgHSV, Point(100, 10), Point(100 + minSize.width, 10 + minSize.height), Scalar(0,0,0), 2, 8, 0); // indicate size
 
 	cvtColor(imgHSV, imgRgb, CV_HSV2BGR); // change back to RGB color space
 

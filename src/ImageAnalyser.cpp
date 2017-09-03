@@ -7,6 +7,7 @@
 
 #include "ImageAnalyser.h"
 #include "GUI.h"
+#include "Garden.h"
 #include "OpenCVUtils.h"
 
 #include <stdio.h>
@@ -21,6 +22,8 @@ using namespace cv;
 static const string WINDOW_IA_ORIG = "ImageAnalyser - original";
 static const string WINDOW_IA_INRANGE = "ImageAnalyser - inRange";
 static const string WINDOW_IA_CONTOURS = "ImageAnalyser - contours";
+bool showOrig = false;
+bool showInrange = false;
 
 // the adjustable parameter
 const char* trackbar_range = "range";
@@ -49,15 +52,13 @@ ImageAnalyser::~ImageAnalyser() {
 }
 
 void ImageAnalyser::show(GUI& gui) {
-	gui.addWindow(WINDOW_IA_ORIG);
-	gui.addWindow(WINDOW_IA_INRANGE);
+	if (showOrig) gui.addWindow(WINDOW_IA_ORIG);
+	if (showInrange) gui.addWindow(WINDOW_IA_INRANGE);
 	gui.addWindow(WINDOW_IA_CONTOURS);
 
-	/// Create Trackbar to choose type of Threshold
-	createTrackbar(trackbar_range, WINDOW_IA_INRANGE, &userInputThresholdRange,
+	if (showOrig) setMouseCallback(WINDOW_IA_ORIG, mouseCallBackFuncOrig, &imageToAnalyse);
+	if (showInrange) createTrackbar(trackbar_range, WINDOW_IA_INRANGE, &userInputThresholdRange,
 			max_value, adjustParameters, this);
-
-	setMouseCallback(WINDOW_IA_ORIG, mouseCallBackFuncOrig, &imageToAnalyse);
 	setMouseCallback(WINDOW_IA_CONTOURS, mouseCallBackFuncContours, &contourImg);
 
 }
@@ -89,7 +90,7 @@ Point2f ImageAnalyser::detectObjectPosition(Mat &frame,
 	vector<vector<Point> > contours = findCountours(frame, colorBlob);
 	if (contours.size() == 0) return Point2f();
 
-	int bestIdx = findBestCountour(contours, colorBlob.getSize());
+	int bestIdx = findBestCountour(contours, colorBlob.getMinSize(), colorBlob.getMaxSize());
 	if (bestIdx == -1)	return Point2f();
 
 	minEnclosingCircle(contours[bestIdx], center, radius);
@@ -109,107 +110,107 @@ Point2f ImageAnalyser::detectObjectPosition(Mat &frame,
 bool ImageAnalyser::detectByContours(Mat &frame, TrackedObject& trackedObject) {
 
 	// store parameters for callback function
-	frame.copyTo(imageToAnalyse);
 	pTrackedObject = &trackedObject;
+	frame.copyTo(imageToAnalyse);
+	if (showOrig) imshow(WINDOW_IA_ORIG, imageToAnalyse);
 
+	int leftBlobIdx = 0;
+	int rightBlobIdx = 0;
+	vector<vector<Point> > leftContours;
+	vector<vector<Point> > rightContours;
 	vector<TrackedColorBlob> colorBlobs = trackedObject.getColorBlobs();
-	TrackedColorBlob colorBlob = colorBlobs[0];
 
-	vector<vector<Point> > contours = findCountours(frame, colorBlob);
-	if (contours.size() < 1) return false;
-
-	int redLightIdx = 0;
-	int whiteLightIdx = 0;
-	if (contours.size() == 2 )
+	//
+	// tracked object where we cannot disinguish colorblobs by color range, e.g. light by night
+	//
+	if (colorBlobs.size() == 1)
 	{
-		Mat1b mask(imageToAnalyse.rows, imageToAnalyse.cols, uchar(0));
-		drawContours(mask, contours, 0, Scalar(255,255,255), CV_FILLED);
-		Scalar average0 = mean(imageToAnalyse, mask);
-		cout << "average0: " << average0 << endl;
+		TrackedColorBlob colorBlob = colorBlobs[0];
 
-		mask(imageToAnalyse.rows, imageToAnalyse.cols, uchar(0));
-		drawContours(mask, contours, 1, Scalar(255,255,255), CV_FILLED);
-		Scalar average1 = mean(imageToAnalyse, mask);
-		cout << "average1: " << average1 << endl;
+		leftContours = findCountours(frame, colorBlob);
+		rightContours = leftContours;
+		if (leftContours.size() < 1) return false;
 
-		// select red light by smaler average red component
-		if (average0[2] < average1[2])
-			redLightIdx = 1;
-		else
-			whiteLightIdx = 1;
+		if (leftContours.size() == 2 )
+		{
+			Mat1b mask(imageToAnalyse.rows, imageToAnalyse.cols, uchar(0));
+			drawContours(mask, leftContours, 0, Scalar(255,255,255), CV_FILLED);
+			Scalar average0 = mean(imageToAnalyse, mask);
+			cout << "average0: " << average0 << endl;
 
-//		if (colorBlob.getSize() != Size(-1,-1))
-//		{
-//			redLightIdx = findBestCountour(contours, colorBlob.getSize());
-//			//	int redLightIdx = findBestCountourWithMaximumArea(contours);
-//		}
-	}
-//	if (redLightIdx < 0) return false;
+			mask(imageToAnalyse.rows, imageToAnalyse.cols, uchar(0));
+			drawContours(mask, leftContours, 1, Scalar(255,255,255), CV_FILLED);
+			Scalar average1 = mean(imageToAnalyse, mask);
+			cout << "average1: " << average1 << endl;
 
-	//
-	// draw contours into image contourImg
-	//
-	frame.copyTo(contourImg);
-
-	// draw all found contours with small line
-	for (uint i = 0; i < contours.size(); i++) {
-		drawContours(contourImg, contours, i, Scalar(128, 255, 255), 1);
+			// select red light by smaler average red component
+			if (average0[2] < average1[2])
+				leftBlobIdx = 1;
+			else
+				rightBlobIdx = 1;
+		}
 	}
 
-//	if (redLightIdx == -1) {
-//		printf("Could not find rightCountourIdx\n");
-//		return true;
-//	}
+	//
+	// tracked Object with two colors
+	//
+	if (colorBlobs.size() == 2)
+	{
+		TrackedColorBlob colorBlob = colorBlobs[0];
+		leftContours = findCountours(frame, colorBlob);
+		leftBlobIdx = findBestCountour(leftContours, colorBlob.getMinSize(), colorBlob.getMaxSize());
+
+		colorBlob = colorBlobs[1];
+		rightContours = findCountours(frame, colorBlob);
+		rightBlobIdx = findBestCountour(rightContours, colorBlob.getMinSize(), colorBlob.getMaxSize());
+	}
+	if (leftContours.size() < 1 || rightContours.size() < 1) return false;
 
 	//
-	// find center
+	// find centers of colorblobs
 	//
-	Point2f center;
+	Point2f leftCenter;
 	float radius;
-	minEnclosingCircle(contours[redLightIdx], center, radius);
-	circle(contourImg, center, radius, Scalar(0, 0, 255), 4, 8, 0);
+	minEnclosingCircle(leftContours[leftBlobIdx], leftCenter, radius);
 
-	Point2f center2;
-	minEnclosingCircle(contours[whiteLightIdx], center2, radius);
-	circle(contourImg, center2, radius, Scalar(255, 255, 255), 4, 8, 0);
+	Point2f rightCenter;
+	minEnclosingCircle(rightContours[rightBlobIdx], rightCenter, radius);
+
+	Point2f startPoint = (leftCenter + rightCenter) * .5; // this is also the center of both blobs
 
 	//
 	// calculate direction
 	//
 	Point2f v;
-	v.x = center2.x - center.x;
-	v.y = center2.y - center.y;
+	v.x = rightCenter.x - leftCenter.x;
+	v.y = rightCenter.y - leftCenter.y;
 	// rotate vector 90 degrees
 	float temp = v.y;
 	v.y = -v.x;
 	v.x = temp;
+	Point2f endPoint = startPoint + v;
 
 	//
 	// update tracked objects position
 	//
-	trackedObject.setAktualPos(center);
+	trackedObject.setAktualPos(startPoint);
 	trackedObject.setDirection(v);
 
-	Point2f startPoint = (center + center2) * .5;
-	Point2f endPoint = startPoint + v;
+	//
+	// draw all found contours with small line,
+	// draw yellow circle on center of best contours,
+	// draw line indicating direction
+	//
+	frame.copyTo(contourImg);
+	for (uint i = 0; i < leftContours.size(); i++)
+		drawContours(contourImg, leftContours, i, Scalar(128, 255, 255), 1);
+	for (uint i = 0; i < rightContours.size(); i++)
+		drawContours(contourImg, rightContours, i, Scalar(128, 255, 255), 1);
+
+	circle(contourImg, leftCenter, radius, Scalar(0, 0, 255), 4, 8, 0);
+	circle(contourImg, rightCenter, radius, Scalar(255, 255, 255), 4, 8, 0);
+
 	line(contourImg, startPoint, endPoint, Scalar(0, 255, 0), 1);
-
-//	} else {
-//		//
-//		// update tracked objects position
-//		//
-//		trackedObject.setAktualPos(center);
-//
-//		//
-//		// show contours image contourImg
-//		//
-//		ostringstream text;
-//		text << "contours: " << contours.size();
-//		putText(contourImg, text.str(), Point(40, 100), FONT_HERSHEY_COMPLEX_SMALL,
-//				1, Scalar::all(255), 1, 8);
-//
-//	}
-
 	imshow(WINDOW_IA_CONTOURS, contourImg);
 
 	return true;
@@ -243,7 +244,7 @@ vector<vector<Point> > ImageAnalyser::findCountours(Mat &frame,
 	Mat imgThreshed;
 	cvtColor(frame, imgHSV, CV_BGR2HSV); // change to HSV color space
 	inRange(imgHSV, treshLow, treshHi, imgThreshed); // threshold
-	imshow(WINDOW_IA_INRANGE, imgThreshed);
+	if (showInrange) imshow(WINDOW_IA_INRANGE, imgThreshed);
 
 	//
 	// find contours
@@ -286,64 +287,35 @@ int ImageAnalyser::findBestCountourWithMaximumArea(
  * Find contour that is closest in size to objSize.
  */
 int ImageAnalyser::findBestCountour(vector<vector<Point> > &contour,
-		Size objSize) {
+		Size minSize, Size maxSize) {
+
+	if (contour.size() == 1) return 0;
+
+	cout <<  "ImageAnalyser::findBestCountour: ";
 	vector<Point> bestContour;
 	vector<vector<Point> > contours(contour.size());
 	vector<Rect> boundRect(contours.size());
 	vector<Point2f> center(contours.size());
 	vector<float> radius(contours.size());
 	int rightCountourIdx = -1;
-	float minRadius = fmin(objSize.width, objSize.height) / 2.0;
-	float maxRadius = fmax(objSize.width, objSize.height) * 2.0;
+	float minRadius = fmin(minSize.width, minSize.height) / 2.0;
+	float maxRadius = fmax(maxSize.width, maxSize.height) / 2.0;
 	for (unsigned int i = 0; i < contours.size(); i++) {
 		approxPolyDP(Mat(contour[i]), contours[i], 3, true);
 		boundRect[i] = boundingRect(Mat(contours[i]));
 		minEnclosingCircle(contours[i], center[i], radius[i]);
+		cout <<  "radius["<< i << "]=" << radius[i] << " ";
 		if (radius[i] > minRadius and radius[i] < maxRadius) {
 			rightCountourIdx = i;
 			bestContour = contours[i];
 		}
 	}
-
-//	//
-//	// draw contours into image contourImg
-//	//
-//	Mat contourImg;
-//	analysedImg.copyTo(contourImg);
-//
-//	RNG rng(12345);
-//	//	 TODO FIXME merge: 	int _levels = 3;
-//	Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255),
-//			rng.uniform(0, 255));
-//	for (uint i = 0; i < contours.size(); i++) {
-//		drawContours(contourImg, contours, i, Scalar(128, 255, 255), 1);
-////	 TODO FIXME merge: 	drawContours(contourImg, contours, i, Scalar(128, 255, 255), 1, CV_AA,
-//				//hierarchy, std::abs(_levels));
-////		circle(contourImg, center[i], (int) radius[i], color, 2, 8, 0);
-//	}
+	cout << " => best: " << rightCountourIdx << endl;
 
 	if (rightCountourIdx == -1) {
-		printf("Could not find best contour for size (%1$d/%2$d).\n", objSize.width, objSize.height);
+		cout <<  "Could not find best contour for minSize: " <<  minSize << ", maxSize: " << maxSize << endl;
 		return -1;
 	}
-
-//	drawContours(contourImg, contours, rightCountourIdx, Scalar(255, 128, 255), 3);
-//// TODO FIXME merge: 	drawContours(contourImg, contours, rightCountourIdx, Scalar(255, 128, 255), 3,	CV_AA, hierarchy, std::abs(_levels));
-//	circle(contourImg, center[rightCountourIdx], 10, color, 4, 8, 0);
-//
-//	//
-//	// show contours image contourImg
-//	//
-//	ostringstream text;
-//	text << "contours: " << contours.size();
-//	putText(contourImg, text.str(), Point(40, 100), FONT_HERSHEY_COMPLEX_SMALL, 1,
-//			Scalar::all(255), 1, 8);
-//	imshow(WINDOW_IA_CONTOURS, contourImg);
-//
-//	//
-//	// update tracked objects position
-//	//
-//	// TODO FIXME merge: trackedObject.setAktualPos(center[rightCountourIdx]);
 
 	return rightCountourIdx;
 }
@@ -379,10 +351,21 @@ bool ImageAnalyser::detectByMoments(Mat &frame, TrackedObject& trackedObject) {
 void ImageAnalyser::analyse(std::string imageName,
 		TrackedObject& aTrackedObject) {
 
-	/// Load an image
+	//
+	// Load an image
 	Mat frame = imread(imageName, 1);
-	imshow(WINDOW_IA_ORIG, frame);
-	analyse(frame, aTrackedObject);
+
+	//
+	// mask out garden
+	//
+	Mat imageDest;
+	Garden garden(1);
+	imageDest = garden.maskOutGreen(frame);
+
+	//
+	// start analysing
+	//
+	analyse(imageDest, aTrackedObject);
 
 //	waitKey(0);
 
@@ -390,6 +373,14 @@ void ImageAnalyser::analyse(std::string imageName,
 	{
 		char key = cv::waitKey(100);
 		switch (key) {
+		case 'o': // toggle visibility of orig window
+			showOrig = !showOrig;
+			destroyWindow(WINDOW_IA_ORIG);
+			break;
+		case 'i': // toggle visibility of inRange window
+			showInrange = !showInrange;
+			destroyWindow(WINDOW_IA_INRANGE);
+			break;
 		case 'w':
 			lastRightClickPosition.y--;
 			break;
@@ -447,7 +438,7 @@ void ImageAnalyser::analyse(std::string imageName,
 		Mat imgTmp;
 		frame.copyTo(imgTmp);
 		circle(imgTmp, lastRightClickPosition, radius, Scalar(255,255,255), 1, 8, 0);
-		imshow(WINDOW_IA_ORIG, imgTmp);
+		if (showOrig) imshow(WINDOW_IA_ORIG, imgTmp);
 
 		cout << "Color (pMin): " << (int) pMin[0] << ", " << (int) pMin[1] << ", "
 				<< (int) pMin[2] << ")" << endl;
@@ -461,7 +452,7 @@ void ImageAnalyser::analyse(Mat& frame,
 		TrackedObject& aTrackedObject) {
 	frame.copyTo(imageToAnalyse);
 	pTrackedObject = &aTrackedObject;
-	imshow(WINDOW_IA_ORIG, imageToAnalyse);
+	if (showOrig) imshow(WINDOW_IA_ORIG, imageToAnalyse);
 
 	/// Call the function to initialize
 	adjustParameters(0, this);
@@ -489,14 +480,14 @@ void mouseCallBackFuncOrig(int event, int x, int y, int flags, void* userdata) {
 
 		Vec3b p1 = (*rgb).at<Vec3b>(y, x); //Vec3b - Array of 3 uchar numbers
 		Vec3b p2 = imgHSV.at<Vec3b>(y, x); //Vec3b - Array of 3 uchar numbers
-		Vec3b pMax = imgHSV.at<Vec3b>(y, x); //Vec3b - Array of 3 uchar numbers
-		Vec3b pMin = imgHSV.at<Vec3b>(y, x); //Vec3b - Array of 3 uchar numbers
+//		Vec3b pMax = imgHSV.at<Vec3b>(y, x); //Vec3b - Array of 3 uchar numbers
+//		Vec3b pMin = imgHSV.at<Vec3b>(y, x); //Vec3b - Array of 3 uchar numbers
 
 
 		Mat imgTmp;
 		rgb->copyTo(imgTmp);
 		circle(imgTmp, Point(x,y), 10, Scalar(255,255,255), 1, 8, 0);
-		imshow(WINDOW_IA_ORIG, imgTmp);
+		if (showOrig) imshow(WINDOW_IA_ORIG, imgTmp);
 
 		//p[0] - H, p[1] - S, p[2] - V
 		cout << endl << "Color (RGB): " << (int) p1[0] << ", " << (int) p1[1]

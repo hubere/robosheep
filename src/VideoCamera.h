@@ -19,17 +19,21 @@ using namespace cv;
 
 class VideoCamera {
 	VideoCapture cap;
+	Mat image;
 
 public:
 	VideoCamera();
 	virtual ~VideoCamera();
 	bool open(String& url);
-	void probeUrls();
+	void loadImage(String image);
 	void show(GUI& gui);
 	bool read(Mat& frame, int frameDelay);
 	bool read(Mat& frame);
 	bool takeSnapshot(Mat& frame);
 	bool saveFrame();
+
+private:
+	void probeUrls();
 
 
 };

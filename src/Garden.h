@@ -8,6 +8,9 @@
 #ifndef Garden_H_
 #define Garden_H_
 
+
+#include "GUI.h"
+
 #include <opencv2/core/core.hpp>
 #include <vector>
 
@@ -15,19 +18,31 @@
 using namespace std;
 using namespace cv;
 
+enum
+{
+	GARDEN,
+	CELLAR
+};
+
 class Garden {
-	vector<Point> green;
-	vector<vector<Point> > greenContours;
+	vector<Point> greenContour;
 	vector<Point> route;
-	vector<vector<Point> > routes;
+	Mat gardenImage;
 
 public:
-	Garden();
 	Garden(int gardenIdx);
 	virtual ~Garden();
+
+	void show(GUI& gui);
+	void setImage(Mat& image);
+	Mat maskOutGreen(Mat& frame);
+	Mat showGreen(Mat &image);
+	Mat showRoute(Mat &image);
+
+
 	Point_<int> getRoutePoint(int id);
-	vector<vector<Point> > &getGreenContours();
-	vector<vector<Point> > &getRoutes();
+	vector<Point> &getGreenContour();
+	vector<Point> &getRoute();
 	int getRouteSize();
 };
 

@@ -9,6 +9,7 @@
 #define PLANER_H_
 
 #include "GUI.h"
+#include "TrackedObject.h"
 
 #include "opencv2/core/core.hpp"
 
@@ -18,23 +19,26 @@ using namespace cv;
 class Planer {
 	Point2f aim;
 	int proximity;
-	vector<Point2i> lastPositions;
+	TrackedObject& trackedObject;
 
 	int speed;
+	int rotate;
 	int motorSpeed1;
 	int motorSpeed2;
 
 public:
-	Planer();
+	Planer(TrackedObject &pTrackedObject);
 	virtual ~Planer();
+
 	void show(GUI& gui);
+	int plan();
+
 	void show(Mat& frame);
 	void putText(Mat& frame, int line, const string& text);
+	void putText(Mat& frame, int line, const string& text, Scalar color);
 	void setAim(Point2f newAim);
 	Point2f getAim();
-	void setAktualPosition(Point2i aktPos);
-	bool isRoutePointReached(Point2f pos);
-	int plan(Point2f lastPos, Point2f aktPos);
+	bool isRoutePointReached();
 	int getMotorSpeed1();
 	int getMotorSpeed2();
 };

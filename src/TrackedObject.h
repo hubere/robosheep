@@ -28,9 +28,11 @@ public:
 	vector<TrackedColorBlob> getColorBlobs();
 	Point2i getAktualPos();
 	Point2i getAktualPosMean();
+	vector<Point2i> getPositionHistory();
 	void setAktualPos(Point2i);
 	void setDirection(Point2f v);
 	void toString();
+	int getKurswinkelDegree();
 
 	static void onChange(int v, void *ptr) {
 		TrackedObject *that = (TrackedObject*) ptr;

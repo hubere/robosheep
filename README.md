@@ -16,3 +16,5 @@ If no contour can be found, adjust colorBlobs.
 		4. Choose color picker tool, pick a color and doubleclick on selected color. That will open a color wheel.
 		5. Read HSV values and put them in TrackedColorBlob.cpp
 
+
+

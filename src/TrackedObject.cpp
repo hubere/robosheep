@@ -25,12 +25,13 @@ TrackedObject::TrackedObject() :
 		positions(0) {
 
 	// two circles
-	// colorBlobs.push_back(TrackedColorBlob(CELLAR_YELLOW_DINA4));
-	// colorBlobs.push_back(TrackedColorBlob(GARDEN_BIKE_WHITE));
-	colorBlobs.push_back(TrackedColorBlob(GARDEN_BIKE_RED_AND_WHITE));
+	 colorBlobs.push_back(TrackedColorBlob(GARDEN_ORANGE_SQUARE));
+	 colorBlobs.push_back(TrackedColorBlob(GARDEN_BLUE_SQUARE));
+//	 colorBlobs.push_back(TrackedColorBlob(GARDEN_BIKE_WHITE));
+//	colorBlobs.push_back(TrackedColorBlob(GARDEN_BIKE_RED_AND_WHITE));
 
 	cout << "TrackedObject::TrackedObject: created for ";
-	for (int i=0;i<colorBlobs.size();i++)
+	for (uint i=0;i<colorBlobs.size();i++)
 	{
 		cout << colorBlobs[i].getName() << endl;
 	}
@@ -40,7 +41,7 @@ TrackedObject::~TrackedObject() {
 }
 
 void TrackedObject::show(GUI& gui) {
-	for (int i=0;i<colorBlobs.size();i++)
+	for (uint i=0;i<colorBlobs.size();i++)
 	{
 		colorBlobs[i].show(gui);
 	}
@@ -64,9 +65,21 @@ Point2i TrackedObject::getAktualPosMean() {
 	return Point2i(x, y);
 }
 
+vector<Point2i> TrackedObject::getPositionHistory()
+{
+	return positions;
+}
+
+
 void TrackedObject::setDirection(Point2f v)
 {
 	direction = v;
+}
+
+int TrackedObject::getKurswinkelDegree()
+{
+	OpenCVUtils util;
+	return util.getKurswinkelDegree(Point(0,0), direction); // Kurswinkel ist
 }
 
 void TrackedObject::setAktualPos(Point_<int> newPos) {
