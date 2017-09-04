@@ -21,7 +21,7 @@ class Planer {
 	int proximity;
 	TrackedObject& trackedObject;
 
-	int speed;
+	int velocity;
 	int rotate;
 	int motorSpeed1;
 	int motorSpeed2;
@@ -41,6 +41,8 @@ public:
 	bool isRoutePointReached();
 	int getMotorSpeed1();
 	int getMotorSpeed2();
+	void speedUp();
+	void slowDown();
 };
 
 #endif /* PLANER_H_ */

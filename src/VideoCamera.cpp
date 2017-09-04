@@ -23,7 +23,7 @@ using namespace cv;
 //
 static const string WINDOW_VIDEO = "Camera";
 
-void mouseCallBackFunc(int event, int x, int y, int flags, void* userdata);
+void mouseCallBackVideo(int event, int x, int y, int flags, void* userdata);
 
 
 //
@@ -131,7 +131,7 @@ VideoCamera::~VideoCamera() {
 
 void VideoCamera::show(GUI& gui) {
 	gui.addWindow(WINDOW_VIDEO);
-	setMouseCallback(WINDOW_VIDEO, mouseCallBackFunc, &image);
+	setMouseCallback(WINDOW_VIDEO, mouseCallBackVideo, &image);
 }
 
 bool VideoCamera::read(Mat& frame) {
@@ -189,7 +189,7 @@ bool VideoCamera::saveFrame() {
 }
 
 
-void mouseCallBackFunc(int event, int x, int y, int flags, void* userdata) {
+void mouseCallBackVideo(int event, int x, int y, int flags, void* userdata) {
 	Mat* rgb = (Mat*) userdata;
 	if (rgb->dims == 0) return;
 

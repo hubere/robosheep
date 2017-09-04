@@ -270,13 +270,13 @@ int main(int argc, char** argv) {
 					framedelay = frametime - algtime;
 				else
 					framedelay = 10;	// minimal framedelay
-				cout << endl << "-----------------------------------------------------" << endl;
-				cout << "main:		algtime="<<algtime<<" framedelay=" << framedelay << endl;
 
 				//
 				// wait and get user keyboard input
 				//
 				char key = cv::waitKey(framedelay);
+				cout << endl << "-----------------------------------------------------" << endl;
+				cout << "main:		algtime="<<algtime<<" framedelay=" << framedelay << endl;
 				frameProcessingStart = (double)getTickCount();
 				switch (key) {
 				case 27:
@@ -293,9 +293,11 @@ int main(int argc, char** argv) {
 					break;
 				case '+': // speed up sheep
 					sheep.speedUp();
+					planer.speedUp();
 					break;
 				case '-': // slow down sheep
 					sheep.slowDown();
+					planer.slowDown();
 					break;
 				}
 
@@ -383,8 +385,9 @@ int main(int argc, char** argv) {
 				sprintf(command, "motor?m1=%d&m2=%d", planer.getMotorSpeed1(), planer.getMotorSpeed2());
 				if (argCameraURL != "noCameraURL"){
 					client.sendMessage(command);
+					cout << "main:		sending client.sendMessage("<< command << ")" << endl;
 				}else{
-					cout << "main:		client.sendMessage("<< command << ")" << endl;
+					cout << "main:		would send client.sendMessage("<< command << ")" << endl;
 				}
 
 

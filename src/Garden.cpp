@@ -30,8 +30,8 @@ Garden::Garden(int gardenIdx) : greenContour(), route() {
 		//
 		// get route to be driven
 		//
-		route.push_back(Point(129, 391));
-		route.push_back(Point(218, 300));
+//		route.push_back(Point(129, 391));
+//		route.push_back(Point(218, 300));
 //		route[2] = Point(134, 232);
 //		route[3] = Point(142, 394);
 //		route[4] = Point(159, 395);
@@ -116,10 +116,8 @@ Mat Garden::showRoute(Mat &image) {
 	return image;
 }
 
-
-
-
 Point_<int> Garden::getRoutePoint(int routeIdx) {
+	if (route.size() == 0) return Point(-1,-1);
 	return route[routeIdx];
 }
 

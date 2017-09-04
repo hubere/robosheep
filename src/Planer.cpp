@@ -20,15 +20,19 @@ using namespace cv;
 
 
 static const string WINDOW_PLANER = "Planer";
-const bool useDistance = false;
+static const bool useDistance = false;
 static double dist2aim = std::numeric_limits<double>::max();
+
+void mouseCallBackPlaner(int event, int x, int y, int flags, void* userdata);
+
+
 int numberPositions = 10;
 
 Planer::Planer(TrackedObject &pTrackedObject) :
 		aim(0, 0),
 		proximity(5),
 		trackedObject(pTrackedObject),
-		speed(0),
+		velocity(0),
 		rotate(),
 		motorSpeed1(0),
 		motorSpeed2(0) {
@@ -40,6 +44,7 @@ Planer::~Planer() {
 void Planer::show(GUI& gui) {
 	gui.addWindow(WINDOW_PLANER);
 	createTrackbar(" trajectory length:", WINDOW_PLANER, &numberPositions, 100);
+	setMouseCallback(WINDOW_PLANER, mouseCallBackPlaner, this);
 }
 
 
@@ -116,7 +121,7 @@ void Planer::show(Mat& frame) {
 
 	text.str("");
 	text << "fittedline: " << fittedline;
-	putText(planned, line++, text.str());
+	putText(planned, line++, text.str(), BGR_PINK);
 
 	imshow(WINDOW_PLANER, planned);
 }
@@ -145,10 +150,19 @@ int Planer::getMotorSpeed2() {
 	return motorSpeed2;
 }
 
+void Planer::speedUp() {
+	velocity += 10;
+	cout << "Planer::speedUp: velocity=" << velocity;
+}
+
+void Planer::slowDown() {
+	velocity -=10;
+	cout << "Planer::slowDown: velocity=" << velocity;
+}
+
 int Planer::plan() {
 	OpenCVUtils util;
 	Point2i aktPos = trackedObject.getAktualPos();
-	Point2i lastPos = trackedObject.getAktualPosMean();
 
 	//
 	// 1. calc direction to head
@@ -169,13 +183,12 @@ int Planer::plan() {
 	//
 	// 3. calc motor speeds
 	//
-	int speed = 50;
 	// the following lines calculate the actual motor speed by measuring the distance between lastPos and aktPos!
 	//	int speed = (int) sqrt(
 	//			(lastPos.x - aktPos.x) * (lastPos.x - aktPos.x)
 	//					+ (lastPos.y - aktPos.y) * (lastPos.y - aktPos.y));
-	motorSpeed1 = speed + rotate;
-	motorSpeed2 = speed - rotate;
+	motorSpeed1 = velocity + rotate;
+	motorSpeed2 = velocity - rotate;
 
 //	if (dist < 10) {
 //		// sheep is not moving! => do not rotate
@@ -184,7 +197,9 @@ int Planer::plan() {
 
 	cout << "Planer::plan:	aim=("<<aim<<")" << endl;
 	cout << "Planer::plan:	ti="<<tiDegree<<" ts="<<tsDegree<<" => rotate:"<< rotate << endl;
-	cout << "Planer::plan:	speed="<<speed<<" m1="<<motorSpeed1<<" m2="<<motorSpeed2<< endl;
+	cout << "Planer::plan:	speed="<<velocity<<" m1="<<motorSpeed1<<" m2="<<motorSpeed2<< endl;
+	if (velocity == 0)
+		cout << "Planer::plan:	hit '+' and '-' to increase and decrease speed." << endl;
 
 	return rotate;
 }
@@ -213,5 +228,19 @@ bool Planer::isRoutePointReached() {
 	return false;
 }
 
+void mouseCallBackPlaner(int event, int x, int y, int flags, void* userdata) {
+	Planer* pPlaner = (Planer*) userdata;
+	if (event == EVENT_LBUTTONDOWN) {
 
+
+	} else if (event == EVENT_RBUTTONDOWN) {
+		pPlaner->setAim(Point(x,y));
+		cout << "Planer: setting new aim to (" << x << ", " << y << ")" << endl;
+	} else if (event == EVENT_MBUTTONDOWN) {
+		cout << "Planer::help	right mouse button sets new aim." << endl;
+	} else if (event == EVENT_MOUSEMOVE) {
+		// cout << "Mouse move over the window - position (" << x << ", " << y << ")" << endl;
+	}
+
+}
 
