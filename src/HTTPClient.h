@@ -13,8 +13,11 @@
 using namespace std;
 
 class HTTPClient {
+private:
+	string mowerURL;
+
 public:
-	HTTPClient();
+	HTTPClient(string pMowerURL);
 	virtual ~HTTPClient();
 	void sendMessage(string message);
 };

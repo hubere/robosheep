@@ -83,6 +83,8 @@ int main(int argc, char** argv) {
 
 	string argImageName = evaluateArgs(argc, argv, "--image", "snapshot");
 	string argSimulateSheep = evaluateArgs(argc, argv, "--simulateSheep", "false");
+	string argMowerURL = evaluateArgs(argc, argv, "--mowerURL", "http://localhost/");
+
 
 
 	if (argc > 1) {
@@ -90,7 +92,7 @@ int main(int argc, char** argv) {
 
 		if (arg1 == "--testHTTP") {
 
-			HTTPClient client;
+			HTTPClient client(argMowerURL);
 			client.sendMessage("motor?m1=10&m2=50");
 			exit(0);
 		}
@@ -205,7 +207,8 @@ int main(int argc, char** argv) {
 			// consumed by a frame processing round trip is substracted from 'frametime' and stored
 			// in 'framedelay'. The next round trip will start by waiting 'framedelay' ms. Hence
 			// a frame will be processed each 'frametime' ms.
-			int frametime = 5000; 			 	// take one frame each 1000ms
+			//int frametime = 5000; 			 	// take one frame each 1000ms <= too big for a stream ?!!?
+			int frametime = 200; 			 	// take one frame each 1000ms
 			double frameProcessingStart = (double)getTickCount();; 	// for measuring duration of frame processing loop
 			int framedelay = 10; 				// the delay for next round trip in oder to reach a 'frametime'
 												// (must be more than 0 in order to not stop program)
@@ -228,7 +231,7 @@ int main(int argc, char** argv) {
 			TrackedObject trackedObject;
 			ImageAnalyser imageAnalyser;
 			Planer planer(trackedObject);
-			HTTPClient client;
+			HTTPClient client(argMowerURL);
 
 			//
 			// initialize camera

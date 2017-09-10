@@ -13,8 +13,9 @@
 using namespace std;
 
 
-HTTPClient::HTTPClient() {
+HTTPClient::HTTPClient(string pMowerURL) {
 	curl_global_init(CURL_GLOBAL_ALL);
+	mowerURL = pMowerURL;
 }
 
 HTTPClient::~HTTPClient() {
@@ -25,7 +26,7 @@ void HTTPClient::sendMessage(string message)
 {
 	CURL* myHandle;
 	CURLcode result;
-	string url = "http://localhost:8000/"+ message;
+	string url = mowerURL + message;
 	myHandle = curl_easy_init();
 	curl_easy_setopt(myHandle, CURLOPT_URL, url.c_str());
 	result = curl_easy_perform(myHandle);

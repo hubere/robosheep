@@ -96,6 +96,11 @@ void Planer::show(Mat& frame) {
 	clipLine(r.size(), startPoint, endPoint);
 	line(planned, startPoint, endPoint, BGR_PINK, 1);
 
+//	// indicate motor movement
+//	rotate
+//	circle(planned, roboPos, 5, BGR_GREEN, 3);
+
+
 	//
 	// print data
 	//
@@ -187,8 +192,21 @@ int Planer::plan() {
 	//	int speed = (int) sqrt(
 	//			(lastPos.x - aktPos.x) * (lastPos.x - aktPos.x)
 	//					+ (lastPos.y - aktPos.y) * (lastPos.y - aktPos.y));
-	motorSpeed1 = velocity + rotate;
-	motorSpeed2 = velocity - rotate;
+
+//	motorSpeed1 = velocity + rotate;
+//	motorSpeed2 = velocity - rotate;
+
+	if (rotate > 0)
+	{
+		motorSpeed1 = velocity + velocity / 4;
+		motorSpeed2 = velocity - velocity / 4;
+
+	}else
+	{
+		motorSpeed1 = velocity - velocity / 4;
+		motorSpeed2 = velocity + velocity / 4;
+
+	}
 
 //	if (dist < 10) {
 //		// sheep is not moving! => do not rotate

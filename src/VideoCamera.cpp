@@ -41,6 +41,9 @@ bool VideoCamera::open(String& url) {
 	if (!cap.open(url)){
 		cout << "FAILED!" << endl;
 		probeUrls();
+		cout << endl << "VideoCamera::open	ensure camera is switches on " << endl;
+		cout         << "			and use fing to find IP of camera." << endl;
+		cout         << "			adjust parameter --cameraURL to the ip-address." << endl;
 		return false;
 	}
 	cout << "succeeded." << endl;
@@ -74,9 +77,9 @@ void VideoCamera::probeUrls() {
 	if (!cap.isOpened()) {
 		printf("failed\n");
 
-		url = "http://admin:hubercek@192.168.1.101/video.cgi";
+		url = "http://robosheep:mower@192.168.1.113:80/video.cgi?x.mjpg";
 		printf("\nTry to open '%1$s' ...", url.c_str());
-		cap.open("http://admin:hubercek@192.168.1.101/video.cgi");
+		cap.open("http://robosheep:mower@192.168.1.113:80/video.cgi?x.mjpg");
 		if (!cap.isOpened()) {
 			printf("failed\n");
 
@@ -136,11 +139,33 @@ void VideoCamera::show(GUI& gui) {
 
 bool VideoCamera::read(Mat& frame) {
 	bool result = true;
+	Mat frame2;
 	if (image.cols > 0)
 		frame = image;
 	else
-		result = cap.read(frame);
-	if (result) imshow(WINDOW_VIDEO, frame);
+		cap >> frame2;
+	if (!frame2.empty()) imshow(WINDOW_VIDEO, frame2);
+	frame2.copyTo(frame);
+
+
+//    for (;;) {
+//    	cap >> frame;
+//        if (frame.empty())
+//            break;
+//
+//        imshow(WINDOW_VIDEO, frame);
+//        char key = (char)waitKey(500); //delay N millis, usually long enough to display and capture input
+//
+//        switch (key) {
+//        case 'q':
+//        case 'Q':
+//        case 27: //escape key
+//            return 0;
+//        default:
+//            break;
+//        }
+//    }
+
 	return result;
 }
 

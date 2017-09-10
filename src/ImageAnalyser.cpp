@@ -165,6 +165,7 @@ bool ImageAnalyser::detectByContours(Mat &frame, TrackedObject& trackedObject) {
 		rightBlobIdx = findBestCountour(rightContours, colorBlob.getMinSize(), colorBlob.getMaxSize());
 	}
 	if (leftContours.size() < 1 || rightContours.size() < 1) return false;
+	if (leftBlobIdx < 0 || rightBlobIdx < 0) return false;
 
 	//
 	// find centers of colorblobs
