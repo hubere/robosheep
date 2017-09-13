@@ -22,6 +22,8 @@ using namespace cv;
 // static stuff
 //
 static const string WINDOW_VIDEO = "Camera";
+static int skipFrames = 10;
+static int framesTaken = 0;
 
 void mouseCallBackVideo(int event, int x, int y, int flags, void* userdata);
 
@@ -30,6 +32,32 @@ void mouseCallBackVideo(int event, int x, int y, int flags, void* userdata);
 // constuctor
 //
 VideoCamera::VideoCamera() {
+}
+
+
+void VideoCamera::test(String& url) {
+	open(url);
+	Mat frame;
+
+	cap >> frame;
+	if (!frame.empty()) gui->showImage(WINDOW_VIDEO, frame);
+	    for (;;) {
+	    	cap >> frame;
+	        if (frame.empty())
+	            break;
+	
+			gui->showImage(WINDOW_VIDEO, frame);
+	        char key = (char)waitKey(10); //delay N millis, usually long enough to display and capture input
+	
+	        switch (key) {
+	        case 'q':
+	        case 'Q':
+	        case 27: //escape key
+	            return ;
+	        default:
+	            break;
+	        }
+	    }
 }
 
 //
@@ -132,20 +160,24 @@ void VideoCamera::probeUrls() {
 VideoCamera::~VideoCamera() {
 }
 
-void VideoCamera::show(GUI& gui) {
-	gui.addWindow(WINDOW_VIDEO);
+void VideoCamera::show(GUI& pGui) {
+	gui = &pGui;
+	gui->addWindow(WINDOW_VIDEO);
 	setMouseCallback(WINDOW_VIDEO, mouseCallBackVideo, &image);
 }
 
 bool VideoCamera::read(Mat& frame) {
 	bool result = true;
-	Mat frame2;
 	if (image.cols > 0)
 		frame = image;
 	else
-		cap >> frame2;
-	if (!frame2.empty()) imshow(WINDOW_VIDEO, frame2);
-	frame2.copyTo(frame);
+		cap >> frame;
+	
+	if (framesTaken++ > skipFrames)
+	{
+		framesTaken = 0;
+		if (!frame.empty()) gui->showImage(WINDOW_VIDEO, frame);
+	}
 
 
 //    for (;;) {
@@ -153,7 +185,7 @@ bool VideoCamera::read(Mat& frame) {
 //        if (frame.empty())
 //            break;
 //
-//        imshow(WINDOW_VIDEO, frame);
+//        showImage(WINDOW_VIDEO, frame);
 //        char key = (char)waitKey(500); //delay N millis, usually long enough to display and capture input
 //
 //        switch (key) {
@@ -194,6 +226,8 @@ bool VideoCamera::saveFrame() {
 		return false;
 	}
 
+// #define _CRT_SECURE_NO_WARNINGS
+
 	time_t now;
 	char filename[40];
 	filename[0] = '\0';
@@ -202,7 +236,7 @@ bool VideoCamera::saveFrame() {
 
 	   if (now != -1)
 	   {
-		   strftime(filename, sizeof(filename), "snapshot_%Y-%m-%d_%H:%M:%S.jpg", gmtime(&now));
+		   strftime(filename, sizeof(filename), "snapshot_%Y-%m-%d_%H-%M-%S.jpg", gmtime(&now));
 	   }
 
 

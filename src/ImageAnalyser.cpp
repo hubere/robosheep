@@ -51,10 +51,11 @@ ImageAnalyser::ImageAnalyser() {
 ImageAnalyser::~ImageAnalyser() {
 }
 
-void ImageAnalyser::show(GUI& gui) {
-	if (showOrig) gui.addWindow(WINDOW_IA_ORIG);
-	if (showInrange) gui.addWindow(WINDOW_IA_INRANGE);
-	gui.addWindow(WINDOW_IA_CONTOURS);
+void ImageAnalyser::show(GUI& pGui) {
+	gui = &pGui;
+	if (showOrig) gui->addWindow(WINDOW_IA_ORIG);
+	if (showInrange) gui->addWindow(WINDOW_IA_INRANGE);
+	gui->addWindow(WINDOW_IA_CONTOURS);
 
 	if (showOrig) setMouseCallback(WINDOW_IA_ORIG, mouseCallBackFuncOrig, &imageToAnalyse);
 	if (showInrange) createTrackbar(trackbar_range, WINDOW_IA_INRANGE, &userInputThresholdRange,
@@ -97,12 +98,12 @@ Point2f ImageAnalyser::detectObjectPosition(Mat &frame,
 
 	// draw
 	frame.copyTo(analysedImg);
-	for (uint i = 0; i < contours.size(); i++) {
+	for (unsigned i = 0; i < contours.size(); i++) {
 		drawContours(analysedImg, contours, i, Scalar(128, 255, 255), 1);
 	}
 	circle(analysedImg, center, 10, Scalar(0, 255, 255), 4, 8, 0);
 	drawContours(analysedImg, contours, bestIdx, Scalar(255, 128, 255), 3);
-	imshow(WINDOW_IA_CONTOURS, analysedImg);
+	gui->showImage(WINDOW_IA_CONTOURS, analysedImg);
 
 	return center;
 }
@@ -112,7 +113,7 @@ bool ImageAnalyser::detectByContours(Mat &frame, TrackedObject& trackedObject) {
 	// store parameters for callback function
 	pTrackedObject = &trackedObject;
 	frame.copyTo(imageToAnalyse);
-	if (showOrig) imshow(WINDOW_IA_ORIG, imageToAnalyse);
+	if (showOrig) gui->showImage(WINDOW_IA_ORIG, imageToAnalyse);
 
 	int leftBlobIdx = 0;
 	int rightBlobIdx = 0;
@@ -203,16 +204,16 @@ bool ImageAnalyser::detectByContours(Mat &frame, TrackedObject& trackedObject) {
 	// draw line indicating direction
 	//
 	frame.copyTo(contourImg);
-	for (uint i = 0; i < leftContours.size(); i++)
+	for (unsigned i = 0; i < leftContours.size(); i++)
 		drawContours(contourImg, leftContours, i, Scalar(128, 255, 255), 1);
-	for (uint i = 0; i < rightContours.size(); i++)
+	for (unsigned i = 0; i < rightContours.size(); i++)
 		drawContours(contourImg, rightContours, i, Scalar(128, 255, 255), 1);
 
 	circle(contourImg, leftCenter, radius, Scalar(0, 0, 255), 4, 8, 0);
 	circle(contourImg, rightCenter, radius, Scalar(255, 255, 255), 4, 8, 0);
 
 	line(contourImg, startPoint, endPoint, Scalar(0, 255, 0), 1);
-	imshow(WINDOW_IA_CONTOURS, contourImg);
+	gui->showImage(WINDOW_IA_CONTOURS, contourImg);
 
 	return true;
 }
@@ -245,7 +246,7 @@ vector<vector<Point> > ImageAnalyser::findCountours(Mat &frame,
 	Mat imgThreshed;
 	cvtColor(frame, imgHSV, CV_BGR2HSV); // change to HSV color space
 	inRange(imgHSV, treshLow, treshHi, imgThreshed); // threshold
-	if (showInrange) imshow(WINDOW_IA_INRANGE, imgThreshed);
+	if (showInrange) gui->showImage(WINDOW_IA_INRANGE, imgThreshed);
 
 	//
 	// find contours
@@ -306,7 +307,7 @@ int ImageAnalyser::findBestCountour(vector<vector<Point> > &contour,
 		boundRect[i] = boundingRect(Mat(contours[i]));
 		minEnclosingCircle(contours[i], center[i], radius[i]);
 		cout <<  "radius["<< i << "]=" << radius[i] << " ";
-		if (radius[i] > minRadius and radius[i] < maxRadius) {
+		if (radius[i] > minRadius && radius[i] < maxRadius) {
 			rightCountourIdx = i;
 			bestContour = contours[i];
 		}
@@ -439,7 +440,7 @@ void ImageAnalyser::analyse(std::string imageName,
 		Mat imgTmp;
 		frame.copyTo(imgTmp);
 		circle(imgTmp, lastRightClickPosition, radius, Scalar(255,255,255), 1, 8, 0);
-		if (showOrig) imshow(WINDOW_IA_ORIG, imgTmp);
+		if (showOrig) gui->showImage(WINDOW_IA_ORIG, imgTmp);
 
 		cout << "Color (pMin): " << (int) pMin[0] << ", " << (int) pMin[1] << ", "
 				<< (int) pMin[2] << ")" << endl;
@@ -453,7 +454,7 @@ void ImageAnalyser::analyse(Mat& frame,
 		TrackedObject& aTrackedObject) {
 	frame.copyTo(imageToAnalyse);
 	pTrackedObject = &aTrackedObject;
-	if (showOrig) imshow(WINDOW_IA_ORIG, imageToAnalyse);
+	if (showOrig) gui->showImage(WINDOW_IA_ORIG, imageToAnalyse);
 
 	/// Call the function to initialize
 	adjustParameters(0, this);
@@ -488,7 +489,7 @@ void mouseCallBackFuncOrig(int event, int x, int y, int flags, void* userdata) {
 		Mat imgTmp;
 		rgb->copyTo(imgTmp);
 		circle(imgTmp, Point(x,y), 10, Scalar(255,255,255), 1, 8, 0);
-		if (showOrig) imshow(WINDOW_IA_ORIG, imgTmp);
+		// geht ned!!! if (showOrig) gui->showImage(WINDOW_IA_ORIG, imgTmp);
 
 		//p[0] - H, p[1] - S, p[2] - V
 		cout << endl << "Color (RGB): " << (int) p1[0] << ", " << (int) p1[1]

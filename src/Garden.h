@@ -12,6 +12,7 @@
 #include "GUI.h"
 
 #include <opencv2/core/core.hpp>
+#include <opencv2/imgproc.hpp>
 #include <vector>
 
 
@@ -25,9 +26,11 @@ enum
 };
 
 class Garden {
+	GUI* gui;
 	vector<Point> greenContour;
 	vector<Point> route;
 	Mat gardenImage;
+	int nextRoutePointIdx;
 
 public:
 	Garden(int gardenIdx);
@@ -39,11 +42,12 @@ public:
 	Mat showGreen(Mat &image);
 	Mat showRoute(Mat &image);
 
-
-	Point_<int> getRoutePoint(int id);
+	void startRoute();
+	Point getNextRoutePoint();
 	vector<Point> &getGreenContour();
 	vector<Point> &getRoute();
 	int getRouteSize();
+
 };
 
 #endif /* Garden_H_ */

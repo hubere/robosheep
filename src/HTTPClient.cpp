@@ -35,6 +35,15 @@ void HTTPClient::sendMessage(string message)
 
 }
 
+void HTTPClient::sendMotorSpeeds(int motorSpeed1, int motorSpeed2)
+{
+	char command[255];
+	sprintf(command, "motor?m1=%d&m2=%d", motorSpeed1, motorSpeed2);
+	sendMessage(command);
+}
+
+
+
 
 
 

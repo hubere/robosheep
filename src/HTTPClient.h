@@ -20,6 +20,7 @@ public:
 	HTTPClient(string pMowerURL);
 	virtual ~HTTPClient();
 	void sendMessage(string message);
+	void sendMotorSpeeds(int motorSpeed1, int motorSpeed2);
 };
 
 

@@ -15,6 +15,8 @@ static const string WINDOW_GARDEN = "Garden";
 
 Garden::Garden(int gardenIdx) : greenContour(), route() {
 
+	startRoute();
+
 	switch (gardenIdx) {
 	case GARDEN: // unser Garten
 	{
@@ -84,15 +86,15 @@ Garden::Garden(int gardenIdx) : greenContour(), route() {
 Garden::~Garden() {
 }
 
-void Garden::show(GUI& gui) {
-	gui.addWindow(WINDOW_GARDEN);
+void Garden::show(GUI& pGui) {
+	gui = &pGui;
+	gui->addWindow(WINDOW_GARDEN);
 }
 
 void Garden::setImage(Mat& frame){
-
 	gardenImage = maskOutGreen(frame);
 	gardenImage = showRoute(gardenImage);
-	imshow(WINDOW_GARDEN, gardenImage);
+	gui->showImage(WINDOW_GARDEN, gardenImage);
 }
 
 Mat Garden::maskOutGreen(Mat& frame){
@@ -116,9 +118,17 @@ Mat Garden::showRoute(Mat &image) {
 	return image;
 }
 
-Point_<int> Garden::getRoutePoint(int routeIdx) {
-	if (route.size() == 0) return Point(-1,-1);
-	return route[routeIdx];
+void Garden::startRoute()
+{
+	nextRoutePointIdx = -1;
+}
+
+Point Garden::getNextRoutePoint()
+{
+	nextRoutePointIdx++;
+	if (nextRoutePointIdx >= getRouteSize())
+		return Point(-1, -1);
+	return route[nextRoutePointIdx];
 }
 
 vector<Point> &Garden::getGreenContour() {

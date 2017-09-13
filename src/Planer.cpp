@@ -41,8 +41,9 @@ Planer::Planer(TrackedObject &pTrackedObject) :
 Planer::~Planer() {
 }
 
-void Planer::show(GUI& gui) {
-	gui.addWindow(WINDOW_PLANER);
+void Planer::show(GUI& pGui) {
+	gui = &pGui;
+	gui->addWindow(WINDOW_PLANER);
 	createTrackbar(" trajectory length:", WINDOW_PLANER, &numberPositions, 100);
 	setMouseCallback(WINDOW_PLANER, mouseCallBackPlaner, this);
 }
@@ -128,7 +129,7 @@ void Planer::show(Mat& frame) {
 	text << "fittedline: " << fittedline;
 	putText(planned, line++, text.str(), BGR_PINK);
 
-	imshow(WINDOW_PLANER, planned);
+	gui->showImage(WINDOW_PLANER, planned);
 }
 
 void Planer::putText(Mat& frame, int line, const string& text) {
@@ -139,11 +140,12 @@ void Planer::putText(Mat& frame, int line, const string& text, Scalar color) {
 	cv::putText(frame, text, Point(10,20+line*12), CV_FONT_HERSHEY_PLAIN, 1.0, color, 1, CV_AA);
 }
 
-void Planer::setAim(Point2f newAim) {
+bool Planer::setAim(Point newAim) {
 	aim = newAim;
+	return !(newAim == Point(-1, -1));
 }
 
-Point2f Planer::getAim() {
+Point Planer::getAim() {
 	return aim;
 }
 
@@ -225,8 +227,8 @@ int Planer::plan() {
 bool Planer::isRoutePointReached() {
 	Point2f pos = trackedObject.getAktualPos();
 	// using proximity
-	if (aim.x > pos.x - proximity and aim.x < pos.x + proximity
-			and aim.y > pos.y - proximity and aim.y < pos.y + proximity) {
+	if (aim.x > pos.x - proximity && aim.x < pos.x + proximity
+			&& aim.y > pos.y - proximity && aim.y < pos.y + proximity) {
 		// we are in proximity
 
 		if (!useDistance) {

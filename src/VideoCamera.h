@@ -18,12 +18,14 @@
 using namespace cv;
 
 class VideoCamera {
+	GUI* gui;
 	VideoCapture cap;
 	Mat image;
 
 public:
 	VideoCamera();
 	virtual ~VideoCamera();
+	void test(String& url);
 	bool open(String& url);
 	void loadImage(String image);
 	void show(GUI& gui);

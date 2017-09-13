@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 
 using namespace cv;
 
@@ -55,10 +56,10 @@ void VirtualSheep::update() {
 		return;
 
 	//	radian = degree * (pi/180);
-	double radian = dir * (pi / 180);
+	float radian = dir * (pi / 180);
 
-	double incX = cos(radian);
-	double incY = -sin(radian);
+	float incX = cos(radian);
+	float incY = -sin(radian);
 
 	if (dir > 90) {
 		incX = cos(pi / 180 - radian);
@@ -94,8 +95,8 @@ void VirtualSheep::draw(Mat &frame) {
 	// draw sheep in original frame
 	//
 	if (pos != Point2f(0, 0)) {
-		rectangle(frame, cvPoint(pos.x - size.width, pos.y - size.height),
-				cvPoint(pos.x + size.width, pos.y + size.height), color, -1, 8,
+		rectangle(frame, cvPoint((int)pos.x - size.width, (int)pos.y - size.height),
+				cvPoint((int)pos.x + size.width, (int)pos.y + size.height), color, -1, 8,
 				0);
 		if (lastpos != Point2f(0, 0)) {
 			line(frame, lastpos, pos, cvScalar(255, 0, 0), 2);
@@ -109,9 +110,9 @@ void VirtualSheep::draw(Mat &frame) {
 	Mat newFame;
 	frame.copyTo(newFame);
 	char buffer[100];
-	sprintf(buffer, "Use 'w','y','a','s','+','-' to control sheep");
+	sprintf_s(buffer, "Use 'w','y','a','s','+','-' to control sheep");
 	putText(newFame, buffer, Point(40,50), FONT_HERSHEY_COMPLEX_SMALL, 1, Scalar::all(255), 1, 8);
-	sprintf(buffer, "(%.0f,%.0f): v=%d, d=%d\n", pos.x, pos.y, velocity, dir);
+	sprintf_s(buffer, "(%.0f,%.0f): v=%d, d=%d\n", pos.x, pos.y, velocity, dir);
 	putText(newFame, buffer, Point(40,100), FONT_HERSHEY_COMPLEX_SMALL, 1, Scalar::all(255), 1, 8);
 
 

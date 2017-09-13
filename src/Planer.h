@@ -17,7 +17,8 @@ using namespace cv;
 
 
 class Planer {
-	Point2f aim;
+	GUI* gui;
+	Point aim;
 	int proximity;
 	TrackedObject& trackedObject;
 
@@ -36,8 +37,8 @@ public:
 	void show(Mat& frame);
 	void putText(Mat& frame, int line, const string& text);
 	void putText(Mat& frame, int line, const string& text, Scalar color);
-	void setAim(Point2f newAim);
-	Point2f getAim();
+	bool setAim(Point newAim);
+	Point getAim();
 	bool isRoutePointReached();
 	int getMotorSpeed1();
 	int getMotorSpeed2();

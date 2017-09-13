@@ -31,7 +31,7 @@ TrackedObject::TrackedObject() :
 //	colorBlobs.push_back(TrackedColorBlob(GARDEN_BIKE_RED_AND_WHITE));
 
 	cout << "TrackedObject::TrackedObject: created for ";
-	for (uint i=0;i<colorBlobs.size();i++)
+	for (unsigned i=0;i<colorBlobs.size();i++)
 	{
 		cout << colorBlobs[i].getName() << endl;
 	}
@@ -41,7 +41,7 @@ TrackedObject::~TrackedObject() {
 }
 
 void TrackedObject::show(GUI& gui) {
-	for (uint i=0;i<colorBlobs.size();i++)
+	for (unsigned i=0;i<colorBlobs.size();i++)
 	{
 		colorBlobs[i].show(gui);
 	}
@@ -109,6 +109,6 @@ void TrackedObject::refresh() {
 //
 //	Mat imgRgb(140, 170, CV_8UC3, Scalar::all(0));
 //
-//	imshow(WINDOW_TRACKED_OBJECT, imgRgb);
+//	showImage(WINDOW_TRACKED_OBJECT, imgRgb);
 }
 

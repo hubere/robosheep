@@ -50,7 +50,7 @@ void MainWindow::start(){
 	// open camera stream
 	//
 // TODO FIXME 	string cameraURL = evaluateArgs(argc, argv, "--cameraURL", "http://192.168.1.105/video.cgi?x.mjpg");
-	string cameraURL = "http://192.168.1.101/video.cgi?x.mjpg";
+	String cameraURL = "http://192.168.1.101/video.cgi?x.mjpg";
 	if (!videoCamera.open(cameraURL)) exit(-1);
 	videoCamera.show(gui);
 
