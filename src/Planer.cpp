@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 using namespace cv;
@@ -160,11 +161,17 @@ int Planer::getMotorSpeed2() {
 void Planer::speedUp() {
 	velocity += 10;
 	cout << "Planer::speedUp: velocity=" << velocity;
+	std::ostringstream oss;
+	oss << "Planner::velocity = " << velocity;
+	gui->printInfo(5, oss.str());
 }
 
 void Planer::slowDown() {
 	velocity -=10;
 	cout << "Planer::slowDown: velocity=" << velocity;
+	std::ostringstream oss;
+	oss << "Planner::velocity = " << velocity;
+	gui->printInfo(5, oss.str());
 }
 
 int Planer::plan() {

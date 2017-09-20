@@ -154,7 +154,7 @@ int main(int argc, char** argv) {
 		// in 'framedelay'. The next round trip will start by waiting 'framedelay' ms. Hence
 		// a frame will be processed each 'frametime' ms.
 //		int64 frameProcessingStart = getTickCount();// for measuring duration of frame processing loop
-		int frametime = 100;	// take one frame each 100ms
+		int frametime =  10;	// take one frame each 10ms
 //		int framedelay = 10; 	// the delay for next round trip in oder to reach a 'frametime'
 								// (must be more than 0 in order to not stop program)
 //		int framesTaken = 0;	// counts frames for some actions only have to happen after ...
@@ -174,6 +174,9 @@ int main(int argc, char** argv) {
 		ImageAnalyser imageAnalyser;
 		Planer planer(trackedObject);
 		HTTPClient client(argMowerURL);
+
+		gui.printInfo(1, "Hit 'h' for help.");
+		gui.printInfo(3, "Initializing...");
 
 		//
 		// initialize camera
@@ -199,6 +202,7 @@ int main(int argc, char** argv) {
 		//
 		// for ever....
 		//
+		gui.printInfo(3, "Running...");
 		while (!stop) {
 
 			//
@@ -210,8 +214,31 @@ int main(int argc, char** argv) {
 			//
 			// wait and get user keyboard input
 			//
-			char key = cv::waitKey(framedelay);
+			int line = 3;
+			char key = waitKey(framedelay);
 			switch (key) {
+			case 'h':
+				gui.printInfo(line++, "Help:");
+				gui.printInfo(line++, "");
+				gui.printInfo(line++, " +     speed up");
+				gui.printInfo(line++, " -     speed down");
+				gui.printInfo(line++, " 1-9   show windows 1 to 9");
+				gui.printInfo(line++, " 0     show all windows");
+				gui.printInfo(line++, " <ESC> Exit");
+				gui.printInfo(line++, "");
+				gui.printInfo(line++, "Hit any key.");
+				while (waitKey(100) == -1) {				};
+				line = 3;
+				gui.printInfo(line++, "Running...");
+				gui.printInfo(line++, "");
+				gui.printInfo(line++, "");
+				gui.printInfo(line++, "");
+				gui.printInfo(line++, "");
+				gui.printInfo(line++, "");
+				gui.printInfo(line++, "");
+				gui.printInfo(line++, "");
+				gui.printInfo(line++, "");
+				break;
 			case 27:
 				stop = true;
 				break;
@@ -255,13 +282,10 @@ int main(int argc, char** argv) {
 			//
 			if (stopwatch.getElapsedTime() < 100) continue;
 
-			// update images in planer and garden
-			planer.show(frame);
-			garden.setImage(frame);
-
 			//
 			// get position of tracked object (sheep)
 			//
+			garden.setImage(frame);
 			Mat greenImage = garden.maskOutGreen(frame);
 			bool objectDetected = imageAnalyser.detectObjectPosition(greenImage, trackedObject);
 			if (!objectDetected) continue;
@@ -278,6 +302,7 @@ int main(int argc, char** argv) {
 			// calc and issue steering command
 			//
 			int rotate = planer.plan();
+			planer.show(frame);
 
 			//
 			// just for simulation: draw sheep in camera frame
@@ -300,6 +325,9 @@ int main(int argc, char** argv) {
 			// send command to roboSheep via http
 			//
 			client.sendMotorSpeeds(planer.getMotorSpeed1(), planer.getMotorSpeed2());
+			std::ostringstream oss;
+			oss << "HTTPClient::sendMotorSpeeds: " << planer.getMotorSpeed1() << " / " << planer.getMotorSpeed2();
+			gui.printInfo(10, oss.str());
 
 
 			//-------------------------------------------------------------------------
