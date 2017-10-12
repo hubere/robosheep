@@ -32,7 +32,7 @@ Garden::Garden(int gardenIdx) : greenContour(), route() {
 		//
 		// get route to be driven
 		//
-//		route.push_back(Point(129, 391));
+		route.push_back(Point(129, 391));
 //		route.push_back(Point(218, 300));
 //		route[2] = Point(134, 232);
 //		route[3] = Point(142, 394);

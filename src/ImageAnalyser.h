@@ -30,7 +30,6 @@ class ImageAnalyser {
 	Mat imageToAnalyse;
 	string algorithm;
 	Mat analysedImg;
-	Mat contourImg;
 
 public:
 	ImageAnalyser();
@@ -41,6 +40,7 @@ public:
 	bool detectObjectPosition();
 	void analyse(string imageName, TrackedObject& aTrackedObject);
 	void analyse(Mat& frame, TrackedObject& aTrackedObject);
+	Mat& getAnalysedImage();
 
 private:
 	vector<vector<Point> > findCountours(Mat &frame, TrackedColorBlob& colorBlob);

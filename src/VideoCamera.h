@@ -13,6 +13,7 @@
 #include "GUI.h"
 #include "OpenCVUtils.h"
 #include "TrackedObject.h"
+#include "Stopwatch.h"
 
 
 using namespace cv;
@@ -20,7 +21,10 @@ using namespace cv;
 class VideoCamera {
 	GUI* gui;
 	VideoCapture cap;
+	VideoWriter* writer;
 	Mat image;
+	Stopwatch stopwatch;
+	int fpms;
 
 public:
 	VideoCamera();
@@ -33,6 +37,8 @@ public:
 	bool read(Mat& frame);
 	bool takeSnapshot(Mat& frame);
 	bool saveFrame();
+	int  getFPMS();
+	void write(Mat& frame);
 
 private:
 	void probeUrls();

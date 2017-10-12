@@ -44,11 +44,16 @@ void mouseCallBackFuncContours(int event, int x, int y, int flags, void* userdat
 ImageAnalyser::ImageAnalyser() {
 	pTrackedObject = NULL;
 	imageToAnalyse = Mat();
-	contourImg = Mat();
+	analysedImg = Mat();
 	algorithm = ALGORITHM_DETECTBYCONTOURS;
 }
 
 ImageAnalyser::~ImageAnalyser() {
+}
+
+Mat& ImageAnalyser::getAnalysedImage()
+{
+	return analysedImg;
 }
 
 void ImageAnalyser::show(GUI& pGui) {
@@ -60,7 +65,7 @@ void ImageAnalyser::show(GUI& pGui) {
 	if (showOrig) setMouseCallback(WINDOW_IA_ORIG, mouseCallBackFuncOrig, &imageToAnalyse);
 	if (showInrange) createTrackbar(trackbar_range, WINDOW_IA_INRANGE, &userInputThresholdRange,
 			max_value, adjustParameters, this);
-	setMouseCallback(WINDOW_IA_CONTOURS, mouseCallBackFuncContours, &contourImg);
+	setMouseCallback(WINDOW_IA_CONTOURS, mouseCallBackFuncContours, &analysedImg);
 
 }
 
@@ -122,13 +127,13 @@ bool ImageAnalyser::detectByContours(Mat &frame, TrackedObject& trackedObject) {
 	vector<TrackedColorBlob> colorBlobs = trackedObject.getColorBlobs();
 
 	//
-	// tracked object where we cannot disinguish colorblobs by color range, e.g. light by night
+	// tracked object where we cannot distinguish colorblobs by color range, e.g. light by night
 	//
 	if (colorBlobs.size() == 1)
 	{
 		TrackedColorBlob colorBlob = colorBlobs[0];
 
-		leftContours = findCountours(frame, colorBlob);
+		leftContours = findCountours(imageToAnalyse, colorBlob);
 		rightContours = leftContours;
 		if (leftContours.size() < 1) return false;
 
@@ -158,11 +163,11 @@ bool ImageAnalyser::detectByContours(Mat &frame, TrackedObject& trackedObject) {
 	if (colorBlobs.size() == 2)
 	{
 		TrackedColorBlob colorBlob = colorBlobs[0];
-		leftContours = findCountours(frame, colorBlob);
+		leftContours = findCountours(imageToAnalyse, colorBlob);
 		leftBlobIdx = findBestCountour(leftContours, colorBlob.getMinSize(), colorBlob.getMaxSize());
 
 		colorBlob = colorBlobs[1];
-		rightContours = findCountours(frame, colorBlob);
+		rightContours = findCountours(imageToAnalyse, colorBlob);
 		rightBlobIdx = findBestCountour(rightContours, colorBlob.getMinSize(), colorBlob.getMaxSize());
 	}
 	if (leftContours.size() < 1 || rightContours.size() < 1) return false;
@@ -179,6 +184,12 @@ bool ImageAnalyser::detectByContours(Mat &frame, TrackedObject& trackedObject) {
 	minEnclosingCircle(rightContours[rightBlobIdx], rightCenter, radius);
 
 	Point2f startPoint = (leftCenter + rightCenter) * .5; // this is also the center of both blobs
+
+	if (norm(leftCenter - rightCenter) > 50)
+	{
+		// ERROR: distance too big (greater then 50 Pixels)
+		return false;
+	}
 
 	//
 	// calculate direction
@@ -203,17 +214,17 @@ bool ImageAnalyser::detectByContours(Mat &frame, TrackedObject& trackedObject) {
 	// draw yellow circle on center of best contours,
 	// draw line indicating direction
 	//
-	frame.copyTo(contourImg);
+	frame.copyTo(analysedImg);
 	for (unsigned i = 0; i < leftContours.size(); i++)
-		drawContours(contourImg, leftContours, i, Scalar(128, 255, 255), 1);
+		drawContours(analysedImg, leftContours, i, Scalar(128, 255, 255), 1);
 	for (unsigned i = 0; i < rightContours.size(); i++)
-		drawContours(contourImg, rightContours, i, Scalar(128, 255, 255), 1);
+		drawContours(analysedImg, rightContours, i, Scalar(128, 255, 255), 1);
 
-	circle(contourImg, leftCenter, radius, Scalar(0, 0, 255), 4, 8, 0);
-	circle(contourImg, rightCenter, radius, Scalar(255, 255, 255), 4, 8, 0);
+	circle(analysedImg, leftCenter, radius, Scalar(0, 0, 255), 4, 8, 0);
+	circle(analysedImg, rightCenter, radius, Scalar(255, 255, 255), 4, 8, 0);
 
-	line(contourImg, startPoint, endPoint, Scalar(0, 255, 0), 1);
-	gui->showImage(WINDOW_IA_CONTOURS, contourImg);
+	line(analysedImg, startPoint, endPoint, Scalar(0, 255, 0), 1);
+	gui->showImage(WINDOW_IA_CONTOURS, analysedImg);
 
 	return true;
 }

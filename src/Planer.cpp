@@ -42,6 +42,11 @@ Planer::Planer(TrackedObject &pTrackedObject) :
 Planer::~Planer() {
 }
 
+Mat& Planer::getPlannedImage()
+{
+	return plannedImage;
+}
+
 void Planer::show(GUI& pGui) {
 	gui = &pGui;
 	gui->addWindow(WINDOW_PLANER);
@@ -51,8 +56,7 @@ void Planer::show(GUI& pGui) {
 
 
 void Planer::show(Mat& frame) {
-	Mat planned;
-	frame.copyTo(planned);
+	frame.copyTo(plannedImage);
 
 	vector<Point2i> lastPositions = trackedObject.getPositionHistory();
 	if (lastPositions.size() < 1) return;
@@ -60,20 +64,20 @@ void Planer::show(Mat& frame) {
 	//
 	// draw aim
 	//
-	circle(planned, aim, 5, BGR_YELLOW, 3);
+	circle(plannedImage, aim, 5, BGR_YELLOW, 3);
 
 	//
 	// draw last detected position
 	//
 	Point roboPos = lastPositions.back();
-	circle(planned, roboPos, 5, BGR_GREEN, 3);
+	circle(plannedImage, roboPos, 5, BGR_GREEN, 3);
 
 	//
 	// draw last positions
 	//
 	int myradius=2;
 	for (int i=0;i<(int)lastPositions.size();i++)
-	    circle(planned,Point(lastPositions[i].x,lastPositions[i].y),myradius,BGR_RED,1);
+	    circle(plannedImage,Point(lastPositions[i].x,lastPositions[i].y),myradius,BGR_RED,1);
 
 	//
 	// draw direction indicator
@@ -96,11 +100,11 @@ void Planer::show(Mat& frame) {
 
 	Rect r = cv::boundingRect(lastPositions);
 	clipLine(r.size(), startPoint, endPoint);
-	line(planned, startPoint, endPoint, BGR_PINK, 1);
+	line(plannedImage, startPoint, endPoint, BGR_PINK, 1);
 
 //	// indicate motor movement
 //	rotate
-//	circle(planned, roboPos, 5, BGR_GREEN, 3);
+//	circle(plannedImage, roboPos, 5, BGR_GREEN, 3);
 
 
 	//
@@ -109,28 +113,28 @@ void Planer::show(Mat& frame) {
 	int line = 0;
 	ostringstream text;
 	text << "aim:       " << aim;
-	putText(planned, line++, text.str(), BGR_YELLOW);
+	putText(plannedImage, line++, text.str(), BGR_YELLOW);
 
 	text.str("");
 	text << "roboPos:   " << roboPos;
-	putText(planned, line++, text.str(), BGR_GREEN);
+	putText(plannedImage, line++, text.str(), BGR_GREEN);
 
 	text.str("");
 	text << "lastPositions: ";
 	for (std::vector<Point2i>::const_iterator i = lastPositions.begin(); i != lastPositions.end(); ++i)
 		text << *i << ", ";
 	text << std::endl;
-	putText(planned, line++, text.str(), BGR_RED);
+	putText(plannedImage, line++, text.str(), BGR_RED);
 
 	text.str("");
 	text << "boundingRect: " << r;
-	putText(planned, line++, text.str());
+	putText(plannedImage, line++, text.str());
 
 	text.str("");
 	text << "fittedline: " << fittedline;
-	putText(planned, line++, text.str(), BGR_PINK);
+	putText(plannedImage, line++, text.str(), BGR_PINK);
 
-	gui->showImage(WINDOW_PLANER, planned);
+	gui->showImage(WINDOW_PLANER, plannedImage);
 }
 
 void Planer::putText(Mat& frame, int line, const string& text) {

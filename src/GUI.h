@@ -22,16 +22,19 @@ class GUI {
 	vector<string> windowNames;
 	int windowShown = 0; // 0 is all windows
 	vector<string> infos;
+	Mat infoImage;
 
 public:
 	GUI();
 	virtual ~GUI();
 	void addWindow(const string& winname);
-	void showImage(const String& winname, InputArray mat);
+	void showImage(const String& winname, Mat& mat);
 	void showWindow(int id);
 	void printInfo(int line, const std::string& info);
+	void printInfo(int line, const std::string& info, int value);
 	void deleteInfo(int line);
 	void refreshDisplay();
+	Mat& getInfoImage();
 };
 
 #endif /* SRC_GUI_H_ */

@@ -32,8 +32,13 @@ void mouseCallBackVideo(int event, int x, int y, int flags, void* userdata);
 // constuctor
 //
 VideoCamera::VideoCamera() {
+	stopwatch.reset();
 }
 
+VideoCamera::~VideoCamera() {
+	if (writer != NULL)
+		delete writer;
+}
 
 void VideoCamera::test(String& url) {
 	open(url);
@@ -45,6 +50,16 @@ void VideoCamera::test(String& url) {
 	    	cap >> frame;
 	        if (frame.empty())
 	            break;
+
+			++framesTaken;
+			int measuringTime = 10; // measure all seconds
+			if (stopwatch.getElapsedTime() > measuringTime * 1000)
+			{
+				fpms = framesTaken * 1000 / measuringTime;
+				framesTaken = 0;
+				stopwatch.reset();
+				cout << "fpms: " << fpms << endl;
+			}
 	
 			gui->showImage(WINDOW_VIDEO, frame);
 	        char key = (char)waitKey(10); //delay N millis, usually long enough to display and capture input
@@ -157,9 +172,6 @@ void VideoCamera::probeUrls() {
 
 }
 
-VideoCamera::~VideoCamera() {
-}
-
 void VideoCamera::show(GUI& pGui) {
 	gui = &pGui;
 	gui->addWindow(WINDOW_VIDEO);
@@ -168,35 +180,28 @@ void VideoCamera::show(GUI& pGui) {
 
 bool VideoCamera::read(Mat& frame) {
 	bool result = true;
-	if (image.cols > 0)
+	if (!image.empty())
 		frame = image;
 	else
 		cap >> frame;
 	
-	if (framesTaken++ > skipFrames)
+	if (frame.empty())
+		return false;
+
+	cout << "framesTaken" << framesTaken;
+
+	// display only each skipFrames frame
+	if ((++framesTaken % skipFrames == 0) && !frame.empty())
+		gui->showImage(WINDOW_VIDEO, frame);
+
+	int measuringTime = 10; // measure all seconds
+	if (stopwatch.getElapsedTime() > measuringTime * 1000)
 	{
+		fpms = framesTaken * 1000 / measuringTime;
 		framesTaken = 0;
-		if (!frame.empty()) gui->showImage(WINDOW_VIDEO, frame);
+		stopwatch.reset();
+		//gui->showImage(WINDOW_VIDEO, frame);
 	}
-
-
-//    for (;;) {
-//    	cap >> frame;
-//        if (frame.empty())
-//            break;
-//
-//        showImage(WINDOW_VIDEO, frame);
-//        char key = (char)waitKey(500); //delay N millis, usually long enough to display and capture input
-//
-//        switch (key) {
-//        case 'q':
-//        case 'Q':
-//        case 27: //escape key
-//            return 0;
-//        default:
-//            break;
-//        }
-//    }
 
 	return result;
 }
@@ -247,6 +252,22 @@ bool VideoCamera::saveFrame() {
 	return true;
 }
 
+void VideoCamera::write(Mat& frame)
+{
+	if (writer == NULL)
+	{
+		int frame_width = frame.cols;
+		int frame_height = frame.rows;
+		writer = new VideoWriter("out.avi", CV_FOURCC('M', 'J', 'P', 'G'), 1, Size(frame_width, frame_height), true);
+	}
+	writer->write(frame);
+}
+
+
+int VideoCamera::getFPMS()
+{
+	return fpms;
+}
 
 void mouseCallBackVideo(int event, int x, int y, int flags, void* userdata) {
 	Mat* rgb = (Mat*) userdata;

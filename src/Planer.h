@@ -21,6 +21,7 @@ class Planer {
 	Point aim;
 	int proximity;
 	TrackedObject& trackedObject;
+	Mat plannedImage;
 
 	int velocity;
 	int rotate;
@@ -44,6 +45,7 @@ public:
 	int getMotorSpeed2();
 	void speedUp();
 	void slowDown();
+	Mat& getPlannedImage();
 };
 
 #endif /* PLANER_H_ */

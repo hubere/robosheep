@@ -12,12 +12,6 @@
 #include <vector>
 #include <time.h>
 
-// Network related include
-//#include <sys/socket.h>
-//#include <netdb.h>
-//#include <arpa/inet.h>
-
-
 #include "MainWindow.h"
 #include "OpenCVUtils.h"
 #include "ImageAnalyser.h"
@@ -39,14 +33,24 @@ OpenCVUtils util;
 
 static int idx = 0;
 
-void mouseHandler(int event, int x, int y, int flags, void *param) {
-	switch (event) {
-	/* left button down */
-	case CV_EVENT_LBUTTONDOWN:
-//		fprintf(stdout, " Left button down (%d, %d).\n", x, y);
-		fprintf(stdout, "route[%i] = Point(%d, %d);\n", idx++, x, y);
-		break;
-	}
+//void mouseHandler(int event, int x, int y, int flags, void *param) {
+//	switch (event) {
+//	/* left button down */
+//	case CV_EVENT_LBUTTONDOWN:
+////		fprintf(stdout, " Left button down (%d, %d).\n", x, y);
+//		fprintf(stdout, "route[%i] = Point(%d, %d);\n", idx++, x, y);
+//		break;
+//	}
+//}
+
+/*
+* print calling arguments
+*/
+void printCallingParameter(int argc, char** argv) {
+	cout << "main: === started robosheep ===" << endl;
+	for (int i = 0; i < argc; i++)
+		cout << "main: arg[" << i << "] " << argv[i] << endl;
+	cout << endl;
 }
 
 string evaluateArgs(int argc, char** argv, string tag, string defaultValue) {
@@ -58,14 +62,30 @@ string evaluateArgs(int argc, char** argv, string tag, string defaultValue) {
 	return defaultValue;
 }
 
-void printCallingParameter(int argc, char** argv) {
-	//
-	// print calling arguments
-	//
-	cout << "main: === started robosheep ===" << endl;
-	for (int i = 0; i < argc; i++)
-		cout << "main: arg[" << i << "] " << argv[i] << endl;
-	cout << endl;
+void printHelp(GUI& gui)
+{
+	int line = 3;
+	gui.printInfo(line++, "Help:");
+	gui.printInfo(line++, "");
+	gui.printInfo(line++, " +     speed up");
+	gui.printInfo(line++, " -     speed down");
+	gui.printInfo(line++, " 1-9   show windows 1 to 9");
+	gui.printInfo(line++, " 0     show all windows");
+	gui.printInfo(line++, " Right-click in Planer windows to set new aim");
+	gui.printInfo(line++, " <ESC> Exit");
+	gui.printInfo(line++, "");
+	gui.printInfo(line++, "Hit any key.");
+	while (waitKey(100) == -1) {};
+	line = 3;
+	gui.printInfo(line++, "Running...");
+	gui.printInfo(line++, "");
+	gui.printInfo(line++, "");
+	gui.printInfo(line++, "");
+	gui.printInfo(line++, "");
+	gui.printInfo(line++, "");
+	gui.printInfo(line++, "");
+	gui.printInfo(line++, "");
+	gui.printInfo(line++, "");
 }
 
 int main(int argc, char** argv) {
@@ -79,13 +99,11 @@ int main(int argc, char** argv) {
 	// evaluate arguments
 	//
 	String argMode = evaluateArgs(argc, argv, "--mode", "modeControlSheep");
-
 	String argCameraURL = evaluateArgs(argc, argv, "--cameraURL", "noCameraURL");
 	//	String argCameraURL = evaluateArgs(argc, argv, "--cameraURL", "rtsp://192.168.1.111:554/onvif1");
-
 	String argImageName = evaluateArgs(argc, argv, "--image", "snapshot");
 	String argSimulateSheep = evaluateArgs(argc, argv, "--simulateSheep", "false");
-	String argMowerURL = evaluateArgs(argc, argv, "--mowerURL", "http://localhost/");
+	String argMowerURL = evaluateArgs(argc, argv, "--mowerURL", "http://192.168.1.108/");
 
 
 	if (argMode == "modeTestCamera")
@@ -153,15 +171,8 @@ int main(int argc, char** argv) {
 		// consumed by a frame processing round trip is substracted from 'frametime' and stored
 		// in 'framedelay'. The next round trip will start by waiting 'framedelay' ms. Hence
 		// a frame will be processed each 'frametime' ms.
-//		int64 frameProcessingStart = getTickCount();// for measuring duration of frame processing loop
-		int frametime =  10;	// take one frame each 10ms
-//		int framedelay = 10; 	// the delay for next round trip in oder to reach a 'frametime'
-								// (must be more than 0 in order to not stop program)
-//		int framesTaken = 0;	// counts frames for some actions only have to happen after ...
-//		int skipFrames = 10;	// ... skipFrames number of frames were captured
-
+		int frametime =  100;	// take one frame each 100ms
 		bool stop(false);		// flag to stop the endless loop
-//		int routeIdx = 0;		// index into sequence of rout points, starting with first rout point
 
 		//
 		// instantiate classes
@@ -178,26 +189,42 @@ int main(int argc, char** argv) {
 		gui.printInfo(1, "Hit 'h' for help.");
 		gui.printInfo(3, "Initializing...");
 
-		//
-		// initialize camera
-		// open camera stream or load image
-		//
-		if (argCameraURL != "noCameraURL"){
-			if (!videoCamera.open(argCameraURL)) exit(-1);
-		}
-		else{
-			videoCamera.loadImage(argImageName);
-		}
-		if (!videoCamera.read(frame))  return 0;
-
-		// tell planer to where sheep should move first
-		planer.setAim(garden.getNextRoutePoint());
-
 		// show them all
 		videoCamera.show(gui);
 		garden.show(gui);
 		imageAnalyser.show(gui);
 		planer.show(gui);
+
+		//
+		// initialize camera
+		// open camera stream or load image
+		//
+		if (argCameraURL != "noCameraURL"){
+			if (!videoCamera.open(argCameraURL))
+			{
+				waitKey(5000);
+				exit(-1);
+			}
+		}
+		else{
+			videoCamera.loadImage(argImageName);
+		}
+		if (!videoCamera.read(frame)) {
+			waitKey(5000);
+			exit(-1);
+		}
+
+		// tell planer to where sheep should move first
+		planer.setAim(garden.getNextRoutePoint());
+
+		//
+		// vor video
+		//
+		Size frameSize = frame.size();
+		Mat videoImage(frameSize.height, frameSize.width * 3, CV_8UC3);
+		//Mat videoImageInfo(videoImage,    Rect(0, 0, frameSize.width, frameSize.height));
+		//Mat videoImageAnalyse(videoImage, Rect(frameSize.width, 0, frameSize.width, frameSize.height));
+		//Mat videoImagePlan(videoImage,    Rect(frameSize.width*2, 0, frameSize.width, frameSize.height));
 
 		//
 		// for ever....
@@ -214,30 +241,10 @@ int main(int argc, char** argv) {
 			//
 			// wait and get user keyboard input
 			//
-			int line = 3;
 			char key = waitKey(framedelay);
 			switch (key) {
 			case 'h':
-				gui.printInfo(line++, "Help:");
-				gui.printInfo(line++, "");
-				gui.printInfo(line++, " +     speed up");
-				gui.printInfo(line++, " -     speed down");
-				gui.printInfo(line++, " 1-9   show windows 1 to 9");
-				gui.printInfo(line++, " 0     show all windows");
-				gui.printInfo(line++, " <ESC> Exit");
-				gui.printInfo(line++, "");
-				gui.printInfo(line++, "Hit any key.");
-				while (waitKey(100) == -1) {				};
-				line = 3;
-				gui.printInfo(line++, "Running...");
-				gui.printInfo(line++, "");
-				gui.printInfo(line++, "");
-				gui.printInfo(line++, "");
-				gui.printInfo(line++, "");
-				gui.printInfo(line++, "");
-				gui.printInfo(line++, "");
-				gui.printInfo(line++, "");
-				gui.printInfo(line++, "");
+				printHelp(gui);
 				break;
 			case 27:
 				stop = true;
@@ -265,22 +272,42 @@ int main(int argc, char** argv) {
 				cout << "key '" << key << "' pressed." << endl;
 			}
 			if (key >= 48 && key < 58)
-			{
 				gui.showWindow(key - 48);
-			}
 
 			//
 			// read next frame if any
 			//
 			if (!videoCamera.read(frame)) {
-				printf("Could not read frame from camera.\n");
+				cout << "Could not read frame from camera." << endl;
+				gui.printInfo(5, "Could not read frame from camera.");
 				break;
 			}
 
 			//
-			// process frame only each 100ms
+			// write video
 			//
-			if (stopwatch.getElapsedTime() < 100) continue;
+//			gui.getInfoImage().copyTo(videoImageInfo);			
+//			imageAnalyser.getAnalysedImage().copyTo(videoImageAnalyse);
+//			planer.getPlannedImage().copyTo(videoImagePlan);
+
+			Mat info = gui.getInfoImage();
+			Mat anal = imageAnalyser.getAnalysedImage();
+			Mat plan = planer.getPlannedImage();
+			Mat vi = Mat::zeros(frameSize.height, frameSize.width * 2, CV_8UC3);
+			if (anal.empty())
+				anal = Mat::zeros(480, 640, CV_8UC3);
+			if (plan.empty())
+				plan = Mat::zeros(480, 640, CV_8UC3);
+
+			hconcat(info, anal, vi);
+			hconcat(vi, plan, videoImage);
+
+			gui.showImage("Camera", videoImage);
+			videoCamera.write(videoImage);
+			
+			gui.printInfo(6, "FPMS:        ", videoCamera.getFPMS());
+			gui.printInfo(7, "algtime:     ", (int)algtime);
+			gui.printInfo(8, "frameDelay:  ", framedelay);
 
 			//
 			// get position of tracked object (sheep)
@@ -288,7 +315,10 @@ int main(int argc, char** argv) {
 			garden.setImage(frame);
 			Mat greenImage = garden.maskOutGreen(frame);
 			bool objectDetected = imageAnalyser.detectObjectPosition(greenImage, trackedObject);
-			if (!objectDetected) continue;
+			if (!objectDetected) {
+				gui.printInfo(10, "No object detected");
+				continue;
+			}
 
 			//
 			// when aim is reached, get next aim for planer.
@@ -329,7 +359,6 @@ int main(int argc, char** argv) {
 			oss << "HTTPClient::sendMotorSpeeds: " << planer.getMotorSpeed1() << " / " << planer.getMotorSpeed2();
 			gui.printInfo(10, oss.str());
 
-
 			//-------------------------------------------------------------------------
 			// Algorithm Done
 			//-------------------------------------------------------------------------
@@ -338,8 +367,14 @@ int main(int argc, char** argv) {
 			cout << "main:		algtime=" << stopwatch.getElapsedTime() << endl;
 			stopwatch.reset();
 		}
+
+		gui.printInfo(10, "Hit any key.");
+		waitKey(5000);
 	}
+
+	
 	return (0);
 }
+
 
 
