@@ -105,6 +105,8 @@ int main(int argc, char** argv) {
 	String argSimulateSheep = evaluateArgs(argc, argv, "--simulateSheep", "false");
 	String argMowerURL = evaluateArgs(argc, argv, "--mowerURL", "http://192.168.1.108/");
 
+	// override arguments
+	//argMode = "modeTestCamera";
 
 	if (argMode == "modeTestCamera")
 	{
@@ -171,9 +173,10 @@ int main(int argc, char** argv) {
 		// consumed by a frame processing round trip is substracted from 'frametime' and stored
 		// in 'framedelay'. The next round trip will start by waiting 'framedelay' ms. Hence
 		// a frame will be processed each 'frametime' ms.
-		int frametime =  100;	// take one frame each 100ms
+		int frametime =  2000;	// take one frame each frametime milliseconds
+		int framedelay = 100;	// delay for algorithm to wait in order to reach a algorithm time of frametime
 		bool stop(false);		// flag to stop the endless loop
-
+		
 		//
 		// instantiate classes
 		//
@@ -218,25 +221,16 @@ int main(int argc, char** argv) {
 		planer.setAim(garden.getNextRoutePoint());
 
 		//
-		// vor video
+		// for video
 		//
 		Size frameSize = frame.size();
 		Mat videoImage(frameSize.height, frameSize.width * 3, CV_8UC3);
-		//Mat videoImageInfo(videoImage,    Rect(0, 0, frameSize.width, frameSize.height));
-		//Mat videoImageAnalyse(videoImage, Rect(frameSize.width, 0, frameSize.width, frameSize.height));
-		//Mat videoImagePlan(videoImage,    Rect(frameSize.width*2, 0, frameSize.width, frameSize.height));
 
 		//
 		// for ever....
 		//
 		gui.printInfo(3, "Running...");
 		while (!stop) {
-
-			//
-			// calc new framedelay
-			//
-			int64 algtime = stopwatch.getElapsedTime();
-			int framedelay = stopwatch.getNextFrameDelay(frametime);
 
 			//
 			// wait and get user keyboard input
@@ -282,32 +276,22 @@ int main(int argc, char** argv) {
 				gui.printInfo(5, "Could not read frame from camera.");
 				break;
 			}
+			ostringstream timingInfo;
+			timingInfo << "timingInfo:	read frame: " << stopwatch.getElapsedTime();
 
 			//
 			// write video
 			//
-//			gui.getInfoImage().copyTo(videoImageInfo);			
-//			imageAnalyser.getAnalysedImage().copyTo(videoImageAnalyse);
-//			planer.getPlannedImage().copyTo(videoImagePlan);
-
 			Mat info = gui.getInfoImage();
 			Mat anal = imageAnalyser.getAnalysedImage();
 			Mat plan = planer.getPlannedImage();
 			Mat vi = Mat::zeros(frameSize.height, frameSize.width * 2, CV_8UC3);
-			if (anal.empty())
-				anal = Mat::zeros(480, 640, CV_8UC3);
-			if (plan.empty())
-				plan = Mat::zeros(480, 640, CV_8UC3);
-
+			if (anal.empty()) anal = Mat::zeros(480, 640, CV_8UC3);
+			if (plan.empty()) plan = Mat::zeros(480, 640, CV_8UC3);
 			hconcat(info, anal, vi);
 			hconcat(vi, plan, videoImage);
-
-			gui.showImage("Camera", videoImage);
 			videoCamera.write(videoImage);
-			
-			gui.printInfo(6, "FPMS:        ", videoCamera.getFPMS());
-			gui.printInfo(7, "algtime:     ", (int)algtime);
-			gui.printInfo(8, "frameDelay:  ", framedelay);
+			timingInfo << "; write video: " << stopwatch.getElapsedTime();
 
 			//
 			// get position of tracked object (sheep)
@@ -315,53 +299,70 @@ int main(int argc, char** argv) {
 			garden.setImage(frame);
 			Mat greenImage = garden.maskOutGreen(frame);
 			bool objectDetected = imageAnalyser.detectObjectPosition(greenImage, trackedObject);
+			timingInfo << "; detect object: " << stopwatch.getElapsedTime();
 			if (!objectDetected) {
-				gui.printInfo(10, "No object detected");
-				continue;
+				gui.printInfo(12, "No object detected");
 			}
-
-			//
-			// when aim is reached, get next aim for planer.
-			//
-			if (planer.isRoutePointReached()) {
-				Point2f aim = garden.getNextRoutePoint();
-				if (!planer.setAim(aim)) stop = true;
-			}
-
-			//
-			// calc and issue steering command
-			//
-			int rotate = planer.plan();
-			planer.show(frame);
-
-			//
-			// just for simulation: draw sheep in camera frame
-			//
-			if (argSimulateSheep == "true")
+			else
 			{
-				sheep.update();
-				sheep.draw(frame);
-				sheep.rotate(rotate);
-				sheep.setSpeed(planer.getMotorSpeed1(), planer.getMotorSpeed2());
-				sheep.print();
-			}
+				// object was detected
 
-			//
-			// process frame only each second
-			//
-			if (stopwatch.getElapsedTime() < 1000) continue;
+				//
+				// when aim is reached, get next aim for planer.
+				//
+				if (planer.isRoutePointReached()) {
+					Point2f aim = garden.getNextRoutePoint();
+					if (!planer.setAim(aim)) stop = true;
+				}
 
-			//
-			// send command to roboSheep via http
-			//
-			client.sendMotorSpeeds(planer.getMotorSpeed1(), planer.getMotorSpeed2());
-			std::ostringstream oss;
-			oss << "HTTPClient::sendMotorSpeeds: " << planer.getMotorSpeed1() << " / " << planer.getMotorSpeed2();
-			gui.printInfo(10, oss.str());
+				//
+				// plan and issue steering command
+				//
+				int rotate = planer.plan();
+				planer.show(frame);
+				timingInfo << "; plan: " << stopwatch.getElapsedTime();
+
+				//
+				// just for simulation: draw sheep in camera frame
+				//
+				if (argSimulateSheep == "true")
+				{
+					sheep.update();
+					sheep.draw(frame);
+					sheep.rotate(rotate);
+					sheep.setSpeed(planer.getMotorSpeed1(), planer.getMotorSpeed2());
+					sheep.print();
+				}
+
+				//
+				// send command to roboSheep via http
+				//
+				client.sendMotorSpeeds(planer.getMotorSpeed1(), planer.getMotorSpeed2());
+				std::ostringstream oss;
+				oss << "HTTPClient::sendMotorSpeeds: " << planer.getMotorSpeed1() << " / " << planer.getMotorSpeed2();
+				gui.printInfo(12, oss.str());
+				timingInfo << "; send command: " << stopwatch.getElapsedTime();
+
+			} // END object was detected
 
 			//-------------------------------------------------------------------------
 			// Algorithm Done
 			//-------------------------------------------------------------------------
+
+			//
+			// calc new framedelay
+			//
+			int64 algtime = stopwatch.getElapsedTime();
+			int framedelay = stopwatch.getNextFrameDelay(frametime);
+
+			//
+			// print info
+			//
+			gui.printInfo(6, "FPMS:        ", videoCamera.getFPMS());
+			gui.printInfo(7, "algtime:     ", (int)algtime);
+			gui.printInfo(8, "frameDelay:  ", framedelay);
+			gui.printInfo(9, timingInfo.str());
+
 
 			cout << endl << "-----------------------------------------------------" << endl;
 			cout << "main:		algtime=" << stopwatch.getElapsedTime() << endl;

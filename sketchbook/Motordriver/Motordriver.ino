@@ -47,6 +47,8 @@
 #define WIFI_SSID2       "Buergernetz-WLAN"
 #define WIFI_PASS3       "Welpenspiel"
 #define WIFI_SSID3       "TP-Huabas"
+#define WIFI_PASS4       "Ihaveastream"
+#define WIFI_SSID4       "MartinRouterKing"
 // maximum number of tries during wifi connection setup
 #define WIFI_MAX_TRIES  30
 // delay in ms between checks during wifi connection setup
@@ -264,6 +266,7 @@ void connectWiFi()
   if (connectWIFI(WIFI_SSID1, WIFI_PASS1)) return;
   if (connectWIFI(WIFI_SSID2, WIFI_PASS2)) return;
   if (connectWIFI(WIFI_SSID3, WIFI_PASS3)) return;  
+  if (connectWIFI(WIFI_SSID4, WIFI_PASS4)) return;  
 }
 
 

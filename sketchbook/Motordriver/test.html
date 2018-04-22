@@ -138,6 +138,7 @@ function send(m1, m2) {
   console.log("send() called" + response);
   if (motorsEnabled)
   {
+	alert(document.location);
 	  var xmlHttp = new XMLHttpRequest();
 	  xmlHttp.open( "GET", "http://192.168.0.112/motor?m1="+m1+"&m2="+m2, false ); // false for synchronous request
 	  xmlHttp.send( null );

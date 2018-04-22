@@ -5,7 +5,10 @@
  *      Author: edi
  */
 
+#include "curl/curl.h" // has to go before opencv headers
+
 #include "VideoCamera.h"
+
 
 #include "OpenCVUtils.h"
 #include "GUI.h"
@@ -26,7 +29,7 @@ static int skipFrames = 10;
 static int framesTaken = 0;
 
 void mouseCallBackVideo(int event, int x, int y, int flags, void* userdata);
-
+cv::Mat curlImg(const char *img_url, int timeout = 10);
 
 //
 // constuctor
@@ -47,7 +50,13 @@ void VideoCamera::test(String& url) {
 	cap >> frame;
 	if (!frame.empty()) gui->showImage(WINDOW_VIDEO, frame);
 	    for (;;) {
+
+			// capture buffered frame
 	    	cap >> frame;
+
+			// capture single image
+			//frame = curlImg("http://robosheep:mower@192.168.1.119/Image.jpg");
+
 	        if (frame.empty())
 	            break;
 
@@ -108,6 +117,7 @@ void VideoCamera::probeUrls() {
 	// url = "http://192.168.1.101/image/jpeg.cgi";
 	// url = "http://admin:hubercek@192.168.1.101/video.cgi";
 	//url = "http://192.168.1.101/video.cgi";
+	// URL die in VLC geht: http://robosheep:mower@192.168.1.128/video.cgi?x.mjpg
 
 //	Auflösung 1280x720: rtsp://192.168.1.111:554/onvif1 
 //	Auflösung 320x180: rtsp://192.168.1.111:554/onvif2
@@ -183,16 +193,21 @@ bool VideoCamera::read(Mat& frame) {
 	if (!image.empty())
 		frame = image;
 	else
+	{
 		cap >> frame;
+
+		// capture single image
+		// frame = curlImg("http://robosheep:mower@192.168.1.119/Image.jpg");
+	}
 	
 	if (frame.empty())
 		return false;
 
-	cout << "framesTaken" << framesTaken;
+	// cout << "framesTaken" << framesTaken;
 
-	// display only each skipFrames frame
-	if ((++framesTaken % skipFrames == 0) && !frame.empty())
-		gui->showImage(WINDOW_VIDEO, frame);
+	//// display only each skipFrames frame
+	//if ((++framesTaken % skipFrames == 0) && !frame.empty())
+	// gui->showImage(WINDOW_VIDEO, frame);
 
 	int measuringTime = 10; // measure all seconds
 	if (stopwatch.getElapsedTime() > measuringTime * 1000)
@@ -200,7 +215,7 @@ bool VideoCamera::read(Mat& frame) {
 		fpms = framesTaken * 1000 / measuringTime;
 		framesTaken = 0;
 		stopwatch.reset();
-		//gui->showImage(WINDOW_VIDEO, frame);
+		gui->showImage(WINDOW_VIDEO, frame);
 	}
 
 	return result;
@@ -269,6 +284,33 @@ int VideoCamera::getFPMS()
 	return fpms;
 }
 
+//curl writefunction to be passed as a parameter
+// we can't ever expect to get the whole image in one piece,
+// every router / hub is entitled to fragment it into parts
+// (like 1-8k at a time),
+// so insert the part at the end of our stream.
+size_t write_data(char *ptr, size_t size, size_t nmemb, void *userdata)
+{
+	vector<uchar> *stream = (vector<uchar>*)userdata;
+	size_t count = size * nmemb;
+	stream->insert(stream->end(), ptr, ptr + count);
+	return count;
+}
+
+//function to retrieve the image as cv::Mat data type
+cv::Mat curlImg(const char *img_url, int timeout)
+{
+	vector<uchar> stream;
+	CURL *curl = curl_easy_init();
+	curl_easy_setopt(curl, CURLOPT_URL, img_url); //the img url
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data); // pass the writefunction
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &stream); // pass the stream ptr to the writefunction
+	curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout); // timeout if curl_easy hangs, 
+	CURLcode res = curl_easy_perform(curl); // start curl
+	curl_easy_cleanup(curl); // cleanup
+	return imdecode(stream, -1); // 'keep-as-is'
+}
+
 void mouseCallBackVideo(int event, int x, int y, int flags, void* userdata) {
 	Mat* rgb = (Mat*) userdata;
 	if (rgb->dims == 0) return;
@@ -292,5 +334,7 @@ void mouseCallBackVideo(int event, int x, int y, int flags, void* userdata) {
 		// cout << "Mouse move over the window - position (" << x << ", " << y << ")" << endl;
 	}
 }
+
+
 
 
