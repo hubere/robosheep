@@ -2,7 +2,7 @@
  * OpenCVUtils.h
  *
  *  Created on: Oct 2, 2012
- *      Author: ubuntu
+ *      Author: Edwin Huber
  */
 
 #ifndef OPENCVUTILS_H_

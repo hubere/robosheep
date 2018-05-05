@@ -1,20 +1,22 @@
 /*
- * Planer.h
+ * The Planer knows where robosheep wants to head next (setAim(...)). And 
+ * it knows the position of the trackedObject. From the difference of these
+ * two it will infere streeing commands for robosheep.
  *
  *  Created on: Nov 10, 2016
- *      Author: edi
+ *      Author: Edwin Huber
  */
 
 #ifndef PLANER_H_
 #define PLANER_H_
 
+#include "opencv2/core/core.hpp"
+
 #include "GUI.h"
 #include "TrackedObject.h"
 
-#include "opencv2/core/core.hpp"
 
 using namespace cv;
-
 
 class Planer {
 	GUI* gui;

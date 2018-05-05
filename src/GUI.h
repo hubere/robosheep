@@ -1,16 +1,16 @@
 /*
- * GUI.h
+ * The GUI provides functionality for displaying images and information. Its 
+ * does some layout.
  *
  *  Created on: Nov 2, 2016
- *      Author: edi
+ *      Author: Edwin Huber
  */
 
 #ifndef SRC_GUI_H_
 #define SRC_GUI_H_
 
-
-#include <opencv2/highgui.hpp>
 #include <map>
+#include <opencv2/highgui.hpp>
 
 
 using namespace std;

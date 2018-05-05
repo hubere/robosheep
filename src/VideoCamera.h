@@ -1,8 +1,8 @@
 /*
- * VideoCamera.h
+ * The VideoCamera reads images from a cameraURL. 
  *
  *  Created on: Oct 14, 2016
- *      Author: edi
+ *      Author: Edwin Huber
  */
 
 #ifndef SRC_VIDEOCAMERA_H_
@@ -11,9 +11,7 @@
 #include <opencv2/highgui/highgui.hpp>
 
 #include "GUI.h"
-#include "OpenCVUtils.h"
-#include "TrackedObject.h"
-#include "Stopwatch.h"
+
 
 
 using namespace cv;

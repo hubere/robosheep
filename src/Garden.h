@@ -1,8 +1,9 @@
 /*
- * Garden.h
+ * A Garden object represents the ground which is to be mowed. At this point
+ * in time there are 2 Gardens known, my back yard and my cellar.
  *
  *  Created on: Sep 19, 2012
- *      Author: ubuntu
+ *      Author: Edwin Huber
  */
 
 #ifndef Garden_H_
@@ -11,9 +12,9 @@
 
 #include "GUI.h"
 
+#include <vector>
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc.hpp>
-#include <vector>
 
 
 using namespace std;

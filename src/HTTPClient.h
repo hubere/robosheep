@@ -1,9 +1,10 @@
 /*
- * HTTPClient.h
+ * HTTPClient acts as the actuator by sending commands to the mower via http.
  *
  *  Created on: Nov 23, 2016
- *      Author: edi
+ *      Author: edi 
  */
+
 
 #ifndef SRC_HTTPCLIENT_H_
 #define SRC_HTTPCLIENT_H_

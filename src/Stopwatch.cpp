@@ -1,3 +1,7 @@
+/*
+* Implementation of Stopwatch.
+*/
+
 #include "Stopwatch.h"
 
 using namespace std;
@@ -8,17 +12,20 @@ Stopwatch::Stopwatch()
 	reset();
 }
 
-
 Stopwatch::~Stopwatch()
 {
 }
 
-int Stopwatch::getElapsedTime()
+int64 Stopwatch::getElapsedTime()
 {
-	return (getTickCount() - frameProcessingStart)*1000. / getTickFrequency();
+	return static_cast<int64>((getTickCount() - frameProcessingStart)*1000. / getTickFrequency());
 }
 
-int Stopwatch::getNextFrameDelay(int frametime)
+/*
+* A convenience funtion. Returns a time difference between frametime an 
+* elapsed time, floored by 10ms.
+*/
+int64 Stopwatch::getNextFrameDelay(int frametime)
 {
 	int64 algtime = getElapsedTime();
 	if (frametime > algtime)

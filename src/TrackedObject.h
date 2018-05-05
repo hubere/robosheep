@@ -1,16 +1,18 @@
 /*
- * TrackedObject.h
+ * A TrackedObject will be found in an image by the imageAnalyser and get
+ * its position and direction.
  *
  *  Created on: Oct 26, 2016
- *      Author: edi
+ *      Author: Edwin Huber
  */
 
 #ifndef SRC_TRACKEDOBJECT_H_
 #define SRC_TRACKEDOBJECT_H_
 
+#include <opencv2/highgui/highgui.hpp>
+
 #include "TrackedColorBlob.h"
 #include "GUI.h"
-#include <opencv2/highgui/highgui.hpp>
 
 using namespace cv;
 

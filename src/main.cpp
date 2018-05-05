@@ -1,18 +1,39 @@
+/*
+* This is the main programm of robosheep. Basically it evaluates calling 
+* parameters and starts the application. Programm arguments are:
+* --cameraURL		that's where the camera can be reached
+* --mowerURL		that's where the mover can be controlled 
+* --mode			one of the operating modes: 
+*						modeTestCamera:		just to test vision system
+*						modeAnalyseImage:	analyse a given image
+*						modeTrack:			just track an object on camera
+*					if no mode is specified, the mover will be controlled.
+*
+* --image			for debugging purpose, an image that wants to be analysed
+* --simulateSheep	for testing, starts a virtual sheep that prints itself 
+*					onto the camera image 
+*
+*  Created on: Nov 10, 2016
+*      Author: Edwin Huber
+*/
+
+#include "main.h"
+
+#include <stdio.h>
+#include <time.h>
+#include <math.h>
+#include <limits>
+#include <string>
+#include <vector>
+#include <sstream>
+#include <iostream>
+
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/features2d/features2d.hpp>
 #include <opencv2/video/tracking.hpp>
-#include <stdio.h>
-#include <sstream>
-#include <math.h>
-#include <limits>
-#include <iostream>
-#include <string>
-#include <vector>
-#include <time.h>
 
-#include "MainWindow.h"
 #include "OpenCVUtils.h"
 #include "ImageAnalyser.h"
 #include "VideoCamera.h"
@@ -22,26 +43,10 @@
 #include "Planer.h"
 #include "HTTPClient.h"
 #include "Stopwatch.h"
-#include "main.h"
+
 
 using namespace std;
 using namespace cv;
-
-// our virtual sheep
-VirtualSheep sheep;
-OpenCVUtils util;
-
-static int idx = 0;
-
-//void mouseHandler(int event, int x, int y, int flags, void *param) {
-//	switch (event) {
-//	/* left button down */
-//	case CV_EVENT_LBUTTONDOWN:
-////		fprintf(stdout, " Left button down (%d, %d).\n", x, y);
-//		fprintf(stdout, "route[%i] = Point(%d, %d);\n", idx++, x, y);
-//		break;
-//	}
-//}
 
 /*
 * print calling arguments
@@ -53,6 +58,9 @@ void printCallingParameter(int argc, char** argv) {
 	cout << endl;
 }
 
+/*
+* Evaluate calling parameters
+*/
 string evaluateArgs(int argc, char** argv, string tag, string defaultValue) {
 	for (int i=0; i< argc; i++)
 	{
@@ -62,6 +70,9 @@ string evaluateArgs(int argc, char** argv, string tag, string defaultValue) {
 	return defaultValue;
 }
 
+/*
+* Print usage, i.e. key bindings.
+*/
 void printHelp(GUI& gui)
 {
 	int line = 3;
@@ -88,6 +99,9 @@ void printHelp(GUI& gui)
 	gui.printInfo(line++, "");
 }
 
+/**
+* The main method. That's where every thing starts.
+*/
 int main(int argc, char** argv) {
 
 	//
@@ -100,13 +114,9 @@ int main(int argc, char** argv) {
 	//
 	String argMode = evaluateArgs(argc, argv, "--mode", "modeControlSheep");
 	String argCameraURL = evaluateArgs(argc, argv, "--cameraURL", "noCameraURL");
-	//	String argCameraURL = evaluateArgs(argc, argv, "--cameraURL", "rtsp://192.168.1.111:554/onvif1");
 	String argImageName = evaluateArgs(argc, argv, "--image", "snapshot");
 	String argSimulateSheep = evaluateArgs(argc, argv, "--simulateSheep", "false");
 	String argMowerURL = evaluateArgs(argc, argv, "--mowerURL", "http://192.168.1.108/");
-
-	// override arguments
-	//argMode = "modeTestCamera";
 
 	if (argMode == "modeTestCamera")
 	{
@@ -118,7 +128,6 @@ int main(int argc, char** argv) {
 		VideoCamera videoCamera;
 		videoCamera.show(gui);
 		videoCamera.test(argCameraURL);
-
 	}
 	else if (argMode == "modeTrack")
 	{
@@ -137,11 +146,6 @@ int main(int argc, char** argv) {
 			imageAnalyser.detectObjectPosition(frame, trackedObject);
 		}
 
-	}
-	else if (argMode == "modeAnalyse")
-	{
-		MainWindow mainWindow;
-		mainWindow.start();
 	}
 	else if (argMode == "modeAnalyseImage")
 	{
@@ -167,7 +171,7 @@ int main(int argc, char** argv) {
 		//
 		// initialize variables
 		//
-		Mat frame;	// actual image of camera
+		Mat frame;				// actual image of camera
 
 		// Each frame should be processes in same amount of time, the 'frametime'. The time
 		// consumed by a frame processing round trip is substracted from 'frametime' and stored
@@ -188,15 +192,17 @@ int main(int argc, char** argv) {
 		ImageAnalyser imageAnalyser;
 		Planer planer(trackedObject);
 		HTTPClient client(argMowerURL);
-
-		gui.printInfo(1, "Hit 'h' for help.");
-		gui.printInfo(3, "Initializing...");
+		VirtualSheep sheep; // our virtual sheep
+		OpenCVUtils util;
 
 		// show them all
 		videoCamera.show(gui);
 		garden.show(gui);
 		imageAnalyser.show(gui);
 		planer.show(gui);
+
+		gui.printInfo(1, "Hit 'h' for help.");
+		gui.printInfo(3, "Initializing...");
 
 		//
 		// initialize camera
@@ -300,6 +306,7 @@ int main(int argc, char** argv) {
 			Mat greenImage = garden.maskOutGreen(frame);
 			bool objectDetected = imageAnalyser.detectObjectPosition(greenImage, trackedObject);
 			timingInfo << "; detect object: " << stopwatch.getElapsedTime();
+
 			if (!objectDetected) {
 				gui.printInfo(12, "No object detected");
 			}
@@ -308,7 +315,7 @@ int main(int argc, char** argv) {
 				// object was detected
 
 				//
-				// when aim is reached, get next aim for planer.
+				// when aim is reached, tell planer the next aim.
 				//
 				if (planer.isRoutePointReached()) {
 					Point2f aim = garden.getNextRoutePoint();
@@ -353,7 +360,7 @@ int main(int argc, char** argv) {
 			// calc new framedelay
 			//
 			int64 algtime = stopwatch.getElapsedTime();
-			int framedelay = stopwatch.getNextFrameDelay(frametime);
+			int64 framedelay = stopwatch.getNextFrameDelay(frametime);
 
 			//
 			// print info

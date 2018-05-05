@@ -1,8 +1,8 @@
 /*
- * ImageAnalyser.h
+ * Analyse an image in order to find position of a trackedObject.
  *
  *  Created on: Sep 19, 2012
- *      Author: ubuntu
+ *      Author: Edwin Huber
  */
 
 #ifndef ImageAnalyser_H_
@@ -20,10 +20,6 @@ using namespace cv;
 static const string ALGORITHM_DETECTBYMOMENTS = "ALGORITHM_DETECTBYMOMENTS";
 static const string ALGORITHM_DETECTBYCONTOURS = "ALGORITHM_DETECTBYCONTOURS";
 
-/**
- * Analyse an image in order to find position of a trackedObject.
- *
- */
 class ImageAnalyser {
 	GUI* gui;
 	TrackedObject* pTrackedObject;
