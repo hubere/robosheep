@@ -7,6 +7,8 @@
 using namespace std;
 using namespace cv;
 
+namespace robosheep {
+
 Stopwatch::Stopwatch()
 {
 	reset();
@@ -39,6 +41,6 @@ void Stopwatch::reset()
 	frameProcessingStart = getTickCount();
 }
 
-
+}  // namespace robosheep
 
 

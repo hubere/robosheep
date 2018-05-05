@@ -16,6 +16,7 @@
 using namespace std;
 using namespace cv;
 
+namespace robosheep {
 
 class GUI {
 	int nextWindowX, nextWindowY;
@@ -36,5 +37,7 @@ public:
 	void refreshDisplay();
 	Mat& getInfoImage();
 };
+
+}  // namespace robosheep
 
 #endif /* SRC_GUI_H_ */

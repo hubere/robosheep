@@ -10,8 +10,10 @@
 
 #include <iostream>
 #include <fstream>
+
 using namespace std;
 
+namespace robosheep {
 
 #define PI 3.14159265
 #define GetCurrentDir getcwd
@@ -194,4 +196,4 @@ Scalar OpenCVUtils::openCV2gimpValue(Scalar value) {
 	return gimpValue;
 }
 
-
+}  // namespace robosheep

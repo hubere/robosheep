@@ -13,6 +13,8 @@
 
 using namespace cv;
 
+namespace robosheep {
+
 class VideoCamera {
 	GUI* gui;				// to display aquired frame and measurements
 	VideoCapture cap;		// the capture device, i.e. video camera
@@ -39,5 +41,7 @@ private:
 	void probeUrls();
 
 };
+
+}  // namespace robosheep
 
 #endif /* SRC_VIDEOCAMERA_H_ */

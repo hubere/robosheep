@@ -16,6 +16,7 @@
 
 using namespace cv;
 
+namespace robosheep {
 
 class TrackedObject {
 
@@ -42,5 +43,7 @@ public:
 	}
 	void refresh();
 };
+
+}  // namespace robosheep
 
 #endif /* SRC_TRACKEDOBJECT_H_ */

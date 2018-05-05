@@ -10,6 +10,8 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <algorithm>
 
+namespace robosheep {
+
 static const string WINDOW_INFO = "INFO";
 
 GUI::GUI() : nextWindowX(0), nextWindowY(0)
@@ -105,3 +107,4 @@ Mat& GUI::getInfoImage()
 	return infoImage;
 }
 
+}  // namespace robosheep

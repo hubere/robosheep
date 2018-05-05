@@ -18,9 +18,9 @@
 using namespace cv;
 using namespace std;
 
+namespace robosheep {
 
 static const string WINDOW_TRACKED_COLOR_BLOB = "Tracked Color Blob ";
-
 static TrackedColorBlob* theTrackedObject;
 
 const char* trackbar_threshold_color_high_H = "high_H";
@@ -302,4 +302,4 @@ void TrackedColorBlob::refresh() {
 
 }
 
-
+}  // namespace robosheep

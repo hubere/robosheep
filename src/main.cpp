@@ -47,6 +47,7 @@
 
 using namespace std;
 using namespace cv;
+using namespace robosheep;
 
 /*
 * print calling arguments

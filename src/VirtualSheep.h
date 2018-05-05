@@ -15,6 +15,8 @@
 using namespace std;
 using namespace cv;
 
+namespace robosheep {
+
 class VirtualSheep {
 	// position and direction of sheep
 	Point2f pos;
@@ -30,7 +32,7 @@ public:
 	VirtualSheep();
 	virtual ~VirtualSheep();
 	void show(GUI& gui);
-	void draw(cv::Mat &frame);
+	void draw(Mat &frame);
 	Size getSize();
 	Point2f getPosition();
 	Scalar getColor();
@@ -45,5 +47,7 @@ public:
 
 	void keyPressed(char key);
 };
+
+}  // namespace robosheep
 
 #endif /* VIRTUALSHEEP_H_ */

@@ -12,6 +12,7 @@
 
 using namespace std;
 
+namespace robosheep {
 
 HTTPClient::HTTPClient(string pMowerURL) {
 	curl_global_init(CURL_GLOBAL_ALL);
@@ -42,7 +43,7 @@ void HTTPClient::sendMotorSpeeds(int motorSpeed1, int motorSpeed2)
 	sendMessage(command);
 }
 
-
+}  // namespace robosheep
 
 
 

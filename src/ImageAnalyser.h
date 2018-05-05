@@ -17,6 +17,8 @@
 using namespace std;
 using namespace cv;
 
+namespace robosheep {
+
 static const string ALGORITHM_DETECTBYMOMENTS = "ALGORITHM_DETECTBYMOMENTS";
 static const string ALGORITHM_DETECTBYCONTOURS = "ALGORITHM_DETECTBYCONTOURS";
 
@@ -37,6 +39,10 @@ public:
 	Mat& getAnalysedImage();
 
 private:
+	int radius;
+	bool showOrig;					// controls whether to show original image
+	bool showInrange;				// controls whether to show inRange image
+
 	vector<vector<Point> > findCountours(Mat &frame, TrackedColorBlob& colorBlob);
 	int findBestCountourWithMaximumArea(vector<vector<Point> > &contour);
 	int findBestCountour(vector<vector<Point> > &contour, Size minSize, Size maxSize);
@@ -45,4 +51,5 @@ private:
 	void analyse(Mat& frame, TrackedObject& aTrackedObject);
 };
 
+}  // namespace robosheep
 #endif /* ImageAnalyser_H_ */

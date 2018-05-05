@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 
+namespace robosheep {
 
 static const string WINDOW_GARDEN = "Garden";
 
@@ -142,3 +143,4 @@ size_t Garden::getRouteSize() {
 	return route.size();
 }
 
+}  // namespace robosheep

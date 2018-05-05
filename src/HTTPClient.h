@@ -13,6 +13,8 @@
 
 using namespace std;
 
+namespace robosheep {
+
 class HTTPClient {
 private:
 	string mowerURL;
@@ -24,5 +26,6 @@ public:
 	void sendMotorSpeeds(int motorSpeed1, int motorSpeed2);
 };
 
+}  // namespace robosheep
 
 #endif /* SRC_HTTPCLIENT_H_ */

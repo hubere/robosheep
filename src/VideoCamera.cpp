@@ -21,9 +21,12 @@
 using namespace std;
 using namespace cv;
 
-//
-// static stuff
-//
+namespace robosheep {
+
+// ----------------------------------------------
+// Constants
+// ----------------------------------------------
+
 static const string WINDOW_VIDEO = "Camera";
 static int skipFrames = 10;
 static int framesTaken = 0;
@@ -31,9 +34,11 @@ static int framesTaken = 0;
 void mouseCallBackVideo(int event, int x, int y, int flags, void* userdata);
 Mat curlImg(const char *img_url, int timeout = 10);
 
-//
-// constuctor
-//
+
+// ----------------------------------------------
+// Class methods
+// ----------------------------------------------
+
 VideoCamera::VideoCamera() {
 	stopwatch.reset();
 }
@@ -330,6 +335,6 @@ void mouseCallBackVideo(int event, int x, int y, int flags, void* userdata) {
 	}
 }
 
-
+}  // namespace robosheep
 
 

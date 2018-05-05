@@ -18,6 +18,8 @@
 
 using namespace cv;
 
+namespace robosheep {
+
 class Planer {
 	GUI* gui;
 	Point aim;
@@ -49,5 +51,7 @@ public:
 	void slowDown();
 	Mat& getPlannedImage();
 };
+
+}  // namespace robosheep
 
 #endif /* PLANER_H_ */

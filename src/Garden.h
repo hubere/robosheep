@@ -20,6 +20,8 @@
 using namespace std;
 using namespace cv;
 
+namespace robosheep {
+
 enum
 {
 	GARDEN,
@@ -50,5 +52,7 @@ public:
 	size_t getRouteSize();
 
 };
+
+}  // namespace robosheep
 
 #endif /* Garden_H_ */

@@ -17,6 +17,8 @@
 using namespace cv;
 using namespace std;
 
+namespace robosheep {
+
 // names of windows
 static const string WINDOW_TRACKED_OBJECT = "Tracked Object";
 
@@ -60,8 +62,8 @@ Point2i TrackedObject::getAktualPos() {
 
 Point2i TrackedObject::getAktualPosMean() {
 	Scalar s = mean(positions);
-	int x = int(std::floor(s.val[0]));
-	int y = int(std::floor(s.val[1]));
+	int x = int(floor(s.val[0]));
+	int y = int(floor(s.val[1]));
 	return Point2i(x, y);
 }
 
@@ -112,3 +114,4 @@ void TrackedObject::refresh() {
 //	showImage(WINDOW_TRACKED_OBJECT, imgRgb);
 }
 
+}  // namespace robosheep

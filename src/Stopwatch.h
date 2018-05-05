@@ -12,6 +12,7 @@
 
 #include <opencv2/core/core.hpp>
 
+namespace robosheep {
 
 class Stopwatch
 {
@@ -26,3 +27,4 @@ public:
 	void reset();
 };
 
+}  // namespace robosheep

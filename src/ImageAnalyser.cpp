@@ -6,46 +6,56 @@
  */
 
 #include "ImageAnalyser.h"
-#include "GUI.h"
-#include "Garden.h"
-#include "OpenCVUtils.h"
 
 #include <stdio.h>
 #include <iostream>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+#include "GUI.h"
+#include "Garden.h"
+#include "OpenCVUtils.h"
+
 using namespace std;
 using namespace cv;
 
+namespace robosheep {
+
+// ----------------------------------------------
+// Constants
+// ----------------------------------------------
 
 static const string WINDOW_IA_ORIG = "ImageAnalyser - original";
 static const string WINDOW_IA_INRANGE = "ImageAnalyser - inRange";
 static const string WINDOW_IA_CONTOURS = "ImageAnalyser - contours";
-bool showOrig = false;
-bool showInrange = false;
 
 // the adjustable parameter
 const char* trackbar_range = "range";
 int userInputThresholdRange = 0;
+Point lastRightClickPosition = Point();
 
 int const max_value = 255;
 int const max_type = 4;
 int const max_BINARY_value = 255;
-
-Point lastRightClickPosition = Point();
-int radius= 10;
 
 // callback and callback parameters
 void adjustParameters(int, void*);
 void mouseCallBackFuncOrig(int event, int x, int y, int flags, void* userdata);
 void mouseCallBackFuncContours(int event, int x, int y, int flags, void* userdata);
 
+
+// ----------------------------------------------
+// Class methods
+// ----------------------------------------------
+
 ImageAnalyser::ImageAnalyser() {
 	pTrackedObject = NULL;
 	imageToAnalyse = Mat();
 	analysedImg = Mat();
 	algorithm = ALGORITHM_DETECTBYCONTOURS;
+	radius = 10;
+	showOrig = false;
+	showInrange = false;
 }
 
 ImageAnalyser::~ImageAnalyser() {
@@ -441,10 +451,10 @@ void ImageAnalyser::analyse(Mat& frame,
 }
 
 
+//-----------------------------------------------
+// static methods
+//-----------------------------------------------
 
-/**
- * @function adjustParameters
- */
 void adjustParameters(int, void* callbackObject) {
 
 	ImageAnalyser* pImageAnalyser = static_cast<ImageAnalyser*>(callbackObject);
@@ -515,4 +525,6 @@ void mouseCallBackFuncContours(int event, int x, int y, int flags, void* userdat
 		// cout << "Mouse move over the window - position (" << x << ", " << y << ")" << endl;
 	}
 }
+
+}  // namespace robosheep
 

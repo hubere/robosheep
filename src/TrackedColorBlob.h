@@ -14,6 +14,8 @@
 
 using namespace cv;
 
+namespace robosheep {
+
 /* Datasets of color blobs.
  *
  * Use robosheep --analyse and type 't' to take a snapshot.
@@ -79,5 +81,7 @@ public:
 	void refresh();
 
 };
+
+}  // namespace robosheep
 
 #endif /* SRC_TRACKEDCOLORBLOB_H_ */

@@ -14,6 +14,8 @@
 
 using namespace cv;
 
+namespace robosheep {
+
 //-----------------------------------------------
 // Constants
 //-----------------------------------------------
@@ -183,3 +185,4 @@ void VirtualSheep::keyPressed(char key) {
 
 }
 
+}  // namespace robosheep

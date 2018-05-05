@@ -18,7 +18,7 @@
 using namespace std;
 using namespace cv;
 
-
+namespace robosheep {
 
 static const string WINDOW_PLANER = "Planer";
 static const bool useDistance = false;
@@ -275,3 +275,4 @@ void mouseCallBackPlaner(int event, int x, int y, int flags, void* userdata) {
 
 }
 
+}  // namespace robosheep
