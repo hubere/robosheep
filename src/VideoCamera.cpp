@@ -43,57 +43,16 @@ VideoCamera::~VideoCamera() {
 		delete writer;
 }
 
-void VideoCamera::test(String& url) {
-	open(url);
-	Mat frame;
-
-	cap >> frame;
-	if (!frame.empty()) gui->showImage(WINDOW_VIDEO, frame);
-	    for (;;) {
-
-			// capture buffered frame
-	    	cap >> frame;
-
-			// capture single image
-			//frame = curlImg("http://robosheep:mower@192.168.1.119/Image.jpg");
-
-	        if (frame.empty())
-	            break;
-
-			++framesTaken;
-			int measuringTime = 10; // measure all seconds
-			if (stopwatch.getElapsedTime() > measuringTime * 1000)
-			{
-				fpms = framesTaken * 1000 / measuringTime;
-				framesTaken = 0;
-				stopwatch.reset();
-				cout << "fpms: " << fpms << endl;
-			}
-	
-			gui->showImage(WINDOW_VIDEO, frame);
-	        char key = (char)waitKey(10); //delay N millis, usually long enough to display and capture input
-	
-	        switch (key) {
-	        case 'q':
-	        case 'Q':
-	        case 27: //escape key
-	            return ;
-	        default:
-	            break;
-	        }
-	    }
-}
-
-//
-// open camera stream
-//
+/**
+* open camera stream
+*/
 bool VideoCamera::open(String& url) {
 
 	cout << endl << "VideoCamera::open(" << url << ") -> ";
 	if (!cap.open(url)){
 		cout << "FAILED!" << endl;
-		probeUrls();
-		cout << endl << "VideoCamera::open	ensure camera is switches on " << endl;
+		// probeUrls(); <- for debugging purpose, enable probeUrls()
+		cout << endl << "VideoCamera::open	ensure camera is switched on " << endl;
 		cout         << "			and use fing to find IP of camera." << endl;
 		cout         << "			adjust parameter --cameraURL to the ip-address." << endl;
 		return false;
@@ -103,9 +62,142 @@ bool VideoCamera::open(String& url) {
 }
 
 void VideoCamera::loadImage(String imageName){
-	// Load an image
 	image = imread(imageName, 1);
 }
+
+void VideoCamera::show(GUI& pGui) {
+	gui = &pGui;
+	gui->addWindow(WINDOW_VIDEO);
+	setMouseCallback(WINDOW_VIDEO, mouseCallBackVideo, &image);
+}
+
+bool VideoCamera::read(Mat& frame) {
+	bool result = true;
+	if (!image.empty())
+		frame = image;
+	else
+	{
+		cap >> frame;
+	}
+	
+	if (frame.empty())
+		return false;
+
+	int measuringTime = 10; // measure all seconds
+	if (stopwatch.getElapsedTime() > measuringTime * 1000)
+	{
+		fpms = framesTaken * 1000 / measuringTime;
+		framesTaken = 0;
+		stopwatch.reset();
+		if (gui !=NULL)
+			gui->showImage(WINDOW_VIDEO, frame);
+	}
+
+	return result;
+}
+
+bool VideoCamera::read(Mat& frame, int frameDelay) {
+	if (!read(frame))
+		return false;
+
+	char key = waitKey(frameDelay);
+	switch (key) {
+	case 27:
+		return false;
+		break;
+	}
+	return true;
+}
+
+bool VideoCamera::takeSnapshot(Mat& frame) {
+	bool result = cap.read(frame);
+	return result;
+}
+
+bool VideoCamera::saveFrame() {
+	Mat image;
+	if (!cap.read(image)){
+		cout << "VideoCamera::saveFrame:	Could not read image" << endl;
+		return false;
+	}
+
+	time_t now;
+	char filename[40];
+	filename[0] = '\0';
+	now = time(NULL);
+
+	if (now != -1)
+	{
+		strftime(filename, sizeof(filename), "snapshot_%Y-%m-%d_%H-%M-%S.jpg", gmtime(&now));
+	}
+
+	imwrite( filename, image );
+	cout << "VideoCamera::saveFrame:	saved image to " << filename << endl;
+
+	return true;
+}
+
+void VideoCamera::write(Mat& frame)
+{
+	if (writer == NULL)
+	{
+		int frame_width = frame.cols;
+		int frame_height = frame.rows;
+		writer = new VideoWriter("out.avi", CV_FOURCC('M', 'J', 'P', 'G'), 1, Size(frame_width, frame_height), true);
+	}
+	writer->write(frame);
+}
+
+int VideoCamera::getFPMS()
+{
+	return fpms;
+}
+
+void VideoCamera::test(String& url) {
+	open(url);
+	Mat frame;
+
+	cap >> frame;
+	if (!frame.empty()) gui->showImage(WINDOW_VIDEO, frame);
+	for (;;) {
+
+		// capture buffered frame
+		cap >> frame;
+
+		// capture single image
+		//frame = curlImg("http://robosheep:mower@192.168.1.119/Image.jpg");
+
+		if (frame.empty())
+			break;
+
+		++framesTaken;
+		int measuringTime = 10; // measure all seconds
+		if (stopwatch.getElapsedTime() > measuringTime * 1000)
+		{
+			fpms = framesTaken * 1000 / measuringTime;
+			framesTaken = 0;
+			stopwatch.reset();
+			cout << "fpms: " << fpms << endl;
+		}
+
+		gui->showImage(WINDOW_VIDEO, frame);
+		char key = (char)waitKey(10); //delay N millis, usually long enough to display and capture input
+
+		switch (key) {
+		case 'q':
+		case 'Q':
+		case 27: //escape key
+			return;
+		default:
+			break;
+		}
+	}
+}
+
+
+//-----------------------------------------------
+// private methods
+//-----------------------------------------------
 
 void VideoCamera::probeUrls() {
 
@@ -119,8 +211,8 @@ void VideoCamera::probeUrls() {
 	//url = "http://192.168.1.101/video.cgi";
 	// URL die in VLC geht: http://robosheep:mower@192.168.1.128/video.cgi?x.mjpg
 
-//	Auflösung 1280x720: rtsp://192.168.1.111:554/onvif1 
-//	Auflösung 320x180: rtsp://192.168.1.111:554/onvif2
+	//	Auflösung 1280x720: rtsp://192.168.1.111:554/onvif1 
+	//	Auflösung 320x180: rtsp://192.168.1.111:554/onvif2
 
 	// --- files ---
 	//	 url =		"/home/edi/workspace/robosheep/resources/M20120703_200959.avi";
@@ -155,134 +247,37 @@ void VideoCamera::probeUrls() {
 
 	printf("\n\nVideoCapture properties:\n");
 	printf("CV_CAP_PROP_FRAME_WIDTH properties:  %f\n",
-			cap.get(CV_CAP_PROP_FRAME_WIDTH));
+		cap.get(CV_CAP_PROP_FRAME_WIDTH));
 	printf("CV_CAP_PROP_FRAME_HEIGHT properties: %f\n",
-			cap.get(CV_CAP_PROP_FRAME_HEIGHT));
+		cap.get(CV_CAP_PROP_FRAME_HEIGHT));
 	printf("CV_CAP_PROP_FPS properties:          %f\n",
-			cap.get(CV_CAP_PROP_FPS));
+		cap.get(CV_CAP_PROP_FPS));
 	printf("CV_CAP_PROP_FORMAT properties:       %f\n",
-			cap.get(CV_CAP_PROP_FORMAT));
+		cap.get(CV_CAP_PROP_FORMAT));
 	printf("CV_CAP_PROP_MODE properties:         %f\n",
-			cap.get(CV_CAP_PROP_MODE));
+		cap.get(CV_CAP_PROP_MODE));
 	printf("CV_CAP_PROP_BRIGHTNESS properties:   %f\n",
-			cap.get(CV_CAP_PROP_BRIGHTNESS));
+		cap.get(CV_CAP_PROP_BRIGHTNESS));
 	printf("CV_CAP_PROP_CONTRAST properties:     %f\n",
-			cap.get(CV_CAP_PROP_CONTRAST));
+		cap.get(CV_CAP_PROP_CONTRAST));
 	printf("CV_CAP_PROP_SATURATION properties:   %f\n",
-			cap.get(CV_CAP_PROP_SATURATION));
+		cap.get(CV_CAP_PROP_SATURATION));
 	printf("CV_CAP_PROP_HUE properties:          %f\n",
-			cap.get(CV_CAP_PROP_HUE));
+		cap.get(CV_CAP_PROP_HUE));
 	printf("CV_CAP_PROP_GAIN properties:         %f\n",
-			cap.get(CV_CAP_PROP_GAIN));
+		cap.get(CV_CAP_PROP_GAIN));
 	printf("CV_CAP_PROP_EXPOSURE properties:     %f\n",
-			cap.get(CV_CAP_PROP_EXPOSURE));
+		cap.get(CV_CAP_PROP_EXPOSURE));
 	printf("CV_CAP_PROP_CONVERT_RGB properties:  %f\n",
-			cap.get(CV_CAP_PROP_CONVERT_RGB));
+		cap.get(CV_CAP_PROP_CONVERT_RGB));
 	printf("\n\n");
 
 }
 
-void VideoCamera::show(GUI& pGui) {
-	gui = &pGui;
-	gui->addWindow(WINDOW_VIDEO);
-	setMouseCallback(WINDOW_VIDEO, mouseCallBackVideo, &image);
-}
 
-bool VideoCamera::read(Mat& frame) {
-	bool result = true;
-	if (!image.empty())
-		frame = image;
-	else
-	{
-		cap >> frame;
-
-		// capture single image
-		// frame = curlImg("http://robosheep:mower@192.168.1.119/Image.jpg");
-	}
-	
-	if (frame.empty())
-		return false;
-
-	// cout << "framesTaken" << framesTaken;
-
-	//// display only each skipFrames frame
-	//if ((++framesTaken % skipFrames == 0) && !frame.empty())
-	// gui->showImage(WINDOW_VIDEO, frame);
-
-	int measuringTime = 10; // measure all seconds
-	if (stopwatch.getElapsedTime() > measuringTime * 1000)
-	{
-		fpms = framesTaken * 1000 / measuringTime;
-		framesTaken = 0;
-		stopwatch.reset();
-		gui->showImage(WINDOW_VIDEO, frame);
-	}
-
-	return result;
-}
-
-bool VideoCamera::read(Mat& frame, int frameDelay) {
-	if (!read(frame))
-		return false;
-
-	char key = waitKey(frameDelay);
-	switch (key) {
-	case 27:
-		return false;
-		break;
-	}
-	return true;
-}
-
-bool VideoCamera::takeSnapshot(Mat& frame) {
-	bool result = cap.read(frame);
-	return result;
-}
-
-bool VideoCamera::saveFrame() {
-	Mat image;
-	if (!cap.read(image)){
-		cout << "VideoCamera::saveFrame:	Could not read image" << endl;
-		return false;
-	}
-
-// #define _CRT_SECURE_NO_WARNINGS
-
-	time_t now;
-	char filename[40];
-	filename[0] = '\0';
-	now = time(NULL);
-
-
-	   if (now != -1)
-	   {
-		   strftime(filename, sizeof(filename), "snapshot_%Y-%m-%d_%H-%M-%S.jpg", gmtime(&now));
-	   }
-
-
-	imwrite( filename, image );
-	cout << "VideoCamera::saveFrame:	saved image to " << filename << endl;
-
-
-	return true;
-}
-
-void VideoCamera::write(Mat& frame)
-{
-	if (writer == NULL)
-	{
-		int frame_width = frame.cols;
-		int frame_height = frame.rows;
-		writer = new VideoWriter("out.avi", CV_FOURCC('M', 'J', 'P', 'G'), 1, Size(frame_width, frame_height), true);
-	}
-	writer->write(frame);
-}
-
-
-int VideoCamera::getFPMS()
-{
-	return fpms;
-}
+//-----------------------------------------------
+// static methods
+//-----------------------------------------------
 
 //curl writefunction to be passed as a parameter
 // we can't ever expect to get the whole image in one piece,

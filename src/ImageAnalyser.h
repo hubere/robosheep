@@ -21,21 +21,19 @@ static const string ALGORITHM_DETECTBYMOMENTS = "ALGORITHM_DETECTBYMOMENTS";
 static const string ALGORITHM_DETECTBYCONTOURS = "ALGORITHM_DETECTBYCONTOURS";
 
 class ImageAnalyser {
-	GUI* gui;
-	TrackedObject* pTrackedObject;
-	Mat imageToAnalyse;
-	string algorithm;
-	Mat analysedImg;
+	GUI* gui;						// to display analysis information
+	TrackedObject* pTrackedObject;	// the object that is to be tracked
+	Mat imageToAnalyse;				// the image to be analysed
+	string algorithm;				// the algorithm that is to be used to detect the trackedObject
+	Mat analysedImg;				// image with analysis information
 
 public:
 	ImageAnalyser();
 	virtual ~ImageAnalyser();
 	void show(GUI& gui);
-	Point2f detectObjectPosition(Mat &frame, TrackedColorBlob& colorBlob);
 	bool detectObjectPosition(Mat& frame, TrackedObject& trackedObject);
 	bool detectObjectPosition();
 	void analyse(string imageName, TrackedObject& aTrackedObject);
-	void analyse(Mat& frame, TrackedObject& aTrackedObject);
 	Mat& getAnalysedImage();
 
 private:
@@ -44,6 +42,7 @@ private:
 	int findBestCountour(vector<vector<Point> > &contour, Size minSize, Size maxSize);
 	bool detectByContours(Mat &frame, TrackedObject& trackedObject);
 	bool detectByMoments(Mat &frame, TrackedObject& trackedObject);
+	void analyse(Mat& frame, TrackedObject& aTrackedObject);
 };
 
 #endif /* ImageAnalyser_H_ */

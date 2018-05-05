@@ -120,9 +120,9 @@ int main(int argc, char** argv) {
 
 	if (argMode == "modeTestCamera")
 	{
-		//
+		// --------------------------------------------
 		// Test camera
-		//
+		// --------------------------------------------
 
 		GUI gui;
 		VideoCamera videoCamera;
@@ -131,9 +131,9 @@ int main(int argc, char** argv) {
 	}
 	else if (argMode == "modeTrack")
 	{
-		//
+		// --------------------------------------------
 		// we want to track an object
-		//
+		// --------------------------------------------
 
 		VideoCamera videoCamera;
 		TrackedObject trackedObject;
@@ -149,9 +149,9 @@ int main(int argc, char** argv) {
 	}
 	else if (argMode == "modeAnalyseImage")
 	{
-		//
+		// --------------------------------------------
 		// analyse image given by argument argImageName
-		//
+		// --------------------------------------------
 
 		GUI gui;
 		TrackedObject trackedObject;
@@ -164,20 +164,20 @@ int main(int argc, char** argv) {
 	}
 	else
 	{
-		//
+		// --------------------------------------------
 		// control the mower
-		//
+		// --------------------------------------------
 
 		//
 		// initialize variables
 		//
 		Mat frame;				// actual image of camera
 
-		// Each frame should be processes in same amount of time, the 'frametime'. The time
+		// Each frame should be processed in same amount of time, the 'frametime'. The time
 		// consumed by a frame processing round trip is substracted from 'frametime' and stored
 		// in 'framedelay'. The next round trip will start by waiting 'framedelay' ms. Hence
 		// a frame will be processed each 'frametime' ms.
-		int frametime =  2000;	// take one frame each frametime milliseconds
+		int frametime =  10000;	// take one frame each frametime milliseconds
 		int framedelay = 100;	// delay for algorithm to wait in order to reach a algorithm time of frametime
 		bool stop(false);		// flag to stop the endless loop
 		
@@ -195,12 +195,6 @@ int main(int argc, char** argv) {
 		VirtualSheep sheep; // our virtual sheep
 		OpenCVUtils util;
 
-		// show them all
-		videoCamera.show(gui);
-		garden.show(gui);
-		imageAnalyser.show(gui);
-		planer.show(gui);
-
 		gui.printInfo(1, "Hit 'h' for help.");
 		gui.printInfo(3, "Initializing...");
 
@@ -211,7 +205,7 @@ int main(int argc, char** argv) {
 		if (argCameraURL != "noCameraURL"){
 			if (!videoCamera.open(argCameraURL))
 			{
-				waitKey(5000);
+				waitKey(10000);
 				exit(-1);
 			}
 		}
@@ -225,6 +219,12 @@ int main(int argc, char** argv) {
 
 		// tell planer to where sheep should move first
 		planer.setAim(garden.getNextRoutePoint());
+
+		// show them all
+		videoCamera.show(gui);
+		garden.show(gui);
+		imageAnalyser.show(gui);
+		planer.show(gui);
 
 		//
 		// for log-video
@@ -283,7 +283,7 @@ int main(int argc, char** argv) {
 				break;
 			}
 			ostringstream timingInfo;
-			timingInfo << "timingInfo:	read frame: " << stopwatch.getElapsedTime();
+			timingInfo << "timingInfo:    read frame: " << stopwatch.getElapsedTime();
 
 			//
 			// write log-video
@@ -365,14 +365,14 @@ int main(int argc, char** argv) {
 			//
 			// print info
 			//
-			gui.printInfo(6, "FPMS:        ", videoCamera.getFPMS());
-			gui.printInfo(7, "algtime:     ", (int)algtime);
-			gui.printInfo(8, "frameDelay:  ", framedelay);
+			gui.printInfo(6, "FPMS:            ", videoCamera.getFPMS());
+			gui.printInfo(7, "algtime[ms]:     ", (int)algtime);
+			gui.printInfo(8, "frameDelay[ms]:  ", framedelay);
 			gui.printInfo(9, timingInfo.str());
 
 
 			cout << endl << "-----------------------------------------------------" << endl;
-			cout << "main:		algtime=" << stopwatch.getElapsedTime() << endl;
+			cout << "main:		algtime[ms]=" << stopwatch.getElapsedTime() << endl;
 			stopwatch.reset();
 		}
 

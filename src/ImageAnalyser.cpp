@@ -84,35 +84,6 @@ bool ImageAnalyser::detectObjectPosition(Mat& frame,
 
 }
 
-/**
- * Find center of colorBlob,
- */
-Point2f ImageAnalyser::detectObjectPosition(Mat &frame,
-		TrackedColorBlob& colorBlob) {
-
-	Point2f center;
-	float radius;
-
-	vector<vector<Point> > contours = findCountours(frame, colorBlob);
-	if (contours.size() == 0) return Point2f();
-
-	int bestIdx = findBestCountour(contours, colorBlob.getMinSize(), colorBlob.getMaxSize());
-	if (bestIdx == -1)	return Point2f();
-
-	minEnclosingCircle(contours[bestIdx], center, radius);
-
-	// draw
-	frame.copyTo(analysedImg);
-	for (unsigned i = 0; i < contours.size(); i++) {
-		drawContours(analysedImg, contours, i, Scalar(128, 255, 255), 1);
-	}
-	circle(analysedImg, center, 10, Scalar(0, 255, 255), 4, 8, 0);
-	drawContours(analysedImg, contours, bestIdx, Scalar(255, 128, 255), 3);
-	gui->showImage(WINDOW_IA_CONTOURS, analysedImg);
-
-	return center;
-}
-
 bool ImageAnalyser::detectByContours(Mat &frame, TrackedObject& trackedObject) {
 
 	// store parameters for callback function
@@ -380,8 +351,6 @@ void ImageAnalyser::analyse(std::string imageName,
 	//
 	analyse(imageDest, aTrackedObject);
 
-//	waitKey(0);
-
 	while (true)
 	{
 		char key = cv::waitKey(100);
@@ -493,8 +462,6 @@ void mouseCallBackFuncOrig(int event, int x, int y, int flags, void* userdata) {
 
 		Vec3b p1 = (*rgb).at<Vec3b>(y, x); //Vec3b - Array of 3 uchar numbers
 		Vec3b p2 = imgHSV.at<Vec3b>(y, x); //Vec3b - Array of 3 uchar numbers
-//		Vec3b pMax = imgHSV.at<Vec3b>(y, x); //Vec3b - Array of 3 uchar numbers
-//		Vec3b pMin = imgHSV.at<Vec3b>(y, x); //Vec3b - Array of 3 uchar numbers
 
 
 		Mat imgTmp;

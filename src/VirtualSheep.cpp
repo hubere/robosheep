@@ -14,9 +14,13 @@
 
 using namespace cv;
 
-#define pi float(3.14159265)
+//-----------------------------------------------
+// Constants
+//-----------------------------------------------
 
+#define pi float(3.14159265)
 static const string WINDOW_VIRTUAL_SHEEP = "Virtual Sheep";
+
 
 VirtualSheep::VirtualSheep() {
 	pos = Point2f(250, 300);
@@ -44,7 +48,6 @@ Size VirtualSheep::getSize() {
 Scalar VirtualSheep::getColor(){
 	return color;
 }
-
 
 void VirtualSheep::locatedAt(Point_<int> location) {
 
@@ -111,7 +114,6 @@ void VirtualSheep::draw(Mat &frame) {
 	putText(newFame, buffer, Point(40,50), FONT_HERSHEY_COMPLEX_SMALL, 1, Scalar::all(255), 1, 8);
 	sprintf_s(buffer, "(%.0f,%.0f): v=%d, d=%d\n", pos.x, pos.y, velocity, dir);
 	putText(newFame, buffer, Point(40,100), FONT_HERSHEY_COMPLEX_SMALL, 1, Scalar::all(255), 1, 8);
-
 
 	imshow(WINDOW_VIRTUAL_SHEEP, newFame);
 }

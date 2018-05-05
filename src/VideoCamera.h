@@ -14,18 +14,18 @@
 using namespace cv;
 
 class VideoCamera {
-	GUI* gui;
-	VideoCapture cap;
-	VideoWriter* writer;
-	Mat image;
-	Stopwatch stopwatch;
-	int fpms;
+	GUI* gui;				// to display aquired frame and measurements
+	VideoCapture cap;		// the capture device, i.e. video camera
+	VideoWriter* writer;	// for writing a log-video
+	Mat image;				// the most recent aquired image
+	Stopwatch stopwatch;	// used for time measurement
+	int fpms;				// frames per second; used for performance measurement
 
 public:
 	VideoCamera();
 	virtual ~VideoCamera();
-	void test(String& url);
 	bool open(String& url);
+	void test(String& url);
 	void loadImage(String image);
 	void show(GUI& gui);
 	bool read(Mat& frame, int frameDelay);
@@ -37,7 +37,6 @@ public:
 
 private:
 	void probeUrls();
-
 
 };
 

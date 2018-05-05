@@ -46,9 +46,6 @@ void GUI::showWindow(int id)
 {
 	if (id >= windowNames.size()) return;
 
-//	destroyAllWindows();
-	
-//	namedWindow(WINDOW_INFO, WINDOW_AUTOSIZE); // info windows is always displayed
 	refreshDisplay();
 
 	if (id == 0)
@@ -60,9 +57,8 @@ void GUI::showWindow(int id)
 	}
 	else
 	{
-//		namedWindow(windowNames[id], WINDOW_AUTOSIZE);
-		moveWindow(windowNames[id], 400, 0);
-		printInfo(5, "Showing " + windowNames[id]);
+		moveWindow(windowNames[id], 600, 0);
+		printInfo(15, "Showing " + windowNames[id]);
 	}
 	windowShown = id;
 }
