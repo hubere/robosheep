@@ -138,7 +138,7 @@ vector<Point> &Garden::getRoute() {
 	return route;
 }
 
-int Garden::getRouteSize() {
+size_t Garden::getRouteSize() {
 	return route.size();
 }
 

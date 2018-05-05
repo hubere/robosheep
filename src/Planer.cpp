@@ -86,17 +86,17 @@ void Planer::show(Mat& frame) {
 	Vec4f fittedline;
 	fitLine(lastPositions, fittedline, CV_DIST_L2, 0, 0.01, 0.01);
 
-	double theMult = max(frame.cols, frame.rows);
+	int theMult = max(frame.cols, frame.rows);
 
 	// calculate start point
 	Point startPoint;
-	startPoint.x = fittedline[2] - theMult * fittedline[0]; // x0
-	startPoint.y = fittedline[3] - theMult * fittedline[1]; // y0
+	startPoint.x = int(floor(fittedline[2] - theMult * fittedline[0])); // x0
+	startPoint.y = int(floor(fittedline[3] - theMult * fittedline[1])); // y0
 
 	// calculate end point
 	Point endPoint;
-	endPoint.x = fittedline[2] + theMult * fittedline[0];		    //x[1]
-	endPoint.y = fittedline[3] + theMult * fittedline[1];		    //y[1]
+	endPoint.x = int(floor(fittedline[2] + theMult * fittedline[0]));		    //x[1]
+	endPoint.y = int(floor(fittedline[3] + theMult * fittedline[1]));		    //y[1]
 
 	Rect r = cv::boundingRect(lastPositions);
 	clipLine(r.size(), startPoint, endPoint);

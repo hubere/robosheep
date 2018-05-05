@@ -227,7 +227,7 @@ int main(int argc, char** argv) {
 		planer.setAim(garden.getNextRoutePoint());
 
 		//
-		// for video
+		// for log-video
 		//
 		Size frameSize = frame.size();
 		Mat videoImage(frameSize.height, frameSize.width * 3, CV_8UC3);
@@ -286,7 +286,7 @@ int main(int argc, char** argv) {
 			timingInfo << "timingInfo:	read frame: " << stopwatch.getElapsedTime();
 
 			//
-			// write video
+			// write log-video
 			//
 			Mat info = gui.getInfoImage();
 			Mat anal = imageAnalyser.getAnalysedImage();
@@ -359,8 +359,8 @@ int main(int argc, char** argv) {
 			//
 			// calc new framedelay
 			//
-			int64 algtime = stopwatch.getElapsedTime();
-			int64 framedelay = stopwatch.getNextFrameDelay(frametime);
+			int algtime = stopwatch.getElapsedTime();
+			int framedelay = stopwatch.getNextFrameDelay(frametime);
 
 			//
 			// print info
@@ -380,7 +380,6 @@ int main(int argc, char** argv) {
 		waitKey(5000);
 	}
 
-	
 	return (0);
 }
 

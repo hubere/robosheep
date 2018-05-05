@@ -35,7 +35,7 @@ public:
 	Point2f getPosition();
 	Scalar getColor();
 	void setPosition(Point2f newPos);
-	void rotate(double dt);
+	void rotate(int dt);
 	void setSpeed(int m1, int m2);
 	void speedUp();
 	void slowDown();

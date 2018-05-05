@@ -14,7 +14,7 @@
 
 using namespace cv;
 
-#define pi 3.14159265
+#define pi float(3.14159265)
 
 static const string WINDOW_VIRTUAL_SHEEP = "Virtual Sheep";
 
@@ -55,9 +55,7 @@ void VirtualSheep::update() {
 	if (pos == Point2f(0, 0))
 		return;
 
-	//	radian = degree * (pi/180);
 	float radian = dir * (pi / 180);
-
 	float incX = cos(radian);
 	float incY = -sin(radian);
 
@@ -86,7 +84,6 @@ void VirtualSheep::update() {
 	if (pos.y > 500)
 		pos.y = 500;
 
-	// print();
 }
 
 void VirtualSheep::draw(Mat &frame) {
@@ -127,7 +124,10 @@ void VirtualSheep::setPosition(Point2f newPos) {
 	pos = newPos;
 }
 
-void VirtualSheep::rotate(double dt) {
+/**
+* Rotate sheep by dt degrees.
+*/
+void VirtualSheep::rotate(int dt) {
 	dir += dt;
 	if (dir > 360)
 		dir = dir - 360;

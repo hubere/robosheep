@@ -220,8 +220,8 @@ bool ImageAnalyser::detectByContours(Mat &frame, TrackedObject& trackedObject) {
 	for (unsigned i = 0; i < rightContours.size(); i++)
 		drawContours(analysedImg, rightContours, i, Scalar(128, 255, 255), 1);
 
-	circle(analysedImg, leftCenter, radius, Scalar(0, 0, 255), 4, 8, 0);
-	circle(analysedImg, rightCenter, radius, Scalar(255, 255, 255), 4, 8, 0);
+	circle(analysedImg, leftCenter, int(floor(radius)), Scalar(0, 0, 255), 4, 8, 0);
+	circle(analysedImg, rightCenter, int(floor(radius)), Scalar(255, 255, 255), 4, 8, 0);
 
 	line(analysedImg, startPoint, endPoint, Scalar(0, 255, 0), 1);
 	gui->showImage(WINDOW_IA_CONTOURS, analysedImg);
@@ -311,8 +311,8 @@ int ImageAnalyser::findBestCountour(vector<vector<Point> > &contour,
 	vector<Point2f> center(contours.size());
 	vector<float> radius(contours.size());
 	int rightCountourIdx = -1;
-	float minRadius = fmin(minSize.width, minSize.height) / 2.0;
-	float maxRadius = fmax(maxSize.width, maxSize.height) / 2.0;
+	double minRadius = fmin(minSize.width, minSize.height) / 2.0;
+	double maxRadius = fmax(maxSize.width, maxSize.height) / 2.0;
 	for (unsigned int i = 0; i < contours.size(); i++) {
 		approxPolyDP(Mat(contour[i]), contours[i], 3, true);
 		boundRect[i] = boundingRect(Mat(contours[i]));
@@ -355,7 +355,7 @@ bool ImageAnalyser::detectByMoments(Mat &frame, TrackedObject& trackedObject) {
 	double moment01 = mu.m01;
 	double area = mu.m00; // cvGetCentralMoment(moments, 0, 0);
 
-	trackedObject.setAktualPos(Point_<int>(moment10 / area, moment01 / area));
+	trackedObject.setAktualPos(Point_<int>(int(floor(moment10 / area)), int(floor(moment01 / area))));
 
 	return true;
 

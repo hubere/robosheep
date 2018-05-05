@@ -60,8 +60,8 @@ Point2i TrackedObject::getAktualPos() {
 
 Point2i TrackedObject::getAktualPosMean() {
 	Scalar s = mean(positions);
-	int x = s.val[0];
-	int y = s.val[1];
+	int x = int(std::floor(s.val[0]));
+	int y = int(std::floor(s.val[1]));
 	return Point2i(x, y);
 }
 

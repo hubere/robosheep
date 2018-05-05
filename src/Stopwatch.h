@@ -21,8 +21,8 @@ private:
 public:
 	Stopwatch();
 	~Stopwatch();
-	int64 getElapsedTime();
-	int64 getNextFrameDelay(int frametime);
+	int getElapsedTime();
+	int getNextFrameDelay(int frametime);
 	void reset();
 };
 

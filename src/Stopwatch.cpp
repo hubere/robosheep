@@ -16,20 +16,20 @@ Stopwatch::~Stopwatch()
 {
 }
 
-int64 Stopwatch::getElapsedTime()
+int Stopwatch::getElapsedTime()
 {
-	return static_cast<int64>((getTickCount() - frameProcessingStart)*1000. / getTickFrequency());
+	return static_cast<int>((getTickCount() - frameProcessingStart)*1000. / getTickFrequency());
 }
 
 /*
 * A convenience funtion. Returns a time difference between frametime an 
 * elapsed time, floored by 10ms.
 */
-int64 Stopwatch::getNextFrameDelay(int frametime)
+int Stopwatch::getNextFrameDelay(int frametime)
 {
 	int64 algtime = getElapsedTime();
 	if (frametime > algtime)
-		return frametime - algtime;
+		return static_cast<int>(frametime - algtime);
 	else
 		return 10;	// minimal framedelay}
 }

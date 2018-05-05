@@ -2,7 +2,7 @@
  * GUI.cpp
  *
  *  Created on: Nov 2, 2016
- *      Author: edi
+ *      Author: Edwin Huber
  */
 
 #include "GUI.h"
@@ -92,7 +92,13 @@ void GUI::refreshDisplay()
 	infoImage = Mat::zeros(480, 640, CV_8UC3);
 
 	for (std::vector<String>::size_type i = 0; i != infos.size(); i++) {
-		putText(infoImage, infos.at(i), Point(10, 20 + i * 12), CV_FONT_HERSHEY_PLAIN, 1.0, Scalar::all(255), 1, CV_AA);
+		putText(infoImage, 
+			infos.at(i), 
+			Point(10, 20 + int(i) * 12), 
+			CV_FONT_HERSHEY_PLAIN, 1.0, 
+			Scalar::all(255), 
+			1, 
+			CV_AA);
 	}
 
 	imshow(WINDOW_INFO, infoImage);

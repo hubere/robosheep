@@ -2,21 +2,21 @@
  * VideoCamera.cpp
  *
  *  Created on: Oct 14, 2016
- *      Author: edi
+ *      Author: Edwin Huber
  */
 
-#include "curl/curl.h" // has to go before opencv headers
+#include "curl/curl.h" // has to go before opencv headers!!
 
 #include "VideoCamera.h"
 
-
-#include "OpenCVUtils.h"
-#include "GUI.h"
 #include <stdio.h>
 #include <iostream>
 #include <time.h>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
+
+#include "OpenCVUtils.h"
+#include "GUI.h"
 
 using namespace std;
 using namespace cv;
@@ -29,7 +29,7 @@ static int skipFrames = 10;
 static int framesTaken = 0;
 
 void mouseCallBackVideo(int event, int x, int y, int flags, void* userdata);
-cv::Mat curlImg(const char *img_url, int timeout = 10);
+Mat curlImg(const char *img_url, int timeout = 10);
 
 //
 // constuctor
@@ -125,19 +125,19 @@ void VideoCamera::probeUrls() {
 	// --- files ---
 	//	 url =		"/home/edi/workspace/robosheep/resources/M20120703_200959.avi";
 
-	printf("\nTry to open '%1$s' ...", url.c_str());
+	printf("\nTry to open '%s' ...", url.c_str());
 	cap.open("http://192.168.1.101/video.cgi");
 	if (!cap.isOpened()) {
 		printf("failed\n");
 
 		url = "http://robosheep:mower@192.168.1.113:80/video.cgi?x.mjpg";
-		printf("\nTry to open '%1$s' ...", url.c_str());
+		printf("\nTry to open '%s' ...", url.c_str());
 		cap.open("http://robosheep:mower@192.168.1.113:80/video.cgi?x.mjpg");
 		if (!cap.isOpened()) {
 			printf("failed\n");
 
 			url = "http://192.168.1.101/video.cgi?x.mjpg";
-			printf("\nTry to open '%1$s' ...", url.c_str());
+			printf("\nTry to open '%s' ...", url.c_str());
 			cap.open(url.c_str());
 			if (!cap.isOpened()) {
 				printf("failed\n");

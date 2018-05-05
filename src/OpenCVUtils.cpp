@@ -114,7 +114,7 @@ double OpenCVUtils::getKurswinkel(Point2f Aufpunkt, Point2f Zielpunkt) {
 }
 
 int OpenCVUtils::getKurswinkelDegree(Point2f Aufpunkt, Point2f Zielpunkt) {
-	int t = getKurswinkel(Aufpunkt, Zielpunkt) / (PI / 180);
+	int t = int(floor(getKurswinkel(Aufpunkt, Zielpunkt) / (PI / 180)));
 	if (t < 0)
 		t += 360;
 	return t;

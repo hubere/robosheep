@@ -24,7 +24,6 @@
     <ClInclude Include="..\..\src\HTTPClient.h" />
     <ClInclude Include="..\..\src\ImageAnalyser.h" />
     <ClInclude Include="..\..\src\main.h" />
-    <ClInclude Include="..\..\src\MainWindow.h" />
     <ClInclude Include="..\..\src\OpenCVUtils.h" />
     <ClInclude Include="..\..\src\Planer.h" />
     <ClInclude Include="..\..\src\Stopwatch.h" />
@@ -39,7 +38,6 @@
     <ClCompile Include="..\..\src\HTTPClient.cpp" />
     <ClCompile Include="..\..\src\ImageAnalyser.cpp" />
     <ClCompile Include="..\..\src\main.cpp" />
-    <ClCompile Include="..\..\src\MainWindow.cpp" />
     <ClCompile Include="..\..\src\OpenCVUtils.cpp" />
     <ClCompile Include="..\..\src\Planer.cpp" />
     <ClCompile Include="..\..\src\Stopwatch.cpp" />

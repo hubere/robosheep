@@ -8,11 +8,8 @@
 #ifndef SRC_VIDEOCAMERA_H_
 #define SRC_VIDEOCAMERA_H_
 
-#include <opencv2/highgui/highgui.hpp>
-
 #include "GUI.h"
-
-
+#include "Stopwatch.h"
 
 using namespace cv;
 

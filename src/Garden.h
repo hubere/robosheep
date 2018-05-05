@@ -47,7 +47,7 @@ public:
 	Point getNextRoutePoint();
 	vector<Point> &getGreenContour();
 	vector<Point> &getRoute();
-	int getRouteSize();
+	size_t getRouteSize();
 
 };
 
