@@ -2,7 +2,7 @@
  * ImageAnalyser.cpp
  *
  *  Created on: Sep 19, 2012
- *      Author: ubuntu
+ *      Author: Edwin Huber
  */
 
 #include "ImageAnalyser.h"
@@ -76,7 +76,6 @@ void ImageAnalyser::show(GUI& pGui) {
 	if (showInrange) createTrackbar(trackbar_range, WINDOW_IA_INRANGE, &userInputThresholdRange,
 			max_value, adjustParameters, this);
 	setMouseCallback(WINDOW_IA_CONTOURS, mouseCallBackFuncContours, &analysedImg);
-
 }
 
 bool ImageAnalyser::detectObjectPosition() {
@@ -91,9 +90,13 @@ bool ImageAnalyser::detectObjectPosition(Mat& frame,
 		return detectByMoments(frame, trackedObject);
 	else
 		return detectByContours(frame, trackedObject);
-
 }
 
+/**
+* Detect trackedObject in frame and update trackedObjects position and direction.
+* It is done by finding two different collored blobs that are next to each other. From
+* these two blobs position and direction of robosheep is infered.
+*/
 bool ImageAnalyser::detectByContours(Mat &frame, TrackedObject& trackedObject) {
 
 	// store parameters for callback function
@@ -210,9 +213,7 @@ bool ImageAnalyser::detectByContours(Mat &frame, TrackedObject& trackedObject) {
 	return true;
 }
 
-/**
- *
- */
+
 vector<vector<Point> > ImageAnalyser::findCountours(Mat &frame,
 		TrackedColorBlob& colorBlob) {
 
