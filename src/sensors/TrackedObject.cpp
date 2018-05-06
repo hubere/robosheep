@@ -6,8 +6,8 @@
  */
 
 #include "TrackedObject.h"
-#include "OpenCVUtils.h"
 #include "ImageAnalyser.h"
+#include "utilities/OpenCVUtils.h"
 
 #include <stdio.h>
 #include <iostream>

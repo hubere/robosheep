@@ -12,7 +12,7 @@
 #include <opencv2/highgui/highgui.hpp>
 
 #include "TrackedColorBlob.h"
-#include "GUI.h"
+#include "presentation/GUI.h"
 
 using namespace cv;
 

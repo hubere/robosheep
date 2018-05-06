@@ -10,7 +10,7 @@
 
 #include <opencv2/core/core.hpp>
 
-#include "GUI.h"
+#include "presentation/GUI.h"
 #include "TrackedObject.h"
 #include "TrackedColorBlob.h"
 

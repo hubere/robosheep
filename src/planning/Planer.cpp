@@ -5,13 +5,13 @@
  *      Author: edi
  */
 
-#include "Planer.h"
-#include "OpenCVUtils.h"
+#include "utilities/OpenCVUtils.h"
 
 #include <opencv2/imgproc/imgproc.hpp>
 
 #include <stdio.h>
 #include <math.h>
+#include <planning/Planer.h>
 #include <iostream>
 #include <sstream>
 
@@ -30,6 +30,7 @@ void mouseCallBackPlaner(int event, int x, int y, int flags, void* userdata);
 int numberPositions = 10;
 
 Planer::Planer(TrackedObject &pTrackedObject) :
+		gui(NULL),
 		aim(0, 0),
 		proximity(5),
 		trackedObject(pTrackedObject),

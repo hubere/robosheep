@@ -12,9 +12,9 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-#include "GUI.h"
-#include "Garden.h"
-#include "OpenCVUtils.h"
+#include "presentation/GUI.h"
+#include "planning/Garden.h"
+#include "utilities/OpenCVUtils.h"
 
 using namespace std;
 using namespace cv;

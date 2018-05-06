@@ -12,8 +12,8 @@
 
 #include "opencv2/core/core.hpp"
 
-#include "GUI.h"
-#include "TrackedObject.h"
+#include "presentation/GUI.h"
+#include "sensors/TrackedObject.h"
 
 
 using namespace cv;

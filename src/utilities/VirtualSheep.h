@@ -8,7 +8,7 @@
 #ifndef VIRTUALSHEEP_H_
 #define VIRTUALSHEEP_H_
 
-#include "GUI.h"
+#include "presentation/GUI.h"
 
 #include <opencv2/core/core.hpp>
 
