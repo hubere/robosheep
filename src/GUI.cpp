@@ -46,22 +46,13 @@ void GUI::showImage(const String& winname, Mat& mat)
 
 void GUI::showWindow(int id)
 {
-	if (id >= windowNames.size()) return;
+	if (id >= int(windowNames.size())) return;
 
 	refreshDisplay();
 
-	if (id == 0)
-	{
-		for (auto &windowName : windowNames) // access by reference to avoid copying
-		{
-//			namedWindow(windowNames[id], WINDOW_AUTOSIZE);
-		}
-	}
-	else
-	{
-		moveWindow(windowNames[id], 600, 0);
-		printInfo(15, "Showing " + windowNames[id]);
-	}
+	moveWindow(windowNames[id], 600, 0);
+	printInfo(15, "Showing " + windowNames[id]);
+
 	windowShown = id;
 }
 

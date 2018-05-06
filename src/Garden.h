@@ -33,7 +33,7 @@ class Garden {
 	vector<Point> greenContour;
 	vector<Point> route;
 	Mat gardenImage;
-	int nextRoutePointIdx;
+	size_t nextRoutePointIdx;
 
 public:
 	Garden(int gardenIdx);

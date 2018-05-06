@@ -21,7 +21,7 @@ namespace robosheep {
 class GUI {
 	int nextWindowX, nextWindowY;
 	vector<string> windowNames;
-	int windowShown = 0; // 0 is all windows
+	int windowShown; // 0 is all windows
 	vector<string> infos;
 	Mat infoImage;
 

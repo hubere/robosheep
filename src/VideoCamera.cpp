@@ -28,7 +28,6 @@ namespace robosheep {
 // ----------------------------------------------
 
 static const string WINDOW_VIDEO = "Camera";
-static int skipFrames = 10;
 static int framesTaken = 0;
 
 void mouseCallBackVideo(int event, int x, int y, int flags, void* userdata);
@@ -40,6 +39,9 @@ Mat curlImg(const char *img_url, int timeout = 10);
 // ----------------------------------------------
 
 VideoCamera::VideoCamera() {
+	gui = NULL;
+	writer = NULL;
+	fpms = 0;
 	stopwatch.reset();
 }
 
@@ -306,7 +308,7 @@ cv::Mat curlImg(const char *img_url, int timeout)
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data); // pass the writefunction
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &stream); // pass the stream ptr to the writefunction
 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout); // timeout if curl_easy hangs, 
-	CURLcode res = curl_easy_perform(curl); // start curl
+	// CURLcode res = curl_easy_perform(curl); // start curl
 	curl_easy_cleanup(curl); // cleanup
 	return imdecode(stream, -1); // 'keep-as-is'
 }

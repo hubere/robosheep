@@ -13,6 +13,7 @@
 #include <opencv2/imgproc.hpp>
 
 using namespace cv;
+using namespace std;
 
 namespace robosheep {
 
@@ -112,9 +113,9 @@ void VirtualSheep::draw(Mat &frame) {
 	Mat newFame;
 	frame.copyTo(newFame);
 	char buffer[100];
-	sprintf_s(buffer, "Use 'w','y','a','s','+','-' to control sheep");
+	sprintf(buffer, "Use 'w','y','a','s','+','-' to control sheep");
 	putText(newFame, buffer, Point(40,50), FONT_HERSHEY_COMPLEX_SMALL, 1, Scalar::all(255), 1, 8);
-	sprintf_s(buffer, "(%.0f,%.0f): v=%d, d=%d\n", pos.x, pos.y, velocity, dir);
+	sprintf(buffer, "(%.0f,%.0f): v=%d, d=%d\n", pos.x, pos.y, velocity, dir);
 	putText(newFame, buffer, Point(40,100), FONT_HERSHEY_COMPLEX_SMALL, 1, Scalar::all(255), 1, 8);
 
 	imshow(WINDOW_VIRTUAL_SHEEP, newFame);
