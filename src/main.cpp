@@ -34,15 +34,15 @@
 #include <opencv2/features2d/features2d.hpp>
 #include <opencv2/video/tracking.hpp>
 
-#include "OpenCVUtils.h"
-#include "ImageAnalyser.h"
-#include "VideoCamera.h"
-#include "Garden.h"
-#include "GUI.h"
-#include "VirtualSheep.h"
-#include "Planer.h"
-#include "HTTPClient.h"
-#include "Stopwatch.h"
+#include "presentation/GUI.h"
+#include "utilities/OpenCVUtils.h"
+#include "utilities/Stopwatch.h"
+#include "utilities/VirtualSheep.h"
+#include "sensors/VideoCamera.h"
+#include "sensors/ImageAnalyser.h"
+#include "planning/Garden.h"
+#include "planning/Planer.h"
+#include "actuators/HTTPClient.h"
 
 
 using namespace std;

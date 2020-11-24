@@ -5,11 +5,11 @@
  *      Author: Edwin Huber
  */
 
-#ifndef SRC_VIDEOCAMERA_H_
-#define SRC_VIDEOCAMERA_H_
+#ifndef SRC_SENSORS_VIDEOCAMERA_H_
+#define SRC_SENSORS_VIDEOCAMERA_H_
 
-#include "GUI.h"
-#include "Stopwatch.h"
+#include "presentation/GUI.h"
+#include "utilities/Stopwatch.h"
 
 using namespace cv;
 
@@ -44,4 +44,4 @@ private:
 
 }  // namespace robosheep
 
-#endif /* SRC_VIDEOCAMERA_H_ */
+#endif /* SRC_SENSORS_VIDEOCAMERA_H_ */

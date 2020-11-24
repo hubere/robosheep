@@ -5,8 +5,7 @@
  *      Author: ubuntu
  */
 
-#include "Garden.h"
-
+#include <planning/Garden.h>
 #include <stdio.h>
 
 namespace robosheep {

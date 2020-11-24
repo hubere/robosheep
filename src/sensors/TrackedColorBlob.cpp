@@ -7,7 +7,7 @@
 
 #include "TrackedColorBlob.h"
 
-#include "OpenCVUtils.h"
+#include "utilities/OpenCVUtils.h"
 #include <stdio.h>
 #include <iostream>
 #include <sstream>

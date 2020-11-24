@@ -5,9 +5,9 @@
  *      Author: Edwin Huber
  */
 
-#include "curl/curl.h" // has to go before opencv headers!!
-
 #include "VideoCamera.h"
+
+#include "curl/curl.h" // has to go before opencv headers!!
 
 #include <stdio.h>
 #include <iostream>
@@ -15,8 +15,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
-#include "OpenCVUtils.h"
-#include "GUI.h"
+#include "utilities/OpenCVUtils.h"
 
 using namespace std;
 using namespace cv;
