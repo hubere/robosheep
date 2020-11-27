@@ -27,7 +27,9 @@
 
 #include "DualMC33926MotorShield.h"
 #include "HTML.h"
-#include <ESP8266WiFi.h>
+#include "ESP8266WiFi.h"
+#include "ESP8266WebServer.h"
+#include "ArduinoJson.h"
 
 //
 // programm behavior
@@ -77,8 +79,10 @@ int desiredSpeedM2 = 0;    // desired speed of motor 2 (PWM)
 int cmdSpeed = 0;   // desired speed 
 int cmdDir = 0;     // desired dir
 
-WiFiServer server(80);
+
 DualMC33926MotorShield md;
+ESP8266WebServer server(80);
+
 
 
 void setup()
@@ -104,6 +108,10 @@ void setup()
 
   Serial.println("\nStarting Webserver");
   server.begin();
+  server.on("/", handleRootPath);
+  server.on("/motor", handleMotor);
+  server.on("/sheep/state", handleSheepState);
+  server.on("/sheep/move", handleSheepMove);  
   delay(10);
 
   //
@@ -132,8 +140,57 @@ void setup()
   lastMillis = millis();
 }
 
+
+
+void handleRootPath() {
+   server.send(200, "text/plain", "Hello world"); 
+}
+
+void handleSheepState() {
+  StaticJsonDocument<200> doc;
+  doc["speedM1"] = speedM1; 
+  doc["speedM2"] = speedM2; 
+  serializeJson(doc, server);      
+  // server.send(200, "text/json", response); 
+}
+
+void handleSheepMove() {
+  String message;
+  if (server.arg("speed")== "" || server.arg("dir")== "" ){     //Parameter not found
+    message = "Speed or dir Argument not found";
+  }else{     //Parameter found
+    message = "Speed = ";
+    message += server.arg("speed");     //Gets the value of the query parameter
+    message += "dir = ";
+    message += server.arg("dir");     //Gets the value of the query parameter
+  }  
+  server.send(200, "text/plain", message); 
+}
+
+void handleMotor() {
+  String message;
+  if (server.arg("m1")== "" || server.arg("m2")== "" ){     //Parameter not found
+    message = "m1 or m2 Argument not found";
+  }else{     //Parameter found
+    message = "m1 = ";
+    message += server.arg("m1");     
+    message += "m2 = ";
+    message += server.arg("m2");    
+  }  
+  server.send(200, "text/plain", message); 
+}
+
+
 void loop()
 {
+
+  server.handleClient();
+  
+}
+
+void loop2()
+{
+/*  
   unsigned long currentMillis = millis();
 
   // make every loop take LOOP_DELAY ms
@@ -211,6 +268,7 @@ void loop()
   // when the function returns and 'client' object is detroyed
   
   lastMillis = millis();
+*/  
 }
 
 /*
@@ -294,5 +352,3 @@ boolean connectWIFI(const char* ssid, const char* passwd)
  
   return false;
 }
-
-
