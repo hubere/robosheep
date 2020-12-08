@@ -1,0 +1,352 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>Robosheep</title>
+    <meta charset="utf-8"/>
+    <!-- <meta http-equiv="refresh" content="5">-->
+    <style>
+        #motor_speed_bars {
+            width: 200px;
+            padding: 10px;
+            background-color: grey;
+        }
+
+        #speedBar {
+            color: green;
+        }
+
+        progress::-webkit-progress-value {
+            background: lightblue;
+        }
+
+        progress::-moz-progress-bar {
+            background: lightblue;
+        }
+
+        progress::-webkit-progress-value {
+            background: red;
+        }
+
+        progress::-webkit-progress-bar {
+            background: blue;
+        }
+    </style>
+</head>
+<body>
+
+
+<h1>Motordriver</h1>
+
+<p><strong>Tip:</strong> Try to click different places in the box to speed up motors.<br>
+    Center means 0,0 i.e. stop. Click towards top runs forward, a click towards bottom runs backward.
+    Once the mouse moves out of the box, motors come to a still.
+</p>
+
+<h2>Robosheep Status</h2>
+<p>
+    Connected to WIFI
+</p>
+
+<div id="motor_speed_bars">
+    <progress id="speedBar" value="70" max="200"><span>0</span>%</progress>
+    <p></p>
+    <progress id="motorBar1" value="70" max="200"><span>0</span>%</progress>
+    <progress id="motorBar2" value="10" max="200"><span>0</span>%</progress>
+</div>
+
+
+<h2>Control</h2>
+<p>
+    <label for="enableMotor">Enable Motor: </label><input type="checkbox" id="enableMotor">
+</p>
+
+
+<div onclick="setMousePosition(event)" onmousemove="speedMotors(event)" onmouseout="stop()"></div>
+
+
+<TABLE>
+    <TR>
+        <TD></TD>
+        <TD>
+            <button onclick="forward()">forward</button>
+        </TD>
+        <TD></TD>
+    </TR>
+    <TR>
+        <TD>
+            <button onclick="left()">left</button>
+        </TD>
+        <TD>
+            <button onclick="stop()">stop</button>
+        </TD>
+        <TD>
+            <button onclick="right()">right</button>
+        </TD>
+    </TR>
+    <TR>
+        <TD></TD>
+        <TD>
+            <button onclick="backward()">backward</button>
+        </TD>
+        <TD></TD>
+    </TR>
+    <TR>
+        <TD>
+            <button onclick="speed1()">speed1</button>
+        </TD>
+        <TD>
+            <button onclick="speed2()">speed2</button>
+        </TD>
+        <TD>
+            <button onclick="speed3()">speed3</button>
+        </TD>
+    </TR>
+
+</TABLE>
+
+
+<p id="demo"></p>
+
+
+<div id="joystick"
+     style="position:relative; height:400px; width:400px; border: 1px solid black;">
+    <img src="https://en.js.cx/clipart/ball.svg" id="ball"
+         style="position:absolute;
+         top:180px; left:180px; width:40px; height:40px;"/>
+</div>
+
+
+<script>
+
+    //
+    // global vars
+    //
+    const ip = location.host
+    const url_sheep_state = "http://" + ip + "/sheep/state";
+    const url_sheep_move = "http://" + ip + "/sheep/move";
+    const url_motor = "http://" + ip + "/motor";
+    var speed = 0;
+
+    //
+    // motor bars
+    //
+    const motor_speed_bars = document.getElementById("motor_speed_bars")
+    const speedBar = document.getElementById('speedBar');
+    const motorBar1 = document.getElementById('motorBar1');
+    const motorBar2 = document.getElementById('motorBar2');
+
+    motor_speed_bars.addEventListener("wheel", motor_speed_bars_wheel);
+    /*
+    motor_speed_bars.addEventListener('contextmenu', function (ev) {
+        ev.preventDefault();
+        console.log('right mouse');
+        return false;
+    }, false);
+     */
+
+    motor_speed_bars.onmousedown = function (event) {
+        console.log("onmousedown: " + event.button)
+    }
+
+    function motor_speed_bars_wheel(event) {
+        const delta = Math.sign(event.deltaY);
+        speed = speed - delta * 10
+        console.info(speed);
+        speedBar.value = 100 + speed
+    }
+
+    /*
+    Update progress bars that indicate motor speed.
+    Values are between -100 and 100.
+     */
+    function updateMotorBars(m1, m2) {
+        if (m1 < -100 || m1 > 100 || m2 < -100 || m2 > 100){
+            console.error("Called updateMotorBars("+m1+","+m2+") with invalid values.")
+            return
+        }
+        motorBar1.value = 100 + m1;
+        motorBar1.getElementsByTagName('span')[0].textContent = m1;
+        motorBar2.value = 100 + m2;
+        motorBar2.getElementsByTagName('span')[0].textContent = m2;
+    }
+
+
+    //
+    // update sheep state
+    //
+    const intervalID = setInterval(function () {
+        const Http = new XMLHttpRequest();
+        Http.open("GET", url_sheep_state);
+        Http.responseType = 'json';
+        Http.send();
+        Http.onreadystatechange = function () {
+            if (this.readyState === 4 && this.status === 200) {
+                let sheep_state = Http.response
+                updateMotorBars(parseInt(sheep_state['m1']), parseInt(sheep_state['m2']));
+            }
+        }
+    }, 5000);
+
+
+    //
+    // ball
+    //
+    ball.onmousedown = function (event) {
+
+        let startX = ball.getBoundingClientRect().left;
+        let startY = ball.getBoundingClientRect().top;
+
+        let shiftX = event.clientX - ball.getBoundingClientRect().left;
+        let shiftY = event.clientY - ball.getBoundingClientRect().top;
+
+        ball.style.position = 'absolute';
+        ball.style.zIndex = '1000';
+        document.body.append(ball);
+
+        moveAt(event.pageX, event.pageY);
+
+        // moves the ball at (pageX, pageY) coordinates
+        // taking initial shifts into account
+        function moveAt(pageX, pageY) {
+            ball.style.left = pageX - shiftX + 'px';
+            ball.style.top = pageY - shiftY + 'px';
+            // console.log("dragged " + pageX + " - " + shiftX + " / " + pageY + " - " + shiftY);
+            let displaceX = -(pageX - startX - shiftX);
+            let displaceY = -(pageY - startY - shiftY);
+            console.log("displace " + displaceX + "/" + displaceY);
+
+            let direction = displaceY
+            url = url_sheep_move + "?speed=" + displaceX + "&dir=" + direction
+
+            const Http = new XMLHttpRequest();
+            Http.open("GET", url);
+            Http.responseType = 'json';
+            Http.send();
+            Http.onreadystatechange = function () {
+                if (this.readyState === 4 && this.status === 200) {
+                    let sheep_state = Http.response
+                    updateMotorBars(parseInt(sheep_state['m1']), parseInt(sheep_state['m2']));
+                }
+            }
+        }
+
+        function onMouseMove(event) {
+            moveAt(event.pageX, event.pageY);
+        }
+
+        // move the ball on mousemove
+        document.addEventListener('mousemove', onMouseMove);
+
+        // drop the ball, remove unneeded handlers
+        ball.onmouseup = function () {
+            document.removeEventListener('mousemove', onMouseMove);
+            ball.onmouseup = null;
+            ball.style.left = startX + 'px';
+            ball.style.top = startY + 'px';
+
+
+            const Http = new XMLHttpRequest();
+            Http.open("GET", url);
+            Http.responseType = 'json';
+            Http.send();
+            Http.onreadystatechange = function () {
+                if (this.readyState === 4 && this.status === 200) {
+                    let sheep_state = Http.response
+                    updateMotorBars(parseInt(sheep_state['m1']), parseInt(sheep_state['m2']));
+                }
+            }
+        };
+    };
+
+    ball.ondragstart = function () {
+        return false;
+    };
+
+    function speed1() {
+        speed = 25;
+    }
+
+    function speed2() {
+        speed = 50;
+    }
+
+    function speed3() {
+        speed = 100;
+    }
+
+    function stop() {
+        send(0, 0);
+    }
+
+    function forward() {
+        send(speed, speed);
+    }
+
+    function left() {
+        send(0, speed);
+    }
+
+    function right() {
+        send(speed, 0);
+    }
+
+    function backward() {
+        send(-speed, -speed);
+    }
+
+
+    var offsetX;
+    var offsetY;
+    var x;
+    var y;
+
+
+    function setMousePosition(event) {
+        console.log("setMousePosition called ");
+        x = event.clientX;
+        y = event.clientY;
+        offsetX = x;
+        offsetY = y;
+        var response = "Offest (" + x + "/" + y + ")";
+        document.getElementById('demo').innerHTML = response;
+    }
+
+    function speedMotors(event) {
+        x = event.clientX;
+        y = event.clientY;
+        var m1 = 0;
+        var m2 = 0;
+        if (offsetX != 0) {
+            var divX = offsetX - x;
+            var divY = offsetY - y;
+            m1 = divY + divX;
+            m2 = divY - divX;
+        }
+        send(m1, m2);
+    }
+
+    function stop() {
+        offsetX = 0;
+        offsetY = 0;
+        x = 0;
+        y = 0;
+        send(0, 0);
+    }
+
+    function send(m1, m2) {
+        var motorsEnabled = document.getElementById("enableMotor").checked;
+        var response = "Offest (" + offsetX + "/" + offsetY + ") m1:" + m1 + " m2:" + m2;
+        var ip = location.host;
+        console.log("send() called" + response);
+        if (motorsEnabled) {
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open("GET", "http://" + ip + "/motor?m1=" + m1 + "&m2=" + m2, false); // false for synchronous request
+            xmlHttp.send(null);
+            response = xmlHttp.responseText;
+        }
+        document.getElementById('demo').innerHTML = response;
+    }
+
+</script>
+</body>
+</html>
