@@ -10,159 +10,384 @@
  */
 
 
-const char *page1 = "\
-<!DOCTYPE HTML>\n \ 
-<html>\n \ 
-<head>\n \ 
-<meta charset=\"utf-8\"/>\n \ 
-<style>\n \ 
-div {\n \ 
-    width: 100px;\n \ 
-    height: 200px;\n \ 
-    border: 1px solid black;\n \ 
-}\n \ 
-</style>\n \ 
-</head>\n \ 
-<body>\n \ 
-\n \ 
-<h1>Motordriver</h1>\n \ 
-\n \ 
-<p><strong>Tip:</strong> Try to click different places in the box to speed up motors.<br> \n \ 
-Center means 0,0 i.e. stop. Click towards top runs forward, a click towards bottom runs backward.\n \ 
-Once the mouse moves out of the box, motors come to a still.\n \ 
-</p>\n \ 
-\n \ 
-Enable Motor: <input type=\"checkbox\" id=\"enableMotor\">\n \ 
-\n \ 
-\n \ 
-<div onclick=\"setMousePosition(event)\" onmousemove=\"speedMotors(event)\" onmouseout=\"stop()\"></div>\n \ 
-\n \ 
-\n \ 
-<TABLE BORDER=\"0\">\n \ 
-<TR>\n \ 
-<TD></TD>\n \ 
-<TD><button onclick=\"forward()\">forward</button></TD>\n \ 
-<TD></TD>\n \ 
-</TR>\n \ 
-<TR>\n \ 
-<TD><button onclick=\"left()\">left</button></TD>\n \ 
-<TD><button onclick=\"stop()\">stop</button></TD>\n \ 
-<TD><button onclick=\"right()\">right</button></TD>\n \ 
-</TR>\n \ 
-<TR>\n \ 
-<TD></TD>\n \ 
-<TD><button onclick=\"backward()\">backward</button></TD>\n \ 
-<TD></TD>\n \ 
-</TR>\n \ 
-<TR>\n \ 
-<TD><button onclick=\"speed1()\">speed1</button></TD>\n \ 
-<TD><button onclick=\"speed2()\">speed2</button></TD>\n \ 
-<TD><button onclick=\"speed3()\">speed3</button></TD>\n \ 
-</TR>\n \ 
-\n \ 
-</TABLE>\n \ 
-\n \ 
-\n \ 
-\n \ 
-<p id=\"demo\"></p>\n \ 
-\n \ 
-<script>\n \ 
-\n \ 
-var speed = 0;\n \ 
-\n \ 
-function speed1() {\n \ 
-	speed = 25;\n \ 
-}\n \ 
-\n \ 
-function speed2() {\n \ 
-	speed = 50;\n \ 
-}\n \ 
-\n \ 
-function speed3() {\n \ 
-	speed = 100;\n \ 
-}\n \ 
-\n \ 
-function stop() {\n \ 
-	send(0, 0);\n \ 
-}\n \ 
-\n \ 
-function forward() {\n \ 
-	send(speed, speed);\n \ 
-}\n \ 
-\n \ 
-function left() {\n \ 
-	send(0, speed);\n \ 
-}\n \ 
-\n \ 
-function right() {\n \ 
-	send(speed, 0);\n \ 
-}\n \ 
-\n \ 
-function backward() {\n \ 
-	send(-speed, -speed);\n \ 
-}\n \ 
-\n \ 
-\n \ 
-\n \ 
-\n \ 
-\n \ 
-\n \ 
-var offsetX ;\n \ 
-var offsetY ;\n \ 
-var x;\n \ 
-var y;\n \ 
-\n \ 
-function setMousePosition(event) {\n \ 
-	console.log(\"setMousePosition called \");\n \ 
-    x = event.clientX;\n \ 
-    y = event.clientY;\n \ 
-    offsetX = x ;\n \ 
-    offsetY = y ;\n \ 
-    var response = \"Offest (\"+x+\"/\"+y+\")\";\n \ 
-    document.getElementById('demo').innerHTML = response;\n \ 
-}\n \ 
-\n \ 
-function speedMotors(event) {\n \ 
-    x = event.clientX;\n \ 
-    y = event.clientY;\n \ 
-	var m1 = 0;\n \ 
-	var m2 = 0;\n \ 
-	if (offsetX != 0)\n \ 
-	{\n \ 
-		var divX = offsetX - x;\n \ 
-		var divY = offsetY - y;\n \ 
-		m1 = divY  + divX;\n \ 
-		m2 = divY  - divX;\n \ 
-	}\n \ 
-	send(m1,m2);\n \ 
-}\n \ 
-\n \ 
-function stop() {\n \ 
-    offsetX = 0;\n \ 
-    offsetY = 0;\n \ 
-	x = 0;\n \ 
-	y = 0;\n \ 
-	send(0,0);\n \ 
-}\n \ 
-\n \ 
-function send(m1, m2) {\n \ 
-  var motorsEnabled = document.getElementById(\"enableMotor\").checked;\n \ 
-  var response = \"Offest (\"+offsetX+\"/\"+offsetY+\") m1:\"+m1+\" m2:\"+m2;\n \ 
-  console.log(\"send() called\" + response);\n \ 
-  if (motorsEnabled)\n \ 
-  {\n \ 
-	  var xmlHttp = new XMLHttpRequest();\n \ 
-	  xmlHttp.open( \"GET\", \"http://192.168.0.112/motor?m1=\"+m1+\"&m2=\"+m2, false ); \n \ 
-	  xmlHttp.send( null );\n \ 
-	  response = xmlHttp.responseText;\n \ 
-  }\n \ 
-  document.getElementById('demo').innerHTML = response;\n \ 
-}\n \ 
-\n \ 
-</script>\n \ 
-</body>\n \ 
-</html>\n \ 
-";
+const char *page1 = ""
+"  <!DOCTYPE HTML>\n"
+"  <html lang=\"en\">\n"
+"  <head>\n"
+"      <title>Robosheep</title>\n"
+"      <meta charset=\"utf-8\"/>\n"
+"    <!-- <meta http-equiv=\"refresh\" content=\"5\">-->\n"
+"    <style>\n"
+"        #motor_speed_bars {\n"
+"            width: 200px;\n"
+"            padding: 10px;\n"
+"            background-color: grey;\n"
+"        }\n"
+"\n"
+"        #speedBar {\n"
+"            color: green;\n"
+"        }\n"
+"\n"
+"        progress::-webkit-progress-value {\n"
+"            background: lightblue;\n"
+"        }\n"
+"\n"
+"        progress::-moz-progress-bar {\n"
+"            background: lightblue;\n"
+"        }\n"
+"\n"
+"        progress::-webkit-progress-value {\n"
+"            background: red;\n"
+"        }\n"
+"\n"
+"        progress::-webkit-progress-bar {\n"
+"            background: blue;\n"
+"        }\n"
+"\n"
+"        #joystick {\n"
+"            width: 200px;\n"
+"            height: 200px;\n"
+"            -webkit-border-radius: 100px;\n"
+"            -moz-border-radius: 100px;\n"
+"            border-radius: 100px;\n"
+"            background: green;\n"
+"        }\n"
+"    </style>\n"
+"</head>\n"
+"<body>\n"
+"\n"
+"\n"
+"<h1>Motordriver (Ver. 0.8)</h1>\n"
+"\n"
+"<p><strong>Tip:</strong> Try to click different places in the box to speed up motors.<br>\n"
+"    Center means 0,0 i.e. stop. Click towards top runs forward, a click towards bottom runs backward.\n"
+"    Once the mouse moves out of the box, motors come to a still.\n"
+"</p>\n"
+"\n"
+"<h2>Robosheep Status</h2>\n"
+"<p>\n"
+"    Connected to WIFI\n"
+"</p>\n"
+"\n"
+"<div id=\"motor_speed_bars\">\n"
+"    <progress id=\"speedBar\" value=\"70\" max=\"200\"><span>0</span>%</progress>\n"
+"    <p></p>\n"
+"    <progress id=\"motorBar1\" value=\"70\" max=\"200\"><span>0</span>%</progress>\n"
+"    <progress id=\"motorBar2\" value=\"10\" max=\"200\"><span>0</span>%</progress>\n"
+"</div>\n"
+"\n"
+"\n"
+"<h2>Control</h2>\n"
+"<p>\n"
+"    <label for=\"enableMotor\">Enable Motor: </label><input type=\"checkbox\" id=\"enableMotor\">\n"
+"</p>\n"
+"\n"
+"\n"
+"<div onclick=\"setMousePosition(event)\" onmousemove=\"speedMotors(event)\" onmouseout=\"stop()\"></div>\n"
+"\n"
+"\n"
+"<TABLE>\n"
+"    <TR>\n"
+"        <TD></TD>\n"
+"        <TD>\n"
+"            <button onclick=\"forward()\">forward</button>\n"
+"        </TD>\n"
+"        <TD></TD>\n"
+"    </TR>\n"
+"    <TR>\n"
+"        <TD>\n"
+"            <button onclick=\"left()\">left</button>\n"
+"        </TD>\n"
+"        <TD>\n"
+"            <button onclick=\"stop()\">stop</button>\n"
+"        </TD>\n"
+"        <TD>\n"
+"            <button onclick=\"right()\">right</button>\n"
+"        </TD>\n"
+"    </TR>\n"
+"    <TR>\n"
+"        <TD></TD>\n"
+"        <TD>\n"
+"            <button onclick=\"backward()\">backward</button>\n"
+"        </TD>\n"
+"        <TD></TD>\n"
+"    </TR>\n"
+"    <TR>\n"
+"        <TD>\n"
+"            <button onclick=\"speed1()\">speed1</button>\n"
+"        </TD>\n"
+"        <TD>\n"
+"            <button onclick=\"speed2()\">speed2</button>\n"
+"        </TD>\n"
+"        <TD>\n"
+"            <button onclick=\"speed3()\">speed3</button>\n"
+"        </TD>\n"
+"    </TR>\n"
+"\n"
+"</TABLE>\n"
+"\n"
+"\n"
+"<p id=\"demo\"></p>\n"
+"\n"
+"\n"
+"<div id=\"joystick\"\n"
+"     style=\"position:relative; height:200px; width:200px; border: 1px solid black;\">\n"
+"    <img src=\"https://en.js.cx/clipart/ball.svg\" id=\"ball\"\n"
+"         style=\"position:absolute;\n"
+"         top:80px; left:80px; width:40px; height:40px;\"/>\n"
+"</div>\n"
+"\n"
+"\n"
+"<script>\n"
+"\n"
+"    //\n"
+"    // global vars\n"
+"    //\n"
+"    const ip = location.host\n"
+"    const url_sheep_state = \"http://\" + ip + \"/sheep/state\";\n"
+"    const url_sheep_move = \"http://\" + ip + \"/sheep/move\";\n"
+"    const url_motor = \"http://\" + ip + \"/motor\";\n"
+"    var speed = 0;\n"
+"\n"
+"    //\n"
+"    // motor bars\n"
+"    //\n"
+"    const motor_speed_bars = document.getElementById(\"motor_speed_bars\")\n"
+"    const speedBar = document.getElementById('speedBar');\n"
+"    const motorBar1 = document.getElementById('motorBar1');\n"
+"    const motorBar2 = document.getElementById('motorBar2');\n"
+"\n"
+"    motor_speed_bars.addEventListener(\"wheel\", motor_speed_bars_wheel);\n"
+"    /*\n"
+"    motor_speed_bars.addEventListener('contextmenu', function (ev) {\n"
+"        ev.preventDefault();\n"
+"        console.log('right mouse');\n"
+"        return false;\n"
+"    }, false);\n"
+"     */\n"
+"\n"
+"    motor_speed_bars.onmousedown = function (event) {\n"
+"        console.log(\"onmousedown: \" + event.button)\n"
+"    }\n"
+"\n"
+"    function motor_speed_bars_wheel(event) {\n"
+"        const delta = Math.sign(event.deltaY);\n"
+"        speed = speed - delta * 10\n"
+"        console.info(speed);\n"
+"        speedBar.value = 100 + speed\n"
+"    }\n"
+"\n"
+"    /*\n"
+"    Update progress bars that indicate motor speed.\n"
+"    Values are between -100 and 100.\n"
+"     */\n"
+"    function updateMotorBars(m1, m2) {\n"
+"        if (m1 < -100 || m1 > 100 || m2 < -100 || m2 > 100) {\n"
+"            console.error(\"Called updateMotorBars(\" + m1 + \",\" + m2 + \") with invalid values.\")\n"
+"            return\n"
+"        }\n"
+"        motorBar1.value = 100 + m1;\n"
+"        motorBar1.getElementsByTagName('span')[0].textContent = m1;\n"
+"        motorBar2.value = 100 + m2;\n"
+"        motorBar2.getElementsByTagName('span')[0].textContent = m2;\n"
+"    }\n"
+"\n"
+"\n"
+"    //\n"
+"    // update sheep state\n"
+"    //\n"
+"    const intervalID = setInterval(function () {\n"
+"        const Http = new XMLHttpRequest();\n"
+"        Http.open(\"GET\", url_sheep_state);\n"
+"        Http.responseType = 'json';\n"
+"        Http.send();\n"
+"        Http.onreadystatechange = function () {\n"
+"            if (this.readyState === 4 && this.status === 200) {\n"
+"                let sheep_state = Http.response\n"
+"                updateMotorBars(parseInt(sheep_state['m1']), parseInt(sheep_state['m2']));\n"
+"            }\n"
+"        }\n"
+"    }, 5000);\n"
+"\n"
+"\n"
+"    //\n"
+"    // ball\n"
+"    //\n"
+"    ball.onmousedown = function (event) {\n"
+"\n"
+"        let startX = ball.getBoundingClientRect().left;\n"
+"        let startY = ball.getBoundingClientRect().top;\n"
+"\n"
+"        let shiftX = event.clientX - ball.getBoundingClientRect().left;\n"
+"        let shiftY = event.clientY - ball.getBoundingClientRect().top;\n"
+"\n"
+"        ball.style.position = 'absolute';\n"
+"        ball.style.zIndex = '1000';\n"
+"        document.body.append(ball);\n"
+"\n"
+"        moveAt(event.pageX, event.pageY);\n"
+"\n"
+"        // moves the ball at (pageX, pageY) coordinates\n"
+"        // taking initial shifts into account\n"
+"        function moveAt(pageX, pageY) {\n"
+"\n"
+"            //\n"
+"            // move ball image\n"
+"            //\n"
+"            ball.style.left = pageX - shiftX + 'px';\n"
+"            ball.style.top = pageY - shiftY + 'px';\n"
+"\n"
+"            // calc displacement\n"
+"            let displaceX = -(pageX - startX - shiftX);\n"
+"            let displaceY = -(pageY - startY - shiftY);\n"
+"            console.log(\"displace \" + displaceX + \"/\" + displaceY);\n"
+"\n"
+"            let direction = displaceX;\n"
+"            let speed = displaceY;\n"
+"\n"
+"            let sum = direction + speed\n"
+"            let diff = direction - speed\n"
+"\n"
+"            if (Math.abs(sum) > 100 || Math.abs(diff) > 100) {\n"
+"                console.log(\"motor speeds to high\")\n"
+"                return\n"
+"            }\n"
+"\n"
+"            // call server\n"
+"            let url = url_sheep_move + \"?speed=\" + speed + \"&dir=\" + direction\n"
+"            const Http = new XMLHttpRequest();\n"
+"            Http.open(\"GET\", url);\n"
+"            Http.responseType = 'json';\n"
+"            Http.send();\n"
+"            Http.onreadystatechange = function () {\n"
+"                if (this.readyState === 4 && this.status === 200) {\n"
+"                    let sheep_state = Http.response\n"
+"                    updateMotorBars(parseInt(sheep_state['m1']), parseInt(sheep_state['m2']));\n"
+"                }\n"
+"            }\n"
+"        }\n"
+"\n"
+"        function onMouseMove(event) {\n"
+"            moveAt(event.pageX, event.pageY);\n"
+"        }\n"
+"\n"
+"        // move the ball on mousemove\n"
+"        document.addEventListener('mousemove', onMouseMove);\n"
+"\n"
+"        // drop the ball, remove unneeded handlers\n"
+"        ball.onmouseup = function () {\n"
+"            document.removeEventListener('mousemove', onMouseMove);\n"
+"            ball.onmouseup = null;\n"
+"            ball.style.left = startX + 'px';\n"
+"            ball.style.top = startY + 'px';\n"
+"\n"
+"\n"
+"            const Http = new XMLHttpRequest();\n"
+"            let url = url_sheep_move + \"?speed=\" + 0 + \"&dir=\" + 0\n"
+"            Http.open(\"GET\", url);\n"
+"            Http.responseType = 'json';\n"
+"            Http.send();\n"
+"            Http.onreadystatechange = function () {\n"
+"                if (this.readyState === 4 && this.status === 200) {\n"
+"                    let sheep_state = Http.response\n"
+"                    updateMotorBars(parseInt(sheep_state['m1']), parseInt(sheep_state['m2']));\n"
+"                }\n"
+"            }\n"
+"        };\n"
+"    };\n"
+"\n"
+"    ball.ondragstart = function () {\n"
+"        return false;\n"
+"    };\n"
+"\n"
+"    function speed1() {\n"
+"        speed = 25;\n"
+"    }\n"
+"\n"
+"    function speed2() {\n"
+"        speed = 50;\n"
+"    }\n"
+"\n"
+"    function speed3() {\n"
+"        speed = 100;\n"
+"    }\n"
+"\n"
+"    function stop() {\n"
+"        send(0, 0);\n"
+"    }\n"
+"\n"
+"    function forward() {\n"
+"        send(speed, speed);\n"
+"    }\n"
+"\n"
+"    function left() {\n"
+"        send(0, speed);\n"
+"    }\n"
+"\n"
+"    function right() {\n"
+"        send(speed, 0);\n"
+"    }\n"
+"\n"
+"    function backward() {\n"
+"        send(-speed, -speed);\n"
+"    }\n"
+"\n"
+"\n"
+"    var offsetX;\n"
+"    var offsetY;\n"
+"    var x;\n"
+"    var y;\n"
+"\n"
+"\n"
+"    function setMousePosition(event) {\n"
+"        console.log(\"setMousePosition called \");\n"
+"        x = event.clientX;\n"
+"        y = event.clientY;\n"
+"        offsetX = x;\n"
+"        offsetY = y;\n"
+"        var response = \"Offest (\" + x + \"/\" + y + \")\";\n"
+"        document.getElementById('demo').innerHTML = response;\n"
+"    }\n"
+"\n"
+"    function speedMotors(event) {\n"
+"        x = event.clientX;\n"
+"        y = event.clientY;\n"
+"        var m1 = 0;\n"
+"        var m2 = 0;\n"
+"        if (offsetX != 0) {\n"
+"            var divX = offsetX - x;\n"
+"            var divY = offsetY - y;\n"
+"            m1 = divY + divX;\n"
+"            m2 = divY - divX;\n"
+"        }\n"
+"        send(m1, m2);\n"
+"    }\n"
+"\n"
+"    function stop() {\n"
+"        offsetX = 0;\n"
+"        offsetY = 0;\n"
+"        x = 0;\n"
+"        y = 0;\n"
+"        send(0, 0);\n"
+"    }\n"
+"\n"
+"    function send(m1, m2) {\n"
+"        var motorsEnabled = document.getElementById(\"enableMotor\").checked;\n"
+"        var response = \"Offest (\" + offsetX + \"/\" + offsetY + \") m1:\" + m1 + \" m2:\" + m2;\n"
+"        var ip = location.host;\n"
+"        console.log(\"send() called\" + response);\n"
+"        if (motorsEnabled) {\n"
+"            var xmlHttp = new XMLHttpRequest();\n"
+"            xmlHttp.open(\"GET\", \"http://\" + ip + \"/motor?m1=\" + m1 + \"&m2=\" + m2, false); // false for synchronous request\n"
+"            xmlHttp.send(null);\n"
+"            response = xmlHttp.responseText;\n"
+"        }\n"
+"        document.getElementById('demo').innerHTML = response;\n"
+"    }\n"
+"\n"
+"</script>\n"
+"</body>\n"
+"</html>";
 
 
 #endif
