@@ -44,84 +44,82 @@
 <body>
 
 
-<h1>Motordriver (Ver. 0.8)</h1>
+<h1>Motordriver (Ver. 0.9)</h1>
 
-<p><strong>Tip:</strong> Try to click different places in the box to speed up motors.<br>
-    Center means 0,0 i.e. stop. Click towards top runs forward, a click towards bottom runs backward.
-    Once the mouse moves out of the box, motors come to a still.
-</p>
+<div style="width: 100%; overflow: hidden; ">
 
-<h2>Robosheep Status</h2>
-<p>
-    Connected to WIFI
-</p>
+        <div style="width: 300px; float: left; margin-left: auto; margin-right: auto;">
+            <h2>Robosheep Status</h2>
+            <div id="motor_speed_bars">
+                <progress id="speedBar" value="70" max="200"><span>0</span>%</progress>
+                <p></p>
+                <progress id="motorBar1" value="70" max="200"><span>0</span>%</progress>
+                <progress id="motorBar2" value="10" max="200"><span>0</span>%</progress>
+            </div>
+            <p id="demo"></p>
+        </div>
 
-<div id="motor_speed_bars">
-    <progress id="speedBar" value="70" max="200"><span>0</span>%</progress>
-    <p></p>
-    <progress id="motorBar1" value="70" max="200"><span>0</span>%</progress>
-    <progress id="motorBar2" value="10" max="200"><span>0</span>%</progress>
-</div>
+        <div style="width: 300px; float: left; margin: auto;">
+            <h2>Joystick</h2>
 
+            <div id="joystick"
+                 style="position:relative; height:200px; width:200px; border: 1px solid black;">
+                <img src="https://en.js.cx/clipart/ball.svg" id="ball"
+                     style="position:absolute;
+                     top:80px; left:80px; width:40px; height:40px;"/>
+            </div>
 
-<h2>Control</h2>
-<p>
-    <label for="enableMotor">Enable Motor: </label><input type="checkbox" id="enableMotor">
-</p>
+        </div>
 
+        <div style="width: 300px; float: left; ">
+            <h2>Control</h2>
+            <p><label for="enableMotor">Enable Motor: </label><input type="checkbox" id="enableMotor"></p>
+            <div onclick="setMousePosition(event)" onmousemove="speedMotors(event)" onmouseout="stop()"></div>
+            <TABLE>
+                <TR>
+                    <TD></TD>
+                    <TD>
+                        <button onclick="forward()">forward</button>
+                    </TD>
+                    <TD></TD>
+                </TR>
+                <TR>
+                    <TD>
+                        <button onclick="left()">left</button>
+                    </TD>
+                    <TD>
+                        <button onclick="stop()">stop</button>
+                    </TD>
+                    <TD>
+                        <button onclick="right()">right</button>
+                    </TD>
+                </TR>
+                <TR>
+                    <TD></TD>
+                    <TD>
+                        <button onclick="backward()">backward</button>
+                    </TD>
+                    <TD></TD>
+                </TR>
+                <TR>
+                    <TD>
+                        <button onclick="speed1()">speed1</button>
+                    </TD>
+                    <TD>
+                        <button onclick="speed2()">speed2</button>
+                    </TD>
+                    <TD>
+                        <button onclick="speed3()">speed3</button>
+                    </TD>
+                </TR>
 
-<div onclick="setMousePosition(event)" onmousemove="speedMotors(event)" onmouseout="stop()"></div>
+            </TABLE>
 
+        </div>
 
-<TABLE>
-    <TR>
-        <TD></TD>
-        <TD>
-            <button onclick="forward()">forward</button>
-        </TD>
-        <TD></TD>
-    </TR>
-    <TR>
-        <TD>
-            <button onclick="left()">left</button>
-        </TD>
-        <TD>
-            <button onclick="stop()">stop</button>
-        </TD>
-        <TD>
-            <button onclick="right()">right</button>
-        </TD>
-    </TR>
-    <TR>
-        <TD></TD>
-        <TD>
-            <button onclick="backward()">backward</button>
-        </TD>
-        <TD></TD>
-    </TR>
-    <TR>
-        <TD>
-            <button onclick="speed1()">speed1</button>
-        </TD>
-        <TD>
-            <button onclick="speed2()">speed2</button>
-        </TD>
-        <TD>
-            <button onclick="speed3()">speed3</button>
-        </TD>
-    </TR>
-
-</TABLE>
-
-
-<p id="demo"></p>
-
-
-<div id="joystick"
-     style="position:relative; height:200px; width:200px; border: 1px solid black;">
-    <img src="https://en.js.cx/clipart/ball.svg" id="ball"
-         style="position:absolute;
-         top:80px; left:80px; width:40px; height:40px;"/>
+        <div style="display: table-cell; border: 1px solid black;">
+        </div>
+    </div>
 </div>
 
 
@@ -143,6 +141,10 @@
     const speedBar = document.getElementById('speedBar');
     const motorBar1 = document.getElementById('motorBar1');
     const motorBar2 = document.getElementById('motorBar2');
+
+    const startX = ball.getBoundingClientRect().left;
+    const startY = ball.getBoundingClientRect().top;
+
 
     motor_speed_bars.addEventListener("wheel", motor_speed_bars_wheel);
     /*
@@ -197,13 +199,40 @@
     }, 5000);
 
 
+    /*
+     * send command to sheep
+     */
+    function sendCommand(displaceX, displaceY) {
+        let direction = displaceX;
+        let speed = displaceY;
+
+        let sum = direction + speed
+        let diff = direction - speed
+
+        if (Math.abs(sum) > 100 || Math.abs(diff) > 100) {
+            console.log("motor speeds to high")
+            return
+        }
+
+        // call server
+        let url = url_sheep_move + "?speed=" + speed + "&dir=" + direction
+        const Http = new XMLHttpRequest();
+        Http.open("GET", url);
+        Http.responseType = 'json';
+        Http.send();
+        Http.onreadystatechange = function () {
+            if (this.readyState === 4 && this.status === 200) {
+                let sheep_state = Http.response
+                updateMotorBars(parseInt(sheep_state['m1']), parseInt(sheep_state['m2']));
+            }
+        }
+    }
+
+
     //
     // ball
     //
     ball.onmousedown = function (event) {
-
-        let startX = ball.getBoundingClientRect().left;
-        let startY = ball.getBoundingClientRect().top;
 
         let shiftX = event.clientX - ball.getBoundingClientRect().left;
         let shiftY = event.clientY - ball.getBoundingClientRect().top;
@@ -229,29 +258,7 @@
             let displaceY = -(pageY - startY - shiftY);
             console.log("displace " + displaceX + "/" + displaceY);
 
-            let direction = displaceX;
-            let speed = displaceY;
-
-            let sum = direction + speed
-            let diff = direction - speed
-
-            if (Math.abs(sum) > 100 || Math.abs(diff) > 100) {
-                console.log("motor speeds to high")
-                return
-            }
-
-            // call server
-            let url = url_sheep_move + "?speed=" + speed + "&dir=" + direction
-            const Http = new XMLHttpRequest();
-            Http.open("GET", url);
-            Http.responseType = 'json';
-            Http.send();
-            Http.onreadystatechange = function () {
-                if (this.readyState === 4 && this.status === 200) {
-                    let sheep_state = Http.response
-                    updateMotorBars(parseInt(sheep_state['m1']), parseInt(sheep_state['m2']));
-                }
-            }
+            sendCommand(displaceX, displaceY)
         }
 
         function onMouseMove(event) {
@@ -281,7 +288,24 @@
                 }
             }
         };
+
     };
+
+    ball.addEventListener('touchmove', function (e) {
+        // grab the location of touch
+        var touchLocation = e.targetTouches[0];
+
+        // assign box new coordinates based on the touch.
+        ball.style.left = touchLocation.pageX + 'px';
+        ball.style.top = touchLocation.pageY + 'px';
+
+        // calc displacement
+        let displaceX = -Math.trunc((startX - touchLocation.pageX));
+        let displaceY = -Math.trunc((startY - touchLocation.pageY));
+        console.log("Touch displace " + displaceX + "/" + displaceY);
+
+        sendCommand(displaceX, displaceY)
+    })
 
     ball.ondragstart = function () {
         return false;
