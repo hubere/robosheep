@@ -6,13 +6,18 @@
     <!-- <meta http-equiv="refresh" content="5">-->
     <style>
         #motor_speed_bars {
-            width: 200px;
+            width: 600px;
             padding: 10px;
             background-color: grey;
         }
 
         #speedBar {
             color: green;
+        }
+
+        progress[value] {
+            width: 600px;
+            height: 20px;
         }
 
         progress::-webkit-progress-value {
@@ -31,14 +36,6 @@
             background: blue;
         }
 
-        #joystick {
-            width: 200px;
-            height: 200px;
-            -webkit-border-radius: 100px;
-            -moz-border-radius: 100px;
-            border-radius: 100px;
-            background: green;
-        }
     </style>
 </head>
 <body>
@@ -46,80 +43,87 @@
 
 <h1>Motordriver (Ver. 0.9)</h1>
 
-<div style="width: 100%; overflow: hidden; ">
-
-        <div style="width: 300px; float: left; margin-left: auto; margin-right: auto;">
-            <h2>Robosheep Status</h2>
-            <div id="motor_speed_bars">
-                <progress id="speedBar" value="70" max="200"><span>0</span>%</progress>
-                <p></p>
-                <progress id="motorBar1" value="70" max="200"><span>0</span>%</progress>
-                <progress id="motorBar2" value="10" max="200"><span>0</span>%</progress>
-            </div>
-            <p id="demo"></p>
-        </div>
-
-        <div style="width: 300px; float: left; margin: auto;">
-            <h2>Joystick</h2>
-
-            <div id="joystick"
-                 style="position:relative; height:200px; width:200px; border: 1px solid black;">
-                <img src="https://en.js.cx/clipart/ball.svg" id="ball"
-                     style="position:absolute;
-                     top:80px; left:80px; width:40px; height:40px;"/>
-            </div>
-
-        </div>
-
-        <div style="width: 300px; float: left; ">
-            <h2>Control</h2>
-            <p><label for="enableMotor">Enable Motor: </label><input type="checkbox" id="enableMotor"></p>
-            <div onclick="setMousePosition(event)" onmousemove="speedMotors(event)" onmouseout="stop()"></div>
-            <TABLE>
-                <TR>
-                    <TD></TD>
-                    <TD>
-                        <button onclick="forward()">forward</button>
-                    </TD>
-                    <TD></TD>
-                </TR>
-                <TR>
-                    <TD>
-                        <button onclick="left()">left</button>
-                    </TD>
-                    <TD>
-                        <button onclick="stop()">stop</button>
-                    </TD>
-                    <TD>
-                        <button onclick="right()">right</button>
-                    </TD>
-                </TR>
-                <TR>
-                    <TD></TD>
-                    <TD>
-                        <button onclick="backward()">backward</button>
-                    </TD>
-                    <TD></TD>
-                </TR>
-                <TR>
-                    <TD>
-                        <button onclick="speed1()">speed1</button>
-                    </TD>
-                    <TD>
-                        <button onclick="speed2()">speed2</button>
-                    </TD>
-                    <TD>
-                        <button onclick="speed3()">speed3</button>
-                    </TD>
-                </TR>
-
-            </TABLE>
-
-        </div>
-
-        <div style="display: table-cell; border: 1px solid black;">
-        </div>
+<div style="margin-right: auto; margin-left: auto; width: 800px; border: 1px solid black;">
+    <h2>Robosheep Status</h2>
+    <div id="motor_speed_bars">
+        <!--
+        Speed<progress id="speedBar" value="100" max="200"><span>0</span>%</progress>
+        <p></p>
+        -->
+        M1
+        <progress id="motorBar1" value="100" max="200"><span>0</span>%</progress>
+        M2
+        <progress id="motorBar2" value="100" max="200"><span>0</span>%</progress>
     </div>
+    <p id="demo"></p>
+</div>
+
+<div style="width: 800px; margin: auto; border: 1px solid black;">
+    <h2>Joystick</h2>
+
+    <div id="joystick"
+         style="position:relative;
+            border: 1px solid black;
+            width: 600px;
+            height: 600px;
+            -webkit-border-radius: 300px;
+            -moz-border-radius: 300px;
+            border-radius: 300px;
+            background: green;">
+        <img id="ball" src="https://en.js.cx/clipart/ball.svg"
+             style="position:absolute;
+                     top:260px; left:260px; width:80px; height:80px;"/>
+    </div>
+
+</div>
+
+<div style="width: 800px; margin: auto; border: 1px solid black;">
+    <h2>Control</h2>
+    <p><label for="enableMotor">Enable Motor: </label><input type="checkbox" id="enableMotor"></p>
+    <div onclick="setMousePosition(event)" onmousemove="speedMotors(event)" onmouseout="stop()"></div>
+    <TABLE>
+        <TR>
+            <TD></TD>
+            <TD>
+                <button onclick="forward()">forward</button>
+            </TD>
+            <TD></TD>
+        </TR>
+        <TR>
+            <TD>
+                <button onclick="left()">left</button>
+            </TD>
+            <TD>
+                <button onclick="stop()">stop</button>
+            </TD>
+            <TD>
+                <button onclick="right()">right</button>
+            </TD>
+        </TR>
+        <TR>
+            <TD></TD>
+            <TD>
+                <button onclick="backward()">backward</button>
+            </TD>
+            <TD></TD>
+        </TR>
+        <TR>
+            <TD>
+                <button onclick="speed1()">speed1</button>
+            </TD>
+            <TD>
+                <button onclick="speed2()">speed2</button>
+            </TD>
+            <TD>
+                <button onclick="speed3()">speed3</button>
+            </TD>
+        </TR>
+
+    </TABLE>
+
+</div>
+
+<div style="display: table-cell; border: 1px solid black;">
 </div>
 
 
@@ -254,8 +258,8 @@
             ball.style.top = pageY - shiftY + 'px';
 
             // calc displacement
-            let displaceX = -(pageX - startX - shiftX);
-            let displaceY = -(pageY - startY - shiftY);
+            let displaceX = -Math.trunc((pageX - startX - shiftX)/3);
+            let displaceY = -Math.trunc((pageY - startY - shiftY)/3);
             console.log("displace " + displaceX + "/" + displaceY);
 
             sendCommand(displaceX, displaceY)
@@ -296,12 +300,12 @@
         var touchLocation = e.targetTouches[0];
 
         // assign box new coordinates based on the touch.
-        ball.style.left = touchLocation.pageX + 'px';
-        ball.style.top = touchLocation.pageY + 'px';
+        //ball.style.left = touchLocation.pageX + 'px';
+        // ball.style.top = touchLocation.pageY + 'px';
 
         // calc displacement
-        let displaceX = -Math.trunc((startX - touchLocation.pageX));
-        let displaceY = -Math.trunc((startY - touchLocation.pageY));
+        let displaceX = Math.trunc((startX - touchLocation.pageX)/3);
+        let displaceY = Math.trunc((startY - touchLocation.pageY)/3);
         console.log("Touch displace " + displaceX + "/" + displaceY);
 
         sendCommand(displaceX, displaceY)
