@@ -69,8 +69,7 @@ def motor():
     sheep_state = get_sheep()
     sheep_state['m1'] = request.args.get('m1')
     sheep_state['m2'] = request.args.get('m2')
-    with open(SHEEP_STATE_FILE, 'w') as outfile:
-        json.dump(sheep_state, outfile)
+    session["sheep_state"] = sheep_state
     return
 
 
@@ -86,8 +85,7 @@ def sheep_move():
     sheep_state = get_sheep()
     sheep_state['m1'] = cmdSpeed + cmdDir
     sheep_state['m2'] = cmdSpeed - cmdDir
-    with open(SHEEP_STATE_FILE, 'w') as outfile:
-        json.dump(sheep_state, outfile)
+    session["sheep_state"] = sheep_state
     return jsonify(get_sheep())
 
 

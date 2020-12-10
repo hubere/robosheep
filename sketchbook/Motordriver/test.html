@@ -54,7 +54,9 @@
         <progress id="motorBar1" value="100" max="200"><span>0</span>%</progress>
         M2
         <progress id="motorBar2" value="100" max="200"><span>0</span>%</progress>
+
     </div>
+    <p id="rssi"></p>
     <p id="demo"></p>
 </div>
 
@@ -146,6 +148,8 @@
     const motorBar1 = document.getElementById('motorBar1');
     const motorBar2 = document.getElementById('motorBar2');
 
+    const rssi = document.getElementById('rssi');
+
     const startX = ball.getBoundingClientRect().left;
     const startY = ball.getBoundingClientRect().top;
 
@@ -198,6 +202,8 @@
             if (this.readyState === 4 && this.status === 200) {
                 let sheep_state = Http.response
                 updateMotorBars(parseInt(sheep_state['m1']), parseInt(sheep_state['m2']));
+                var signalStrength  = "Signal Strength: " + sheep_state['rssi'] + " dBm";
+                document.getElementById('demo').innerHTML = signalStrength;
             }
         }
     }, 5000);
@@ -295,6 +301,30 @@
 
     };
 
+    /*
+     * see also (https://www.mediaevent.de/javascript/touch-events.html)
+     */
+    ball.ontouchmove = function(e){
+        // grab the location of touch
+        var touchLocation = e.targetTouches[0]; // erster finger
+
+        // assign box new coordinates based on the touch.
+        //ball.style.left = touchLocation.pageX + 'px';
+        //ball.style.top = touchLocation.pageY + 'px';
+
+        // calc displacement
+        let displaceX = Math.trunc((startX - touchLocation.pageX)/3);
+        let displaceY = Math.trunc((startY - touchLocation.pageY)/3);
+        console.log("Touch displace " + displaceX + "/" + displaceY);
+
+        sendCommand(displaceX, displaceY)
+    }
+
+    ball.ontouchend = function(e){
+        sendCommand(0, 0)
+    }
+
+/*
     ball.addEventListener('touchmove', function (e) {
         // grab the location of touch
         var touchLocation = e.targetTouches[0];
@@ -310,6 +340,7 @@
 
         sendCommand(displaceX, displaceY)
     })
+*/
 
     ball.ondragstart = function () {
         return false;

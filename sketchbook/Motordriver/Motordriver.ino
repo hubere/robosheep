@@ -83,15 +83,23 @@ int loopCount = 0;
 int bigLoopCount = 0;
 unsigned long endOfLastLoopInMillis = millis();
 unsigned long lastCommandTimestamp = millis();
+int led_state = 0;  // last state set for led
+
+//
+// sheep state
+//
 int speedM1 = 0;    // actual speed of motor 1 (PWM)
 int speedM2 = 0;    // actual speed of motor 2 (PWM)
 int desiredSpeedM1 = 0;    // desired speed of motor 1 (PWM)
 int desiredSpeedM2 = 0;    // desired speed of motor 2 (PWM)
 int cmdSpeed = 0;   // desired speed 
 int cmdDir = 0;     // desired dir
+long rssi = 0;  
 
-int led_state = 0;  // last state set for led
 
+//
+// global objects
+// 
 WiFiServer server(80);
 DualMC33926MotorShield md;
 
@@ -127,6 +135,8 @@ void setup()
   printUsage();
 
   endOfLastLoopInMillis = millis();  
+
+
 }
 
 /*
@@ -164,6 +174,7 @@ void loop()
     return;
     
   //
+  // ----------------------------------------------------------
   // time for big loop!
   // we get here all LOOP_DELAY ms
   //
@@ -173,6 +184,7 @@ void loop()
   loopCount=0;  // <- they are usually about 800 once we get here
   bigLoopCount++;  
   endOfLastLoopInMillis = millis();  
+  rssi = WiFi.RSSI();  
 
   //
   // indicate operation
@@ -343,6 +355,15 @@ String respondWithSheepState(){
   response += "\", ";
   response += "\"m2\":\""; 
   response += speedM2;
+  response += "\", ";
+  response += "\"desiredSpeedM1\":\""; 
+  response += desiredSpeedM1;
+  response += "\", ";
+  response += "\"desiredSpeedM2\":\""; 
+  response += desiredSpeedM2;
+  response += "\", ";
+  response += "\"rssi\":\"";
+  response += rssi;
   response += "\"";
   response += "}";
   return response; 
@@ -433,6 +454,14 @@ boolean connectWIFI(const char* ssid, const char* passwd)
     Serial.println("");
     Serial.println("WiFi connected");
     Serial.println(WiFi.localIP());
+
+  
+    // Measure Signal Strength (RSSI) of Wi-Fi connection
+    unsigned long before = millis();    
+    long rssi = WiFi.RSSI();  
+    Serial.println("RSSI: " + String(rssi) + " (" + String(millis() - before) + ")");
+    
+    
     return true;   
   }
  
