@@ -3,3 +3,8 @@ Debug/
 /Robosheep/OpenCVTest
 /Robosheep/Robosheep/out.avi
 /.settings/org.eclipse.cdt.managedbuilder.core.prefs
+/vision/build/CMakeFiles/**
+/vision/build/CMakeCache.txt
+/vision/build/Makefile
+/vision/build/RSControl
+/vision/build/cmake_install.cmake

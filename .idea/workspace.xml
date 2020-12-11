@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="b1169ea1-08b2-4f85-a2f3-bf8b0f5fc14c" name="Default Changelist" comment="Added Signal Strength">
+      <change afterPath="$PROJECT_DIR$/vision/.vscode/launch.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/.vscode/tasks.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/build/CMakeCache.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/build/CMakeFiles/3.16.3/CMakeCCompiler.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/build/CMakeFiles/3.16.3/CMakeCXXCompiler.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/build/CMakeFiles/3.16.3/CMakeDetermineCompilerABI_C.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/build/CMakeFiles/3.16.3/CMakeDetermineCompilerABI_CXX.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/build/CMakeFiles/3.16.3/CMakeSystem.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/build/CMakeFiles/3.16.3/CompilerIdC/CMakeCCompilerId.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/build/CMakeFiles/3.16.3/CompilerIdC/a.out" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/build/CMakeFiles/3.16.3/CompilerIdCXX/CMakeCXXCompilerId.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/build/CMakeFiles/3.16.3/CompilerIdCXX/a.out" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/build/CMakeFiles/CMakeDirectoryInformation.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/build/CMakeFiles/CMakeOutput.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/build/CMakeFiles/Makefile.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/build/CMakeFiles/Makefile2" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/build/CMakeFiles/RSControl.dir/CXX.includecache" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/build/CMakeFiles/RSControl.dir/DependInfo.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/build/CMakeFiles/RSControl.dir/build.make" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/build/CMakeFiles/RSControl.dir/cmake_clean.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/build/CMakeFiles/RSControl.dir/depend.internal" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/build/CMakeFiles/RSControl.dir/depend.make" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/build/CMakeFiles/RSControl.dir/flags.make" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/build/CMakeFiles/RSControl.dir/home/q464773/projects/robosheep/vision/src/main.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/build/CMakeFiles/RSControl.dir/link.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/build/CMakeFiles/RSControl.dir/progress.make" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/build/CMakeFiles/TargetDirectories.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/build/CMakeFiles/cmake.check_cache" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/build/CMakeFiles/progress.marks" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/build/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/build/Makefile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/build/RSControl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/build/cmake_install.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/helloworld/.vscode/tasks.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/helloworld/helloworld" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/helloworld/helloworld.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/CMakeCache.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/CMakeFiles/3.16.3/CMakeCCompiler.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/CMakeFiles/3.16.3/CMakeCXXCompiler.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/CMakeFiles/3.16.3/CMakeDetermineCompilerABI_C.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/CMakeFiles/3.16.3/CMakeDetermineCompilerABI_CXX.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/CMakeFiles/3.16.3/CMakeSystem.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/CMakeFiles/3.16.3/CompilerIdC/CMakeCCompilerId.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/CMakeFiles/3.16.3/CompilerIdC/a.out" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/CMakeFiles/3.16.3/CompilerIdCXX/CMakeCXXCompilerId.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/CMakeFiles/3.16.3/CompilerIdCXX/a.out" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/CMakeFiles/CMakeDirectoryInformation.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/CMakeFiles/CMakeOutput.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/CMakeFiles/DisplayImage.dir/CXX.includecache" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/CMakeFiles/DisplayImage.dir/DependInfo.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/CMakeFiles/DisplayImage.dir/DisplayImage.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/CMakeFiles/DisplayImage.dir/build.make" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/CMakeFiles/DisplayImage.dir/cmake_clean.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/CMakeFiles/DisplayImage.dir/depend.internal" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/CMakeFiles/DisplayImage.dir/depend.make" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/CMakeFiles/DisplayImage.dir/flags.make" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/CMakeFiles/DisplayImage.dir/link.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/CMakeFiles/DisplayImage.dir/progress.make" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/CMakeFiles/Makefile.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/CMakeFiles/Makefile2" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/CMakeFiles/TargetDirectories.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/CMakeFiles/cmake.check_cache" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/CMakeFiles/progress.marks" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/DisplayImage" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/DisplayImage.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/Makefile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/openCV_make_examples/simple_demo/cmake_install.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/main.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/workspace.code-workspace" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="JupyterTrust" id="c59bac62-c195-4d46-b2ea-7e6800fc6ec4" />
+  <component name="ProjectId" id="1kssk1npcqS4hlFEelNDB6FqZq2" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="restartRequiresConfirmation" value="false" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/vision/examples" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/gui/plain" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Flask server.Flask (gui/plain/app.py)">
+    <configuration name="app" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/gui/plain" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/gui/plain/app.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Flask (gui/plain/app.py)" type="Python.FlaskServer" nameIsGenerated="true">
+      <option name="flaskDebug" value="true" />
+      <module name="robosheep" />
+      <option name="target" value="$PROJECT_DIR$/gui/plain/app.py" />
+      <option name="targetType" value="PATH" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="/usr/bin/python3.8" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="launchJavascriptDebuger" value="false" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.app" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="b1169ea1-08b2-4f85-a2f3-bf8b0f5fc14c" name="Default Changelist" comment="" />
+      <created>1606500778180</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1606500778180</updated>
+      <workItem from="1606500779310" duration="4523000" />
+      <workItem from="1606838563177" duration="10818000" />
+      <workItem from="1607517073609" duration="11723000" />
+      <workItem from="1607584099542" duration="3602000" />
+      <workItem from="1607601445515" duration="1032000" />
+    </task>
+    <task id="LOCAL-00001" summary="Used WebServer and Json, but does not compile">
+      <created>1606501281915</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1606501281915</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Revert &quot;Used WebServer and Json, but does not compile&quot;&#10;&#10;This reverts commit ec2e179e">
+      <created>1606501313872</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1606501313872</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Added Signal Strength">
+      <created>1607601025777</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1607601025777</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ORDER">
+      <list>
+        <option value="0" />
+        <option value="2" />
+        <option value="3" />
+        <option value="1" />
+      </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="Used WebServer and Json, but does not compile" />
+    <MESSAGE value="Revert &quot;Used WebServer and Json, but does not compile&quot;&#10;&#10;This reverts commit ec2e179e" />
+    <MESSAGE value="Added Signal Strength" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added Signal Strength" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="774" y="391" width="1084" height="736" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1606838921426">
+      <screen x="72" y="27" width="2488" height="1413" />
+    </state>
+    <state x="774" y="391" width="1084" height="736" key="#com.intellij.execution.impl.EditConfigurationsDialog/72.27.2488.1413/2560.728.1920.1080@72.27.2488.1413" timestamp="1606838921426" />
+    <state x="1048" y="551" width="525" height="423" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1606580284896">
+      <screen x="72" y="27" width="2488" height="1413" />
+    </state>
+    <state x="1048" y="551" width="525" height="423" key="#com.intellij.ide.util.TreeClassChooserDialog/72.27.2488.1413/2560.728.1920.1080@72.27.2488.1413" timestamp="1606580284896" />
+    <state x="818" y="280" width="986" height="913" key="CommitChangelistDialog2" timestamp="1606501313822">
+      <screen x="72" y="27" width="2488" height="1413" />
+    </state>
+    <state x="818" y="280" width="986" height="913" key="CommitChangelistDialog2/72.27.2488.1413/2560.728.1920.1080@72.27.2488.1413" timestamp="1606501313822" />
+    <state x="172" y="127" width="1034" height="1213" key="DiffContextDialog" timestamp="1607008798203">
+      <screen x="72" y="27" width="2488" height="1413" />
+    </state>
+    <state x="172" y="127" width="1034" height="1213" key="DiffContextDialog/72.27.2488.1413/2560.728.1920.1080@72.27.2488.1413" timestamp="1607008798203" />
+    <state x="1099" y="517" width="424" height="491" key="FileChooserDialogImpl" timestamp="1607601441216">
+      <screen x="72" y="27" width="2488" height="1413" />
+    </state>
+    <state x="1099" y="517" width="424" height="491" key="FileChooserDialogImpl/72.27.2488.1413/2560.728.1920.1080@72.27.2488.1413" timestamp="1607601441216" />
+    <state width="1188" height="484" key="GridCell.Tab.0.bottom" timestamp="1607077559361">
+      <screen x="0" y="27" width="2560" height="1413" />
+    </state>
+    <state width="1188" height="484" key="GridCell.Tab.0.bottom/0.27.2560.1413/2560.728.1920.1080@0.27.2560.1413" timestamp="1607077559361" />
+    <state width="1188" height="484" key="GridCell.Tab.0.bottom/72.27.2488.1413/2560.728.1920.1080@72.27.2488.1413" timestamp="1607017054978" />
+    <state width="1188" height="484" key="GridCell.Tab.0.center" timestamp="1607077559361">
+      <screen x="0" y="27" width="2560" height="1413" />
+    </state>
+    <state width="1188" height="484" key="GridCell.Tab.0.center/0.27.2560.1413/2560.728.1920.1080@0.27.2560.1413" timestamp="1607077559361" />
+    <state width="1188" height="484" key="GridCell.Tab.0.center/72.27.2488.1413/2560.728.1920.1080@72.27.2488.1413" timestamp="1607017054978" />
+    <state width="1188" height="484" key="GridCell.Tab.0.left" timestamp="1607077559361">
+      <screen x="0" y="27" width="2560" height="1413" />
+    </state>
+    <state width="1188" height="484" key="GridCell.Tab.0.left/0.27.2560.1413/2560.728.1920.1080@0.27.2560.1413" timestamp="1607077559361" />
+    <state width="1188" height="484" key="GridCell.Tab.0.left/72.27.2488.1413/2560.728.1920.1080@72.27.2488.1413" timestamp="1607017054978" />
+    <state width="1188" height="484" key="GridCell.Tab.0.right" timestamp="1607077559361">
+      <screen x="0" y="27" width="2560" height="1413" />
+    </state>
+    <state width="1188" height="484" key="GridCell.Tab.0.right/0.27.2560.1413/2560.728.1920.1080@0.27.2560.1413" timestamp="1607077559361" />
+    <state width="1188" height="484" key="GridCell.Tab.0.right/72.27.2488.1413/2560.728.1920.1080@72.27.2488.1413" timestamp="1607017054978" />
+    <state width="1188" height="484" key="GridCell.Tab.1.bottom" timestamp="1607077559362">
+      <screen x="0" y="27" width="2560" height="1413" />
+    </state>
+    <state width="1188" height="484" key="GridCell.Tab.1.bottom/0.27.2560.1413/2560.728.1920.1080@0.27.2560.1413" timestamp="1607077559362" />
+    <state width="1188" height="484" key="GridCell.Tab.1.bottom/72.27.2488.1413/2560.728.1920.1080@72.27.2488.1413" timestamp="1607017054875" />
+    <state width="1188" height="484" key="GridCell.Tab.1.center" timestamp="1607077559362">
+      <screen x="0" y="27" width="2560" height="1413" />
+    </state>
+    <state width="1188" height="484" key="GridCell.Tab.1.center/0.27.2560.1413/2560.728.1920.1080@0.27.2560.1413" timestamp="1607077559362" />
+    <state width="1188" height="484" key="GridCell.Tab.1.center/72.27.2488.1413/2560.728.1920.1080@72.27.2488.1413" timestamp="1607017054874" />
+    <state width="1188" height="484" key="GridCell.Tab.1.left" timestamp="1607077559361">
+      <screen x="0" y="27" width="2560" height="1413" />
+    </state>
+    <state width="1188" height="484" key="GridCell.Tab.1.left/0.27.2560.1413/2560.728.1920.1080@0.27.2560.1413" timestamp="1607077559361" />
+    <state width="1188" height="484" key="GridCell.Tab.1.left/72.27.2488.1413/2560.728.1920.1080@72.27.2488.1413" timestamp="1607017054874" />
+    <state width="1188" height="484" key="GridCell.Tab.1.right" timestamp="1607077559362">
+      <screen x="0" y="27" width="2560" height="1413" />
+    </state>
+    <state width="1188" height="484" key="GridCell.Tab.1.right/0.27.2560.1413/2560.728.1920.1080@0.27.2560.1413" timestamp="1607077559362" />
+    <state width="1188" height="484" key="GridCell.Tab.1.right/72.27.2488.1413/2560.728.1920.1080@72.27.2488.1413" timestamp="1607017054875" />
+    <state x="1097" y="417" width="428" height="640" key="RollbackChangesDialog" timestamp="1607003968779">
+      <screen x="72" y="27" width="2488" height="1413" />
+    </state>
+    <state x="1097" y="417" width="428" height="640" key="RollbackChangesDialog/72.27.2488.1413/2560.728.1920.1080@72.27.2488.1413" timestamp="1607003968779" />
+    <state x="164" y="87" width="1034" height="1213" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1607601443203">
+      <screen x="72" y="27" width="2488" height="1413" />
+    </state>
+    <state x="164" y="87" width="1034" height="1213" key="com.intellij.history.integration.ui.views.FileHistoryDialog/72.27.2488.1413/2560.728.1920.1080@72.27.2488.1413" timestamp="1607601443203" />
+    <state x="380" y="472" width="618" height="522" key="find.popup" timestamp="1606839025889">
+      <screen x="72" y="27" width="2488" height="1413" />
+    </state>
+    <state x="380" y="472" width="618" height="522" key="find.popup/72.27.2488.1413/2560.728.1920.1080@72.27.2488.1413" timestamp="1606839025889" />
+    <state x="1041" y="625" width="540" height="223" key="vcs.readOnlyHandler.ReadOnlyStatusDialog" timestamp="1606580178074">
+      <screen x="72" y="27" width="2488" height="1413" />
+    </state>
+    <state x="1041" y="625" width="540" height="223" key="vcs.readOnlyHandler.ReadOnlyStatusDialog/72.27.2488.1413/2560.728.1920.1080@72.27.2488.1413" timestamp="1606580178074" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/robosheep$Flask__gui_plain_app_py_.coverage" NAME="Flask (gui/plain/app.py) Coverage Results" MODIFIED="1607542128844" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+  </component>
+</project>
