@@ -19,51 +19,10 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b1169ea1-08b2-4f85-a2f3-bf8b0f5fc14c" name="Default Changelist" comment="First working cmake project">
-      <change afterPath="$PROJECT_DIR$/vision/CMakeLists.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/query/client-vscode/query.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/cache-v2-0b13239003a40c0eb74d.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/codemodel-v2-f1ac1b2cc303e04c5dbd.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/index-2020-12-11T11-45-03-0054.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/target-Continuous-Debug-ccb7ffa9978a17909427.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/target-ContinuousBuild-Debug-fbe5c6f13f9d0b0fda7f.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/target-ContinuousConfigure-Debug-e50d85f92dff45137d08.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/target-ContinuousCoverage-Debug-8e77c9844717b5d78f1d.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/target-ContinuousMemCheck-Debug-6dc397776ac62b583443.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/target-ContinuousStart-Debug-e5333a93d322bdca7e2c.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/target-ContinuousSubmit-Debug-4fa6b21fb7b292361882.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/target-ContinuousTest-Debug-568a9c9a705921553383.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/target-ContinuousUpdate-Debug-64371bec26c652a83b2a.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/target-Experimental-Debug-9dd5df03d773a90f3c92.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/target-ExperimentalBuild-Debug-73bb360ec85e77324b07.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/target-ExperimentalConfigure-Debug-16d715fabac2df4f738b.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/target-ExperimentalCoverage-Debug-84b4a72b86a74a7b0c74.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/target-ExperimentalMemCheck-Debug-e2a5c5b061800616824e.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/target-ExperimentalStart-Debug-7113052b00f034005848.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/target-ExperimentalSubmit-Debug-5845b4f637743a5446be.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/target-ExperimentalTest-Debug-46e37abeefe8d5146a50.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/target-ExperimentalUpdate-Debug-88df2b117e6a7cd48b33.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/target-Nightly-Debug-cea50abb2f464ca0229a.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/target-NightlyBuild-Debug-afccd0465e4b8c1e2d87.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/target-NightlyConfigure-Debug-7ec533b122c4c2965696.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/target-NightlyCoverage-Debug-e2b20065ab4aa5f75d86.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/target-NightlyMemCheck-Debug-8eda9eba68978ec4ed5b.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/target-NightlyMemoryCheck-Debug-784f4a2876bbb9b4bcea.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/target-NightlyStart-Debug-87062bf9eaacc239a2bf.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/target-NightlySubmit-Debug-00614dd8d283eaa542b9.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/target-NightlyTest-Debug-b8d330abdb63439bfe9e.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/target-NightlyUpdate-Debug-b681408b94dc782d2255.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/.cmake/api/v1/reply/target-RSControl-Debug-a6306671b86020976b2d.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/CPackConfig.cmake" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/CPackSourceConfig.cmake" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/CTestTestfile.cmake" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/DartConfiguration.tcl" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/Testing/Temporary/LastTest.log" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vision/build/compile_commands.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="b1169ea1-08b2-4f85-a2f3-bf8b0f5fc14c" name="Default Changelist" comment="Working project with OpenCV">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vision/build/CMakeLists.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vision/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/vision/src/main.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vision/.vscode/launch.json" beforeDir="false" afterPath="$PROJECT_DIR$/vision/.vscode/launch.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vision/.vscode/tasks.json" beforeDir="false" afterPath="$PROJECT_DIR$/vision/.vscode/tasks.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -161,7 +120,7 @@
       <workItem from="1606838563177" duration="10818000" />
       <workItem from="1607517073609" duration="11723000" />
       <workItem from="1607584099542" duration="3602000" />
-      <workItem from="1607601445515" duration="1947000" />
+      <workItem from="1607601445515" duration="3689000" />
     </task>
     <task id="LOCAL-00001" summary="Used WebServer and Json, but does not compile">
       <created>1606501281915</created>
@@ -191,7 +150,14 @@
       <option name="project" value="LOCAL" />
       <updated>1607685699513</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Working project with OpenCV">
+      <created>1607687378862</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1607687378862</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -225,7 +191,8 @@
     <MESSAGE value="Revert &quot;Used WebServer and Json, but does not compile&quot;&#10;&#10;This reverts commit ec2e179e" />
     <MESSAGE value="Added Signal Strength" />
     <MESSAGE value="First working cmake project" />
-    <option name="LAST_COMMIT_MESSAGE" value="First working cmake project" />
+    <MESSAGE value="Working project with OpenCV" />
+    <option name="LAST_COMMIT_MESSAGE" value="Working project with OpenCV" />
   </component>
   <component name="WindowStateProjectService">
     <state x="774" y="391" width="1084" height="736" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1606838921426">
@@ -292,10 +259,14 @@
       <screen x="72" y="27" width="2488" height="1413" />
     </state>
     <state x="1097" y="417" width="428" height="640" key="RollbackChangesDialog/72.27.2488.1413/2560.728.1920.1080@72.27.2488.1413" timestamp="1607003968779" />
-    <state x="164" y="87" width="1034" height="1213" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1607601443203">
+    <state x="172" y="127" width="1014" height="1213" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog" timestamp="1607689254551">
       <screen x="72" y="27" width="2488" height="1413" />
     </state>
-    <state x="164" y="87" width="1034" height="1213" key="com.intellij.history.integration.ui.views.FileHistoryDialog/72.27.2488.1413/2560.728.1920.1080@72.27.2488.1413" timestamp="1607601443203" />
+    <state x="172" y="127" width="1014" height="1213" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog/72.27.2488.1413/2560.728.1920.1080@72.27.2488.1413" timestamp="1607689254551" />
+    <state x="164" y="87" width="1034" height="1213" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1607691015345">
+      <screen x="72" y="27" width="2488" height="1413" />
+    </state>
+    <state x="164" y="87" width="1034" height="1213" key="com.intellij.history.integration.ui.views.FileHistoryDialog/72.27.2488.1413/2560.728.1920.1080@72.27.2488.1413" timestamp="1607691015345" />
     <state x="380" y="472" width="618" height="522" key="find.popup" timestamp="1606839025889">
       <screen x="72" y="27" width="2488" height="1413" />
     </state>
