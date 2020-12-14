@@ -19,10 +19,73 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b1169ea1-08b2-4f85-a2f3-bf8b0f5fc14c" name="Default Changelist" comment="Working project with OpenCV">
+    <list default="true" id="b1169ea1-08b2-4f85-a2f3-bf8b0f5fc14c" name="Default Changelist" comment="Successfully build project with cmake">
+      <change afterPath="$PROJECT_DIR$/vision/CMakeCache.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/CPackConfig.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/CPackSourceConfig.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/CTestTestfile.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/DartConfiguration.tcl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/Makefile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/cmake_install.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/CTestTestfile.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/Makefile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/actuators/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/actuators/CTestTestfile.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/actuators/HTTPClient.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/actuators/HTTPClient.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/actuators/Makefile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/actuators/cmake_install.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/cmake_install.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/main.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/planning/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/planning/CTestTestfile.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/planning/Garden.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/planning/Garden.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/planning/Makefile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/planning/Planer.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/planning/Planer.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/planning/cmake_install.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/presentation/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/presentation/CTestTestfile.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/presentation/GUI.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/presentation/GUI.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/presentation/Makefile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/presentation/cmake_install.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/sensors/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/sensors/CTestTestfile.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/sensors/ImageAnalyser.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/sensors/ImageAnalyser.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/sensors/Makefile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/sensors/TrackedColorBlob.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/sensors/TrackedColorBlob.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/sensors/TrackedObject.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/sensors/TrackedObject.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/sensors/VideoCamera.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/sensors/VideoCamera.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/sensors/cmake_install.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/utilities/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/utilities/CTestTestfile.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/utilities/Makefile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/utilities/OpenCVUtils.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/utilities/OpenCVUtils.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/utilities/Stopwatch.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/utilities/Stopwatch.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/utilities/VirtualSheep.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/utilities/VirtualSheep.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vision/src/utilities/cmake_install.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/planning/Planer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/planning/Planer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/presentation/GUI.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/presentation/GUI.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sensors/ImageAnalyser.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/sensors/ImageAnalyser.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sensors/TrackedColorBlob.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/sensors/TrackedColorBlob.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sensors/VideoCamera.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/sensors/VideoCamera.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/vision/.vscode/launch.json" beforeDir="false" afterPath="$PROJECT_DIR$/vision/.vscode/launch.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vision/.vscode/tasks.json" beforeDir="false" afterPath="$PROJECT_DIR$/vision/.vscode/tasks.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vision/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/vision/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vision/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/vision/src/main.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -120,7 +183,7 @@
       <workItem from="1606838563177" duration="10818000" />
       <workItem from="1607517073609" duration="11723000" />
       <workItem from="1607584099542" duration="3602000" />
-      <workItem from="1607601445515" duration="3689000" />
+      <workItem from="1607601445515" duration="5537000" />
     </task>
     <task id="LOCAL-00001" summary="Used WebServer and Json, but does not compile">
       <created>1606501281915</created>
@@ -157,7 +220,14 @@
       <option name="project" value="LOCAL" />
       <updated>1607687378862</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Successfully build project with cmake">
+      <created>1607935089536</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1607935089536</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -192,7 +262,8 @@
     <MESSAGE value="Added Signal Strength" />
     <MESSAGE value="First working cmake project" />
     <MESSAGE value="Working project with OpenCV" />
-    <option name="LAST_COMMIT_MESSAGE" value="Working project with OpenCV" />
+    <MESSAGE value="Successfully build project with cmake" />
+    <option name="LAST_COMMIT_MESSAGE" value="Successfully build project with cmake" />
   </component>
   <component name="WindowStateProjectService">
     <state x="774" y="391" width="1084" height="736" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1606838921426">
@@ -263,10 +334,10 @@
       <screen x="72" y="27" width="2488" height="1413" />
     </state>
     <state x="172" y="127" width="1014" height="1213" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog/72.27.2488.1413/2560.728.1920.1080@72.27.2488.1413" timestamp="1607689254551" />
-    <state x="164" y="87" width="1034" height="1213" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1607691015345">
+    <state x="164" y="87" width="1034" height="1213" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1607929140645">
       <screen x="72" y="27" width="2488" height="1413" />
     </state>
-    <state x="164" y="87" width="1034" height="1213" key="com.intellij.history.integration.ui.views.FileHistoryDialog/72.27.2488.1413/2560.728.1920.1080@72.27.2488.1413" timestamp="1607691015345" />
+    <state x="164" y="87" width="1034" height="1213" key="com.intellij.history.integration.ui.views.FileHistoryDialog/72.27.2488.1413/2560.728.1920.1080@72.27.2488.1413" timestamp="1607929140645" />
     <state x="380" y="472" width="618" height="522" key="find.popup" timestamp="1606839025889">
       <screen x="72" y="27" width="2488" height="1413" />
     </state>

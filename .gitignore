@@ -5,3 +5,7 @@ Debug/
 /.settings/org.eclipse.cdt.managedbuilder.core.prefs
 /vision/build/
 CMakeFiles/
+*.cmake
+CMakeCache.txt
+DartConfiguration.tcl
+Makefile

@@ -19,12 +19,29 @@
         },
         {
             "name": "Debug RSControl",
-            "default" : true,
             "type": "cppdbg",
             "request": "launch",
             // Resolved by CMake Tools:
             "program": "${command:cmake.launchTargetPath}",
-            "args": ["/home/q464773/Pictures/photo_2020-09-02_11-10-47.jpg"],
+
+            /* --cameraURL		that's where the camera can be reached
+            * --mowerURL		that's where the mover can be controlled 
+            * --mode			one of the operating modes: 
+            *						modeTestCamera:		just to test vision system
+            *						modeAnalyseImage:	analyse a given image
+            *						modeTrack:			just track an object on camera
+            *					if no mode is specified, the mover will be controlled.
+            *
+            * --image			for debugging purpose, an image that wants to be analysed
+            * --simulateSheep	for testing, starts a virtual sheep that prints itself 
+            *					onto the camera image 
+            */            
+            "args": ["--mode modeTestCamera",
+                "--cameraURL http://192.168.1.124/video.cgi?x.mjpg",
+                "--mowerURL http://192.168.0.112/",
+                "--simulateSheep true"
+            ],
+
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [
