@@ -36,10 +36,10 @@
             * --simulateSheep	for testing, starts a virtual sheep that prints itself 
             *					onto the camera image 
             */            
-            "args": ["--mode modeTestCamera",
-                "--cameraURL http://192.168.1.124/video.cgi?x.mjpg",
-                "--mowerURL http://192.168.0.112/",
-                "--simulateSheep true"
+            "args": ["--mode", "modeTestCamera",
+                "--cameraURL", "http://192.168.1.124/video.cgi?x.mjpg",
+                "--mowerURL", "http://192.168.0.112/",
+                "--simulateSheep", "true"
             ],
 
             "stopAtEntry": false,

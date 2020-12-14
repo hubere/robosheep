@@ -6,6 +6,7 @@ Debug/
 /vision/build/
 CMakeFiles/
 *.cmake
+*.a
 CMakeCache.txt
 DartConfiguration.tcl
 Makefile
