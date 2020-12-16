@@ -117,7 +117,7 @@ int main(int argc, char** argv) {
 	String argCameraURL = evaluateArgs(argc, argv, "--cameraURL", "noCameraURL");
 	String argImageName = evaluateArgs(argc, argv, "--image", "snapshot");
 	String argSimulateSheep = evaluateArgs(argc, argv, "--simulateSheep", "false");
-	String argMowerURL = evaluateArgs(argc, argv, "--mowerURL", "http://192.168.1.108/");
+	String argMowerURL = evaluateArgs(argc, argv, "--mowerURL", "http://192.168.0.112/");
 
 	if (argMode == "modeTestCamera")
 	{
