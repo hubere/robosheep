@@ -11,6 +11,11 @@
             background-color: grey;
         }
 
+        button {
+            height: 80px;
+            width: 200px;
+        }
+
         #speedBar {
             color: green;
         }
@@ -57,7 +62,6 @@
 
     </div>
     <p id="rssi"></p>
-    <p id="demo"></p>
 </div>
 
 <div style="width: 800px; margin: auto; border: 1px solid black;">
@@ -81,11 +85,13 @@
 
 <div style="width: 800px; margin: auto; border: 1px solid black;">
     <h2>Control</h2>
-    <p><label for="enableMotor">Enable Motor: </label><input type="checkbox" id="enableMotor"></p>
     <div onclick="setMousePosition(event)" onmousemove="speedMotors(event)" onmouseout="stop()"></div>
     <TABLE>
         <TR>
-            <TD></TD>
+            <TD>
+                <p><label for="enableMotor">Enable Motor: </label><input style="height:20px;width:20px" type="checkbox"
+                                                                         id="enableMotor"></p>
+            </TD>
             <TD>
                 <button onclick="forward()">forward</button>
             </TD>
@@ -126,8 +132,11 @@
 </div>
 
 <div style="display: table-cell; border: 1px solid black;">
+    <h2>Log</h2>
+    <p id="log"></p>
 </div>
 
+<p id="demo"></p>
 
 <script>
 
@@ -149,6 +158,7 @@
     const motorBar2 = document.getElementById('motorBar2');
 
     const rssi = document.getElementById('rssi');
+    const log = document.getElementById('log');
 
     const startX = ball.getBoundingClientRect().left;
     const startY = ball.getBoundingClientRect().top;
@@ -202,11 +212,11 @@
             if (this.readyState === 4 && this.status === 200) {
                 let sheep_state = Http.response
                 updateMotorBars(parseInt(sheep_state['m1']), parseInt(sheep_state['m2']));
-                var signalStrength  = "Signal Strength: " + sheep_state['rssi'] + " dBm";
-                document.getElementById('demo').innerHTML = signalStrength;
+                var signalStrength = "Signal Strength: " + sheep_state['rssi'] + " dBm";
+                rssi.innerHTML = signalStrength;
             }
         }
-    }, 5000);
+    }, 1000);
 
 
     /*
@@ -264,8 +274,8 @@
             ball.style.top = pageY - shiftY + 'px';
 
             // calc displacement
-            let displaceX = -Math.trunc((pageX - startX - shiftX)/3);
-            let displaceY = -Math.trunc((pageY - startY - shiftY)/3);
+            let displaceX = -Math.trunc((pageX - startX - shiftX) / 3);
+            let displaceY = -Math.trunc((pageY - startY - shiftY) / 3);
             console.log("displace " + displaceX + "/" + displaceY);
 
             sendCommand(displaceX, displaceY)
@@ -304,7 +314,7 @@
     /*
      * see also (https://www.mediaevent.de/javascript/touch-events.html)
      */
-    ball.ontouchmove = function(e){
+    ball.ontouchmove = function (e) {
         // grab the location of touch
         var touchLocation = e.targetTouches[0]; // erster finger
 
@@ -313,34 +323,46 @@
         //ball.style.top = touchLocation.pageY + 'px';
 
         // calc displacement
-        let displaceX = Math.trunc((startX - touchLocation.pageX)/3);
-        let displaceY = Math.trunc((startY - touchLocation.pageY)/3);
+        let displaceX = Math.trunc((startX - touchLocation.pageX) / 3);
+        let displaceY = Math.trunc((startY - touchLocation.pageY) / 3);
         console.log("Touch displace " + displaceX + "/" + displaceY);
+
+        var msg = "Touch displace " + displaceX + "/" + displaceY;
+        log.innerHTML = msg;
 
         sendCommand(displaceX, displaceY)
     }
 
-    ball.ontouchend = function(e){
+    ball.ontouchend = function (e) {
         sendCommand(0, 0)
     }
 
-/*
-    ball.addEventListener('touchmove', function (e) {
-        // grab the location of touch
-        var touchLocation = e.targetTouches[0];
+    /*
+    * Disable context menu
+    */
+    window.oncontextmenu = function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        return false;
+    };
 
-        // assign box new coordinates based on the touch.
-        //ball.style.left = touchLocation.pageX + 'px';
-        // ball.style.top = touchLocation.pageY + 'px';
+    /*
+        ball.addEventListener('touchmove', function (e) {
+            // grab the location of touch
+            var touchLocation = e.targetTouches[0];
 
-        // calc displacement
-        let displaceX = Math.trunc((startX - touchLocation.pageX)/3);
-        let displaceY = Math.trunc((startY - touchLocation.pageY)/3);
-        console.log("Touch displace " + displaceX + "/" + displaceY);
+            // assign box new coordinates based on the touch.
+            //ball.style.left = touchLocation.pageX + 'px';
+            // ball.style.top = touchLocation.pageY + 'px';
 
-        sendCommand(displaceX, displaceY)
-    })
-*/
+            // calc displacement
+            let displaceX = Math.trunc((startX - touchLocation.pageX)/3);
+            let displaceY = Math.trunc((startY - touchLocation.pageY)/3);
+            console.log("Touch displace " + displaceX + "/" + displaceY);
+
+            sendCommand(displaceX, displaceY)
+        })
+    */
 
     ball.ondragstart = function () {
         return false;

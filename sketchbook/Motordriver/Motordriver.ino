@@ -95,6 +95,7 @@ int desiredSpeedM2 = 0;    // desired speed of motor 2 (PWM)
 int cmdSpeed = 0;   // desired speed 
 int cmdDir = 0;     // desired dir
 long rssi = 0;  
+int losingConnection = 0;  // timer for lost connection / no new commands from client.
 
 
 //
@@ -135,7 +136,6 @@ void setup()
   printUsage();
 
   endOfLastLoopInMillis = millis();  
-
 
 }
 
@@ -194,6 +194,7 @@ void loop()
   //
   // Stop if connection is lost, i.e. no commands issued anymore
   //
+  // Serial.println("currentMillis: ("+String(currentMillis)+"); lastCommandTimestamp: "+String(lastCommandTimestamp)+")");         
   stopOnLostConnection(currentMillis - lastCommandTimestamp);
     
   //
@@ -204,6 +205,7 @@ void loop()
   //
   // listen for incoming clients
   //
+  // Serial.println("listen " + String(millis()));
   WiFiClient client = server.available();  
   if (client)
   {
@@ -214,21 +216,14 @@ void loop()
   }
 
   //
-  // and of big loop
+  // end of big loop
   //
-  endOfLastLoopInMillis = millis();
-  return;    
-  
-  // A command was issued, reset alive check timer
-  lastCommandTimestamp = millis();
-  
-  //delay(1); // what is that for?!?!
-  Serial.println("");
-
   // The client will actually be disconnected 
   // when the function returns and 'client' object is detroyed
-  
+  //
   endOfLastLoopInMillis = millis();
+  
+  
 }
 
 // --------- helper functions ---------
@@ -263,10 +258,12 @@ void toggleLED(int bigLoopCount)
  */
 void stopOnLostConnection(unsigned long timeSinceLastCommand)
 {
+  losingConnection = (MAX_ALIVE_DELAY - timeSinceLastCommand); //  / MAX_ALIVE_DELAY * 100;
   if (timeSinceLastCommand > MAX_ALIVE_DELAY)
   {
     desiredSpeedM1 = 0;
     desiredSpeedM2 = 0;
+    //Serial.println("Warning! Lost connection to client. timeSinceLastCommand ("+String(timeSinceLastCommand)+") > MAX_ALIVE_DELAY ("+String(MAX_ALIVE_DELAY)+")");       
   }
 }
 
@@ -311,11 +308,13 @@ void handleClientRequest(WiFiClient client)
             
         }else if (request.indexOf("/sheep/move") > 0){
           extractSpeedAndDir(request);
-          response = respondWithSheepState();
+          response = respondWithSheepState();          
+          lastCommandTimestamp = millis(); // A command was issued, reset alive check timer
           
         }else if (request.indexOf("/motor") > 0){
           extractMotorSpeeds(request);    
           response = respondWithSheepState();
+          lastCommandTimestamp = millis(); // A command was issued, reset alive check timer
           
         }else{ 
           // serve index.html
@@ -362,10 +361,14 @@ String respondWithSheepState(){
   response += "\"desiredSpeedM2\":\""; 
   response += desiredSpeedM2;
   response += "\", ";
+  response += "\"losingConnection\":\"";
+  response += losingConnection;
+  response += "\", ";
   response += "\"rssi\":\"";
   response += rssi;
   response += "\"";
   response += "}";
+  
   return response; 
 }
 
@@ -390,6 +393,8 @@ void extractSpeedAndDir(String request){
 
   desiredSpeedM1 = cmdSpeed + cmdDir;
   desiredSpeedM2 = cmdSpeed - cmdDir;  
+  Serial.println("Setting desiredSpeedM1 to "+String(desiredSpeedM1));       
+
 }
 
 /*
