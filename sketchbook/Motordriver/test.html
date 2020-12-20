@@ -62,6 +62,7 @@
 
     </div>
     <p id="rssi"></p>
+    <p id="sheep_state"></p>
 </div>
 
 <div style="width: 800px; margin: auto; border: 1px solid black;">
@@ -158,6 +159,7 @@
     const motorBar2 = document.getElementById('motorBar2');
 
     const rssi = document.getElementById('rssi');
+    const sheepStateCtrl = document.getElementById('sheep_state');
     const log = document.getElementById('log');
 
     const startX = ball.getBoundingClientRect().left;
@@ -214,6 +216,7 @@
                 updateMotorBars(parseInt(sheep_state['m1']), parseInt(sheep_state['m2']));
                 var signalStrength = "Signal Strength: " + sheep_state['rssi'] + " dBm";
                 rssi.innerHTML = signalStrength;
+                sheepStateCtrl.innerHTML = JSON.stringify(sheep_state);
             }
         }
     }, 1000);

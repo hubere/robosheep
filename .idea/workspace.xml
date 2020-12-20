@@ -19,7 +19,7 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b1169ea1-08b2-4f85-a2f3-bf8b0f5fc14c" name="Default Changelist" comment="Adjust default mowerURL.">
+    <list default="true" id="b1169ea1-08b2-4f85-a2f3-bf8b0f5fc14c" name="Default Changelist" comment="FIX loosing connection">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sketchbook/Motordriver/HTML.h" beforeDir="false" afterPath="$PROJECT_DIR$/sketchbook/Motordriver/HTML.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sketchbook/Motordriver/Motordriver.ino" beforeDir="false" afterPath="$PROJECT_DIR$/sketchbook/Motordriver/Motordriver.ino" afterDir="false" />
@@ -122,7 +122,7 @@
       <workItem from="1607517073609" duration="11723000" />
       <workItem from="1607584099542" duration="3602000" />
       <workItem from="1607601445515" duration="8189000" />
-      <workItem from="1608122297902" duration="2971000" />
+      <workItem from="1608122297902" duration="4745000" />
     </task>
     <task id="LOCAL-00001" summary="Used WebServer and Json, but does not compile">
       <created>1606501281915</created>
@@ -194,7 +194,14 @@
       <option name="project" value="LOCAL" />
       <updated>1608104805262</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="FIX loosing connection">
+      <created>1608126686944</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1608126686944</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -233,7 +240,8 @@
     <MESSAGE value="Successfully build project with cmake" />
     <MESSAGE value="Start test camera" />
     <MESSAGE value="Adjust default mowerURL." />
-    <option name="LAST_COMMIT_MESSAGE" value="Adjust default mowerURL." />
+    <MESSAGE value="FIX loosing connection" />
+    <option name="LAST_COMMIT_MESSAGE" value="FIX loosing connection" />
   </component>
   <component name="WindowStateProjectService">
     <state x="774" y="391" width="1084" height="736" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1606838921426">

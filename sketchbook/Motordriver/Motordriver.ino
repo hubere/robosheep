@@ -84,6 +84,8 @@ int bigLoopCount = 0;
 unsigned long endOfLastLoopInMillis = millis();
 unsigned long lastCommandTimestamp = millis();
 int led_state = 0;  // last state set for led
+int batteryPower = 0;  // power of battery in %
+
 
 //
 // sheep state
@@ -96,6 +98,17 @@ int cmdSpeed = 0;   // desired speed
 int cmdDir = 0;     // desired dir
 long rssi = 0;  
 int losingConnection = 0;  // timer for lost connection / no new commands from client.
+
+//
+// battery power measurement
+// see (https://www.electroschematics.com/arduino-digital-voltmeter/)
+// 
+// int analogInput = 0; -> see ANALOG_PIN
+float vout = 0.0;
+float vin = 0.0;
+float R1 = 100000.0; // resistance of R1 (100K) -see text!
+float R2 = 10000.0; // resistance of R2 (10K) - see text!
+int value = 0;
 
 
 //
@@ -121,6 +134,9 @@ void setup()
   delay(10);
   digitalWrite(CONNECTED_LED_PIN, 0);
 
+  // prepare battery power measurement
+  pinMode(ANALOG_PIN, INPUT);
+  
   Serial.println("\nInitializing Dual MC33926 Motor Shield");
   md.init();
   delay(10);
@@ -191,6 +207,9 @@ void loop()
   //
   toggleLED(bigLoopCount);
 
+  // battery power
+  measureBatteryPower();
+
   //
   // Stop if connection is lost, i.e. no commands issued anymore
   //
@@ -250,6 +269,20 @@ void toggleLED(int bigLoopCount)
     }
     digitalWrite(CONNECTED_LED_PIN, led_state);   
   }  
+}
+
+/*
+ * Measure battery power
+ * (see https://www.electroschematics.com/arduino-digital-voltmeter/)
+ */
+void measureBatteryPower()
+{
+   // read the value at analog input
+   value = analogRead(ANALOG_PIN);
+   vout = (value * 5.0) / 1024.0; // see text
+   vin = vout / (R2/(R1+R2)); 
+   if (vin<0.09) vin=0.0;//statement to quash undesired reading !
+   batteryPower = vin;
 }
 
 
@@ -364,10 +397,16 @@ String respondWithSheepState(){
   response += "\"losingConnection\":\"";
   response += losingConnection;
   response += "\", ";
+  response += "\"power\":\"";
+  response += batteryPower;
+  response += "\", ";
   response += "\"rssi\":\"";
   response += rssi;
   response += "\"";
   response += "}";
+
+
+
   
   return response; 
 }
