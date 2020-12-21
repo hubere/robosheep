@@ -20,49 +20,70 @@
             color: green;
         }
 
-        progress[value] {
-            width: 600px;
-            height: 20px;
+        .progress-bar-vertical {
+            width: 30px;
+            min-height: 100px;
+            display: flex;
+            align-items: flex-end;
+            margin-right: 20px;
+            float: left;
+
         }
 
-        progress::-webkit-progress-value {
-            background: lightblue;
-        }
-
-        progress::-moz-progress-bar {
-            background: lightblue;
-        }
-
-        progress::-webkit-progress-value {
-            background: red;
-        }
-
-        progress::-webkit-progress-bar {
-            background: blue;
+        .progress-bar-vertical .progress-bar {
+            width: 100%;
+            height: 0;
+            color: black;
+            -webkit-transition: height 0.6s ease;
+            -o-transition: height 0.6s ease;
+            transition: height 0.6s ease;
         }
 
     </style>
 </head>
 <body>
 
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"/>
 
 <h1>Motordriver (Ver. 0.9)</h1>
 
 <div style="margin-right: auto; margin-left: auto; width: 800px; border: 1px solid black;">
     <h2>Robosheep Status</h2>
     <div id="motor_speed_bars">
-        <!--
-        Speed<progress id="speedBar" value="100" max="200"><span>0</span>%</progress>
-        <p></p>
-        -->
-        M1
-        <progress id="motorBar1" value="100" max="200"><span>0</span>%</progress>
-        M2
-        <progress id="motorBar2" value="100" max="200"><span>0</span>%</progress>
+
+        <div>M1___M2__RSSI__PWR </div>
+        <div class="progress progress-bar-vertical">
+            <div id="motorBar1" class="progress-bar" role="progressbar" style="height: 50%;" aria-valuenow="50"
+                 aria-valuemin="0" aria-valuemax="100">0%
+            </div>
+        </div>
+
+        <div class="progress progress-bar-vertical">
+            <div id="motorBar2" class="progress-bar" role="progressbar" style="height: 50%;" aria-valuenow="50"
+                 aria-valuemin="0" aria-valuemax="100">0%
+            </div>
+        </div>
+
+        <div class="progress progress-bar-vertical">
+            <div id="signalStrength" class="progress-bar" role="progressbar" style="height: 0%;" aria-valuenow="0"
+                 aria-valuemin="0" aria-valuemax="100">0%
+            </div>
+        </div>
+
+        <div class="progress progress-bar-vertical">
+            <div id="powerSupply" class="progress-bar" role="progressbar" style="height: 0%;" aria-valuenow="0"
+                 aria-valuemin="0" aria-valuemax="100">0%
+            </div>
+        </div>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
 
     </div>
-    <p id="rssi"></p>
-    <p id="sheep_state"></p>
+    <p id="sheep_state">sheep_state</p>
 </div>
 
 <div style="width: 800px; margin: auto; border: 1px solid black;">
@@ -86,7 +107,6 @@
 
 <div style="width: 800px; margin: auto; border: 1px solid black;">
     <h2>Control</h2>
-    <div onclick="setMousePosition(event)" onmousemove="speedMotors(event)" onmouseout="stop()"></div>
     <TABLE>
         <TR>
             <TD>
@@ -134,17 +154,18 @@
 
 <div style="display: table-cell; border: 1px solid black;">
     <h2>Log</h2>
-    <p id="log"></p>
+    <p id="log">log</p>
 </div>
 
-<p id="demo"></p>
+<p id="demo">demo</p>
 
 <script>
 
     //
     // global vars
     //
-    const ip = location.host
+    let ip = location.host;
+    if (location.host == "") ip = "192.168.0.112";
     const url_sheep_state = "http://" + ip + "/sheep/state";
     const url_sheep_move = "http://" + ip + "/sheep/move";
     const url_motor = "http://" + ip + "/motor";
@@ -158,32 +179,15 @@
     const motorBar1 = document.getElementById('motorBar1');
     const motorBar2 = document.getElementById('motorBar2');
 
-    const rssi = document.getElementById('rssi');
     const sheepStateCtrl = document.getElementById('sheep_state');
-    const log = document.getElementById('log');
+    const logger = document.getElementById('log');
 
     const startX = ball.getBoundingClientRect().left;
     const startY = ball.getBoundingClientRect().top;
 
 
-    motor_speed_bars.addEventListener("wheel", motor_speed_bars_wheel);
-    /*
-    motor_speed_bars.addEventListener('contextmenu', function (ev) {
-        ev.preventDefault();
-        console.log('right mouse');
-        return false;
-    }, false);
-     */
-
     motor_speed_bars.onmousedown = function (event) {
         console.log("onmousedown: " + event.button)
-    }
-
-    function motor_speed_bars_wheel(event) {
-        const delta = Math.sign(event.deltaY);
-        speed = speed - delta * 10
-        console.info(speed);
-        speedBar.value = 100 + speed
     }
 
     /*
@@ -195,10 +199,36 @@
             console.error("Called updateMotorBars(" + m1 + "," + m2 + ") with invalid values.")
             return
         }
-        motorBar1.value = 100 + m1;
-        motorBar1.getElementsByTagName('span')[0].textContent = m1;
-        motorBar2.value = 100 + m2;
-        motorBar2.getElementsByTagName('span')[0].textContent = m2;
+        updateMotorBar(motorBar1, m1);
+        updateMotorBar(motorBar2, m2);
+    }
+
+    function updateMotorBar(motorBar, value) {
+        width = (100 + value)/2;
+        motorBar.style.height = width+'%';
+        motorBar.innerHTML = value+'%';
+        if (value < 0){
+            motorBar.style.backgroundColor = "red";
+        }else{
+            motorBar.style.backgroundColor = "green";
+        }
+    }
+
+    function updateRssiCtrl(sheep_state){
+        let rssiValue = parseInt(sheep_state['rssi']);
+        let barHeight = 100 + rssiValue;
+        const signalStrengthCtrl = document.getElementById('signalStrength');
+        signalStrengthCtrl.style.height = barHeight+'%';
+        signalStrengthCtrl.innerHTML = rssiValue + 'dBm';
+    }
+
+    function updatePwrCtrl(sheep_state){
+        let powerValue = parseInt(sheep_state['power']);
+        let barHeight = powerValue / 24 * 100;
+        let voltage = (powerValue / 10.0).toFixed(1);
+        const powerSupplyCtrl = document.getElementById('powerSupply');
+        powerSupplyCtrl.style.height = barHeight+'%';
+        powerSupplyCtrl.innerHTML = voltage + 'V';
     }
 
 
@@ -214,8 +244,8 @@
             if (this.readyState === 4 && this.status === 200) {
                 let sheep_state = Http.response
                 updateMotorBars(parseInt(sheep_state['m1']), parseInt(sheep_state['m2']));
-                var signalStrength = "Signal Strength: " + sheep_state['rssi'] + " dBm";
-                rssi.innerHTML = signalStrength;
+                updateRssiCtrl(sheep_state);
+                updatePwrCtrl(sheep_state);
                 sheepStateCtrl.innerHTML = JSON.stringify(sheep_state);
             }
         }
@@ -225,7 +255,17 @@
     /*
      * send command to sheep
      */
+    let awaitingRequest = false;
     function sendCommand(displaceX, displaceY) {
+
+        // ensure, there is a delay of at least 1000ms between consecutive commands
+        if (awaitingRequest) return;
+        awaitingRequest = true;
+        setTimeout(function (){
+            awaitingRequest = false;
+        }, 1000)
+
+
         let direction = displaceX;
         let speed = displaceY;
 
@@ -239,6 +279,7 @@
 
         // call server
         let url = url_sheep_move + "?speed=" + speed + "&dir=" + direction
+        console.log("Sending: " + url );
         const Http = new XMLHttpRequest();
         Http.open("GET", url);
         Http.responseType = 'json';
@@ -279,7 +320,9 @@
             // calc displacement
             let displaceX = -Math.trunc((pageX - startX - shiftX) / 3);
             let displaceY = -Math.trunc((pageY - startY - shiftY) / 3);
-            console.log("displace " + displaceX + "/" + displaceY);
+            var msg = "Touch displace " + displaceX + "/" + displaceY;
+            console.log(msg);
+            logger.innerHTML = msg;
 
             sendCommand(displaceX, displaceY)
         }
@@ -298,18 +341,8 @@
             ball.style.left = startX + 'px';
             ball.style.top = startY + 'px';
 
-
-            const Http = new XMLHttpRequest();
-            let url = url_sheep_move + "?speed=" + 0 + "&dir=" + 0
-            Http.open("GET", url);
-            Http.responseType = 'json';
-            Http.send();
-            Http.onreadystatechange = function () {
-                if (this.readyState === 4 && this.status === 200) {
-                    let sheep_state = Http.response
-                    updateMotorBars(parseInt(sheep_state['m1']), parseInt(sheep_state['m2']));
-                }
-            }
+            awaitingRequest = false;
+            sendCommand(0,0);
         };
 
     };
@@ -331,7 +364,7 @@
         console.log("Touch displace " + displaceX + "/" + displaceY);
 
         var msg = "Touch displace " + displaceX + "/" + displaceY;
-        log.innerHTML = msg;
+        logger.innerHTML = msg;
 
         sendCommand(displaceX, displaceY)
     }
@@ -348,24 +381,6 @@
         event.stopPropagation();
         return false;
     };
-
-    /*
-        ball.addEventListener('touchmove', function (e) {
-            // grab the location of touch
-            var touchLocation = e.targetTouches[0];
-
-            // assign box new coordinates based on the touch.
-            //ball.style.left = touchLocation.pageX + 'px';
-            // ball.style.top = touchLocation.pageY + 'px';
-
-            // calc displacement
-            let displaceX = Math.trunc((startX - touchLocation.pageX)/3);
-            let displaceY = Math.trunc((startY - touchLocation.pageY)/3);
-            console.log("Touch displace " + displaceX + "/" + displaceY);
-
-            sendCommand(displaceX, displaceY)
-        })
-    */
 
     ball.ondragstart = function () {
         return false;
@@ -384,76 +399,36 @@
     }
 
     function stop() {
-        send(0, 0);
+        sendCommand(0, 0);
     }
 
     function forward() {
-        send(speed, speed);
+        sendCommand(0,speed)
     }
 
     function left() {
-        send(0, speed);
+        sendCommand(speed, 0);
     }
 
     function right() {
-        send(speed, 0);
+        sendCommand(-speed, 0);
     }
 
     function backward() {
-        send(-speed, -speed);
+        sendCommand(0,-speed)
     }
-
 
     var offsetX;
     var offsetY;
     var x;
     var y;
 
-
-    function setMousePosition(event) {
-        console.log("setMousePosition called ");
-        x = event.clientX;
-        y = event.clientY;
-        offsetX = x;
-        offsetY = y;
-        var response = "Offest (" + x + "/" + y + ")";
-        document.getElementById('demo').innerHTML = response;
-    }
-
-    function speedMotors(event) {
-        x = event.clientX;
-        y = event.clientY;
-        var m1 = 0;
-        var m2 = 0;
-        if (offsetX != 0) {
-            var divX = offsetX - x;
-            var divY = offsetY - y;
-            m1 = divY + divX;
-            m2 = divY - divX;
-        }
-        send(m1, m2);
-    }
-
     function stop() {
         offsetX = 0;
         offsetY = 0;
         x = 0;
         y = 0;
-        send(0, 0);
-    }
-
-    function send(m1, m2) {
-        var motorsEnabled = document.getElementById("enableMotor").checked;
-        var response = "Offest (" + offsetX + "/" + offsetY + ") m1:" + m1 + " m2:" + m2;
-        var ip = location.host;
-        console.log("send() called" + response);
-        if (motorsEnabled) {
-            var xmlHttp = new XMLHttpRequest();
-            xmlHttp.open("GET", "http://" + ip + "/motor?m1=" + m1 + "&m2=" + m2, false); // false for synchronous request
-            xmlHttp.send(null);
-            response = xmlHttp.responseText;
-        }
-        document.getElementById('demo').innerHTML = response;
+        sendCommand(0, 0);
     }
 
 </script>
