@@ -47,7 +47,7 @@
 
 <h1>Motordriver (Ver. 0.9)</h1>
 
-<div style="margin-right: auto; margin-left: auto; width: 800px; border: 1px solid black;">
+<div style="margin-right: auto; margin-left: auto; width: 602px; border: 1px solid black;">
     <h2>Robosheep Status</h2>
     <div id="motor_speed_bars">
 
@@ -86,7 +86,7 @@
     <p id="sheep_state">sheep_state</p>
 </div>
 
-<div style="width: 800px; margin: auto; border: 1px solid black;">
+<div style="width: 602px; margin: auto; border: 1px solid black;">
     <h2>Joystick</h2>
 
     <div id="joystick"
@@ -105,7 +105,7 @@
 
 </div>
 
-<div style="width: 800px; margin: auto; border: 1px solid black;">
+<div style="width: 608px; margin: auto; border: 1px solid black;">
     <h2>Control</h2>
     <TABLE>
         <TR>
@@ -152,7 +152,10 @@
 
 </div>
 
+<!--
 <div style="display: table-cell; border: 1px solid black;">
+-->
+<div style="width: 600px; margin: auto; border: 1px solid black;">
     <h2>Log</h2>
     <p id="log">log</p>
 </div>
@@ -225,10 +228,12 @@
     function updatePwrCtrl(sheep_state){
         let powerValue = parseInt(sheep_state['power']);
         let barHeight = powerValue / 24 * 100;
+        if (barHeight > 100) barHeight = 100;
         let voltage = (powerValue / 10.0).toFixed(1);
         const powerSupplyCtrl = document.getElementById('powerSupply');
         powerSupplyCtrl.style.height = barHeight+'%';
         powerSupplyCtrl.innerHTML = voltage + 'V';
+        console.log("Voltage: " + voltage)
     }
 
 
@@ -256,7 +261,7 @@
      * send command to sheep
      */
     let awaitingRequest = false;
-    function sendCommand(displaceX, displaceY) {
+    function sendCommand(speed, direction) {
 
         // ensure, there is a delay of at least 1000ms between consecutive commands
         if (awaitingRequest) return;
@@ -265,9 +270,6 @@
             awaitingRequest = false;
         }, 1000)
 
-
-        let direction = displaceX;
-        let speed = displaceY;
 
         let sum = direction + speed
         let diff = direction - speed
@@ -324,7 +326,9 @@
             console.log(msg);
             logger.innerHTML = msg;
 
-            sendCommand(displaceX, displaceY)
+            let speed = displaceY;
+            let dir = -displaceX;
+            sendCommand(speed, dir)
         }
 
         function onMouseMove(event) {
@@ -366,7 +370,9 @@
         var msg = "Touch displace " + displaceX + "/" + displaceY;
         logger.innerHTML = msg;
 
-        sendCommand(displaceX, displaceY)
+        let speed = displaceY;
+        let dir = -displaceX;
+        sendCommand(speed, dir)
     }
 
     ball.ontouchend = function (e) {
@@ -403,19 +409,19 @@
     }
 
     function forward() {
-        sendCommand(0,speed)
+        sendCommand(speed, 0)
     }
 
     function left() {
-        sendCommand(speed, 0);
+        sendCommand(0, -speed);
     }
 
     function right() {
-        sendCommand(-speed, 0);
+        sendCommand(0, speed);
     }
 
     function backward() {
-        sendCommand(0,-speed)
+        sendCommand(-speed, 0)
     }
 
     var offsetX;
