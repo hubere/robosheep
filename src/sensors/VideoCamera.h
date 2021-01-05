@@ -21,7 +21,7 @@ class VideoCamera {
 	VideoWriter* writer;	// for writing a log-video
 	Mat image;				// the most recent aquired image
 	Stopwatch stopwatch;	// used for time measurement
-	int fpms;				// frames per second; used for performance measurement
+	int fps;				// frames per second; used for performance measurement
 
 public:
 	VideoCamera();
@@ -34,7 +34,7 @@ public:
 	bool read(Mat& frame);
 	bool takeSnapshot(Mat& frame);
 	bool saveFrame();
-	int  getFPMS();
+	int  getFPS();
 	void write(Mat& frame);
 
 private:

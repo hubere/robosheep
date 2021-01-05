@@ -105,6 +105,14 @@ void printHelp(GUI& gui)
 */
 int main(int argc, char** argv) {
 
+
+	// os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "rtsp_transport;udp"
+
+//	putenv("OPENCV_FFMPEG_CAPTURE_OPTIONS=rtsp_transport;udp");
+//	setenv("OPENCV_FFMPEG_CAPTURE_OPTIONS", "rtsp_transport;udp", 1);
+
+
+
 	//
 	// print calling arguments
 	//
@@ -113,13 +121,14 @@ int main(int argc, char** argv) {
 	//
 	// evaluate arguments
 	//
-	String argMode = evaluateArgs(argc, argv, "--mode", "modeControlSheep");
+	String argMode = evaluateArgs(argc, argv, "--mode", "controlSheep");
 	String argCameraURL = evaluateArgs(argc, argv, "--cameraURL", "noCameraURL");
 	String argImageName = evaluateArgs(argc, argv, "--image", "snapshot");
 	String argSimulateSheep = evaluateArgs(argc, argv, "--simulateSheep", "false");
 	String argMowerURL = evaluateArgs(argc, argv, "--mowerURL", "http://192.168.1.108/");
 
-	if (argMode == "modeTestCamera")
+
+	if (argMode == "testCamera")
 	{
 		// --------------------------------------------
 		// Test camera
@@ -130,7 +139,7 @@ int main(int argc, char** argv) {
 		videoCamera.show(gui);
 		videoCamera.test(argCameraURL);
 	}
-	else if (argMode == "modeTrack")
+	else if (argMode == "track")
 	{
 		// --------------------------------------------
 		// we want to track an object
@@ -148,7 +157,7 @@ int main(int argc, char** argv) {
 		}
 
 	}
-	else if (argMode == "modeAnalyseImage")
+	else if (argMode == "analyseImage")
 	{
 		// --------------------------------------------
 		// analyse image given by argument argImageName
@@ -163,7 +172,7 @@ int main(int argc, char** argv) {
 		imageAnalyser.analyse(argImageName, trackedObject);
 
 	}
-	else
+	else if (argMode == "controlSheep")
 	{
 		// --------------------------------------------
 		// control the mower
@@ -366,7 +375,7 @@ int main(int argc, char** argv) {
 			//
 			// print info
 			//
-			gui.printInfo(6, "FPMS:            ", videoCamera.getFPMS());
+			gui.printInfo(6, "FPS:             ", videoCamera.getFPS());
 			gui.printInfo(7, "algtime[ms]:     ", (int)algtime);
 			gui.printInfo(8, "frameDelay[ms]:  ", framedelay);
 			gui.printInfo(9, timingInfo.str());
@@ -380,7 +389,10 @@ int main(int argc, char** argv) {
 		gui.printInfo(10, "Hit any key.");
 		waitKey(5000);
 	}
-
+	else
+	{
+		cerr << endl << "invalid mode: " << argMode << endl;
+	}
 	return (0);
 }
 

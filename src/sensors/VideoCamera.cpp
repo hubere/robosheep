@@ -32,7 +32,6 @@ static int framesTaken = 0;
 void mouseCallBackVideo(int event, int x, int y, int flags, void* userdata);
 Mat curlImg(const char *img_url, int timeout = 10);
 
-
 // ----------------------------------------------
 // Class methods
 // ----------------------------------------------
@@ -40,7 +39,7 @@ Mat curlImg(const char *img_url, int timeout = 10);
 VideoCamera::VideoCamera() {
 	gui = NULL;
 	writer = NULL;
-	fpms = 0;
+	fps = 0;
 	stopwatch.reset();
 }
 
@@ -50,24 +49,25 @@ VideoCamera::~VideoCamera() {
 }
 
 /**
-* open camera stream
-*/
+ * open camera stream
+ */
 bool VideoCamera::open(String& url) {
 
 	cout << endl << "VideoCamera::open(" << url << ") -> ";
-	if (!cap.open(url)){
+	if (!cap.open(url)) {
 		cout << "FAILED!" << endl;
-		// probeUrls(); <- for debugging purpose, enable probeUrls()
-		cout << endl << "VideoCamera::open	ensure camera is switched on " << endl;
-		cout         << "			and use fing to find IP of camera." << endl;
-		cout         << "			adjust parameter --cameraURL to the ip-address." << endl;
+		probeUrls(); // <- for debugging purpose, enable probeUrls()
+		cout << endl << "VideoCamera::open	ensure camera is switched on "
+				<< endl;
+		cout << "			and use fing to find IP of camera." << endl;
+		cout << "			adjust parameter --cameraURL to the ip-address." << endl;
 		return false;
 	}
 	cout << "succeeded." << endl;
 	return true;
 }
 
-void VideoCamera::loadImage(String imageName){
+void VideoCamera::loadImage(String imageName) {
 	image = imread(imageName, 1);
 }
 
@@ -81,21 +81,19 @@ bool VideoCamera::read(Mat& frame) {
 	bool result = true;
 	if (!image.empty())
 		frame = image;
-	else
-	{
+	else {
 		cap >> frame;
 	}
-	
+
 	if (frame.empty())
 		return false;
 
 	int measuringTime = 10; // measure all seconds
-	if (stopwatch.getElapsedTime() > measuringTime * 1000)
-	{
-		fpms = framesTaken * 1000 / measuringTime;
+	if (stopwatch.getElapsedTime() > measuringTime * 1000) {
+		fps = framesTaken * 1000 / measuringTime;
 		framesTaken = 0;
 		stopwatch.reset();
-		if (gui !=NULL)
+		if (gui != NULL)
 			gui->showImage(WINDOW_VIDEO, frame);
 	}
 
@@ -122,7 +120,7 @@ bool VideoCamera::takeSnapshot(Mat& frame) {
 
 bool VideoCamera::saveFrame() {
 	Mat image;
-	if (!cap.read(image)){
+	if (!cap.read(image)) {
 		cout << "VideoCamera::saveFrame:	Could not read image" << endl;
 		return false;
 	}
@@ -132,31 +130,29 @@ bool VideoCamera::saveFrame() {
 	filename[0] = '\0';
 	now = time(NULL);
 
-	if (now != -1)
-	{
-		strftime(filename, sizeof(filename), "snapshot_%Y-%m-%d_%H-%M-%S.jpg", gmtime(&now));
+	if (now != -1) {
+		strftime(filename, sizeof(filename), "snapshot_%Y-%m-%d_%H-%M-%S.jpg",
+				gmtime(&now));
 	}
 
-	imwrite( filename, image );
+	imwrite(filename, image);
 	cout << "VideoCamera::saveFrame:	saved image to " << filename << endl;
 
 	return true;
 }
 
-void VideoCamera::write(Mat& frame)
-{
-	if (writer == NULL)
-	{
+void VideoCamera::write(Mat& frame) {
+	if (writer == NULL) {
 		int frame_width = frame.cols;
 		int frame_height = frame.rows;
-		writer = new VideoWriter("out.avi", CV_FOURCC('M', 'J', 'P', 'G'), 1, Size(frame_width, frame_height), true);
+		writer = new VideoWriter("out.avi", CV_FOURCC('M', 'J', 'P', 'G'), 1,
+				Size(frame_width, frame_height), true);
 	}
 	writer->write(frame);
 }
 
-int VideoCamera::getFPMS()
-{
-	return fpms;
+int VideoCamera::getFPS() {
+	return fps;
 }
 
 void VideoCamera::test(String& url) {
@@ -164,7 +160,8 @@ void VideoCamera::test(String& url) {
 	Mat frame;
 
 	cap >> frame;
-	if (!frame.empty()) gui->showImage(WINDOW_VIDEO, frame);
+	if (!frame.empty())
+		gui->showImage(WINDOW_VIDEO, frame);
 	for (;;) {
 
 		// capture buffered frame
@@ -177,17 +174,16 @@ void VideoCamera::test(String& url) {
 			break;
 
 		++framesTaken;
-		int measuringTime = 10; // measure all seconds
-		if (stopwatch.getElapsedTime() > measuringTime * 1000)
-		{
-			fpms = framesTaken * 1000 / measuringTime;
+		int measuringTime = 10; // measure all 10 seconds
+		if (stopwatch.getElapsedTime() > measuringTime * 1000) {
+			fps = framesTaken / measuringTime;
 			framesTaken = 0;
+			cout << "elapsed time: " << stopwatch.getElapsedTime() << "  fps: " << fps << endl;
 			stopwatch.reset();
-			cout << "fpms: " << fpms << endl;
 		}
 
 		gui->showImage(WINDOW_VIDEO, frame);
-		char key = (char)waitKey(10); //delay N millis, usually long enough to display and capture input
+		char key = (char) waitKey(10); //delay N millis, usually long enough to display and capture input
 
 		switch (key) {
 		case 'q':
@@ -200,17 +196,42 @@ void VideoCamera::test(String& url) {
 	}
 }
 
-
 //-----------------------------------------------
 // private methods
 //-----------------------------------------------
 
 void VideoCamera::probeUrls() {
 
+	printf("\nProbing other URLS ...\n\n");
+
+
+	// os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "rtsp_transport;udp"
+
 	string url;
 
 	// --- URLs ---
-	// url = "http://iris.not.iac.es/axis-cgi/mjpg/video.cgi?resolution=320x240";
+    string urls[]  = {
+    		"rtsp://admin:123456@192.168.0.70:554",
+    		"rtsp://admin:123456@192.168.0.70:554/1",
+    		"http://admin:123456@192.168.0.70:8080/video.cgi?.mjpg",
+    		"rtsp://admin:123456@192.168.0.70:554/cam/realmonitor?channel=1&subtype=0",
+    		"rtsp://admin:123456@192.168.0.70:554/axis-media/media.amp",
+    		"rtsp://admin:123456@192.168.0.70:554/1",
+    		"rtsp://admin:123456@192.168.0.70:554/1",
+    		"rtsp://admin:123456@192.168.0.70:554/video",
+    		"http://admin:123456@192.168.0.70/?action=stream",
+    		"rtsp://admin:123456@192.168.0.70:554/h264/ch1/main/av_stream",
+    		"rtsp://admin:123456@192.168.0.70:554/H264?ch=1&subtype=0",
+    		"rtsp://admin:123456@192.168.0.70:554/onvif1",
+    		"rtsp://admin:123456@192.168.0.70:554/stream=0",
+    		"rtsp://admin:123456@192.168.0.70:554/stream=1",
+    		"rtsp://admin:123456@192.168.0.70:554/live/ch0",
+			"http://admin:123456@192.168.0.70:8080",
+			"http://admin:123456@192.168.0.70:554",
+			"http://admin:123456@192.168.0.70:554/onvif1",
+			"http://admin:hubercek@192.168.0.124/video.cgi?x.mjpg",
+    		""};
+
 	//	url = "http://88.53.197.250/axis-cgi/mjpg/video.cgi?resolution=320x240";
 	// url = "http://192.168.1.101/image/jpeg.cgi";
 	// url = "http://admin:hubercek@192.168.1.101/video.cgi";
@@ -223,18 +244,36 @@ void VideoCamera::probeUrls() {
 	// --- files ---
 	//	 url =		"/home/edi/workspace/robosheep/resources/M20120703_200959.avi";
 
+
+
+	for( int a = 0; urls[a].length(); a = a + 1 ){
+		url = urls[a];
+		printf("Try to open '%s' ...", url.c_str());
+		VideoCapture cap(url);
+//		cap.open(url.c_str());
+		if (!cap.isOpened()) {
+			printf("failed\n");
+		}else{
+			printf("---SUCCESS---\n");
+			exit(0);
+		}
+
+	}
+
+
+
 	printf("\nTry to open '%s' ...", url.c_str());
-	cap.open("http://192.168.1.101/video.cgi");
+	cap.open(url.c_str());
 	if (!cap.isOpened()) {
 		printf("failed\n");
 
-		url = "http://robosheep:mower@192.168.1.113:80/video.cgi?x.mjpg";
+		url = "rtsp://admin:123456@192.168.0.70:554/onvif1";
 		printf("\nTry to open '%s' ...", url.c_str());
-		cap.open("http://robosheep:mower@192.168.1.113:80/video.cgi?x.mjpg");
+		cap.open(url.c_str());
 		if (!cap.isOpened()) {
 			printf("failed\n");
 
-			url = "http://192.168.1.101/video.cgi?x.mjpg";
+			url = "http://admin:123456@192.168.0.70:8080";
 			printf("\nTry to open '%s' ...", url.c_str());
 			cap.open(url.c_str());
 			if (!cap.isOpened()) {
@@ -253,33 +292,32 @@ void VideoCamera::probeUrls() {
 
 	printf("\n\nVideoCapture properties:\n");
 	printf("CV_CAP_PROP_FRAME_WIDTH properties:  %f\n",
-		cap.get(CV_CAP_PROP_FRAME_WIDTH));
+			cap.get(CV_CAP_PROP_FRAME_WIDTH));
 	printf("CV_CAP_PROP_FRAME_HEIGHT properties: %f\n",
-		cap.get(CV_CAP_PROP_FRAME_HEIGHT));
+			cap.get(CV_CAP_PROP_FRAME_HEIGHT));
 	printf("CV_CAP_PROP_FPS properties:          %f\n",
-		cap.get(CV_CAP_PROP_FPS));
+			cap.get(CV_CAP_PROP_FPS));
 	printf("CV_CAP_PROP_FORMAT properties:       %f\n",
-		cap.get(CV_CAP_PROP_FORMAT));
+			cap.get(CV_CAP_PROP_FORMAT));
 	printf("CV_CAP_PROP_MODE properties:         %f\n",
-		cap.get(CV_CAP_PROP_MODE));
+			cap.get(CV_CAP_PROP_MODE));
 	printf("CV_CAP_PROP_BRIGHTNESS properties:   %f\n",
-		cap.get(CV_CAP_PROP_BRIGHTNESS));
+			cap.get(CV_CAP_PROP_BRIGHTNESS));
 	printf("CV_CAP_PROP_CONTRAST properties:     %f\n",
-		cap.get(CV_CAP_PROP_CONTRAST));
+			cap.get(CV_CAP_PROP_CONTRAST));
 	printf("CV_CAP_PROP_SATURATION properties:   %f\n",
-		cap.get(CV_CAP_PROP_SATURATION));
+			cap.get(CV_CAP_PROP_SATURATION));
 	printf("CV_CAP_PROP_HUE properties:          %f\n",
-		cap.get(CV_CAP_PROP_HUE));
+			cap.get(CV_CAP_PROP_HUE));
 	printf("CV_CAP_PROP_GAIN properties:         %f\n",
-		cap.get(CV_CAP_PROP_GAIN));
+			cap.get(CV_CAP_PROP_GAIN));
 	printf("CV_CAP_PROP_EXPOSURE properties:     %f\n",
-		cap.get(CV_CAP_PROP_EXPOSURE));
+			cap.get(CV_CAP_PROP_EXPOSURE));
 	printf("CV_CAP_PROP_CONVERT_RGB properties:  %f\n",
-		cap.get(CV_CAP_PROP_CONVERT_RGB));
+			cap.get(CV_CAP_PROP_CONVERT_RGB));
 	printf("\n\n");
 
 }
-
 
 //-----------------------------------------------
 // static methods
@@ -290,17 +328,15 @@ void VideoCamera::probeUrls() {
 // every router / hub is entitled to fragment it into parts
 // (like 1-8k at a time),
 // so insert the part at the end of our stream.
-size_t write_data(char *ptr, size_t size, size_t nmemb, void *userdata)
-{
-	vector<uchar> *stream = (vector<uchar>*)userdata;
+size_t write_data(char *ptr, size_t size, size_t nmemb, void *userdata) {
+	vector<uchar> *stream = (vector<uchar>*) userdata;
 	size_t count = size * nmemb;
 	stream->insert(stream->end(), ptr, ptr + count);
 	return count;
 }
 
 //function to retrieve the image as cv::Mat data type
-cv::Mat curlImg(const char *img_url, int timeout)
-{
+cv::Mat curlImg(const char *img_url, int timeout) {
 	vector<uchar> stream;
 	CURL *curl = curl_easy_init();
 	curl_easy_setopt(curl, CURLOPT_URL, img_url); //the img url
@@ -314,7 +350,8 @@ cv::Mat curlImg(const char *img_url, int timeout)
 
 void mouseCallBackVideo(int event, int x, int y, int flags, void* userdata) {
 	Mat* rgb = (Mat*) userdata;
-	if (rgb->dims == 0) return;
+	if (rgb->dims == 0)
+		return;
 
 	//
 	// on left click, show coordinates
@@ -322,8 +359,8 @@ void mouseCallBackVideo(int event, int x, int y, int flags, void* userdata) {
 	if (event == EVENT_LBUTTONDOWN) {
 
 		cout << "position (" << x << ", " << y << ")" << endl;
-		cout << "greenContour.push_back(Point("<< x <<", "<< y << ")" << endl;
-
+		cout << "greenContour.push_back(Point(" << x << ", " << y << ")"
+				<< endl;
 
 	} else if (event == EVENT_RBUTTONDOWN) {
 		cout << "Right button of the mouse is clicked - position (" << x << ", "
@@ -337,5 +374,4 @@ void mouseCallBackVideo(int event, int x, int y, int flags, void* userdata) {
 }
 
 }  // namespace robosheep
-
 

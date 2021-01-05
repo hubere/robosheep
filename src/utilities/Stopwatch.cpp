@@ -18,6 +18,9 @@ Stopwatch::~Stopwatch()
 {
 }
 
+/*
+ * Returns millisseconds since last call to Stopwatch::reset()
+ */
 int Stopwatch::getElapsedTime()
 {
 	return static_cast<int>((getTickCount() - frameProcessingStart)*1000. / getTickFrequency());
