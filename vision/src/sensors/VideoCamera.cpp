@@ -57,7 +57,7 @@ bool VideoCamera::open(String& url) {
 	cout << endl << "VideoCamera::open(" << url << ") -> ";
 	if (!cap.open(url)){
 		cout << "FAILED!" << endl;
-		// probeUrls(); <- for debugging purpose, enable probeUrls()
+		probeUrls(); // <- for debugging purpose, enable probeUrls()
 		cout << endl << "VideoCamera::open	ensure camera is switched on " << endl;
 		cout         << "			and use fing to find IP of camera." << endl;
 		cout         << "			adjust parameter --cameraURL to the ip-address." << endl;

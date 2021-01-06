@@ -100,11 +100,35 @@ void printHelp(GUI& gui)
 	gui.printInfo(line++, "");
 }
 
+
+String getDomain(String url)
+{
+	char domain[1024];	
+	int retLen = sscanf(url.c_str(), "http://%[^/]", domain);
+	cout << "URL: " << url.c_str() << endl;	
+	cout << "Domain Found: " << domain << endl;
+ 
+	return String(domain);
+}
+
+void dontUseProxyForUrls(String cameraURL, String mowerURL)
+{
+	String noproxy = ("noproxy="s + getDomain(cameraURL) + "," + getDomain(mowerURL) + ",$no_proxy").c_str();
+
+	system(("noproxy="s + cameraURL + "," + mowerURL + ",$no_proxy").c_str());
+	system(("export noproxy"s).c_str());
+
+	putenv((char *)noproxy.c_str());
+}
+
 /**
 * The main method. That's where every thing starts.
 */
 int main(int argc, char** argv) {
 
+
+	std::cout << cv::getBuildInformation() << std::endl;
+	
 	//
 	// print calling arguments
 	//
@@ -118,6 +142,8 @@ int main(int argc, char** argv) {
 	String argImageName = evaluateArgs(argc, argv, "--image", "snapshot");
 	String argSimulateSheep = evaluateArgs(argc, argv, "--simulateSheep", "false");
 	String argMowerURL = evaluateArgs(argc, argv, "--mowerURL", "http://192.168.0.112/");
+
+	dontUseProxyForUrls(argCameraURL, argMowerURL); // <- does not work :-(
 
 	if (argMode == "modeTestCamera")
 	{
