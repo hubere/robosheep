@@ -2,6 +2,7 @@ from threading import Thread
 import cv2
 
 from CountsPerSec import CountsPerSec
+from globals import GUI
 
 
 class VideoCamera:
@@ -22,13 +23,12 @@ class VideoCamera:
     def get(self):
         cps = CountsPerSec().start()
         while not self.stopped:
+            (self.grabbed, self.frame) = self.stream.read()
             if not self.grabbed:
                 self.stop()
             else:
-                (self.grabbed, self.frame) = self.stream.read()
                 cps.increment()
-                #frame = putIterationsPerSec(frame, cps.countsPerSec())
-
+                GUI.putText("VideoCamera: {:.0f} fps".format(cps.countsPerSec()), 1)
 
     def stop(self):
         self.stopped = True

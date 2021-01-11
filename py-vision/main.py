@@ -11,6 +11,7 @@ import cv2
 from CountsPerSec import CountsPerSec
 from VideoCamera import VideoCamera
 from VideoShow import VideoShow
+from globals import GUI
 from gui import Gui
 from thread_demo import putIterationsPerSec
 
@@ -19,8 +20,11 @@ def test_camera():
     url = args["cameraURL"]
 
     video_getter = VideoCamera(url).start()
-    gui = Gui()
     cps = CountsPerSec().start()
+
+    print("Hit q to quit.")
+
+    GUI.putText("Hit q to quit.", 25)
 
     while True:
         if (cv2.waitKey(1) == ord("q")) or video_getter.stopped:
@@ -29,33 +33,11 @@ def test_camera():
 
         frame = video_getter.frame
         frame = putIterationsPerSec(frame, cps.countsPerSec())
-        # cv2.imshow("Video", frame)
         cps.increment()
-        gui.set_frame(frame, 0, 0)
+        GUI.set_video_frame(frame)
+        screen = GUI.get_screen()
+        cv2.imshow("Robosheep", screen)
         time.sleep(1)
-
-
-def test_camera2():
-    url = args["cameraURL"]
-
-    video_getter = VideoCamera(url).start()
-    gui = Gui()
-    video_shower = VideoShow(video_getter.frame).start()
-    cps = CountsPerSec().start()
-
-    while True:
-        if video_getter.stopped:
-            break
-
-        frame = video_getter.frame
-        video_shower.frame = frame
-        # frame = putIterationsPerSec(frame, cps.countsPerSec())
-        # gui.set_frame(frame, 0, 0)
-        # cv2.imshow("Video2", frame)
-        cps.increment()
-        time.sleep(1000)
-
-    pass
 
 
 def track():
