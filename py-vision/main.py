@@ -5,24 +5,17 @@
 import argparse
 import os
 import time
-
 import cv2
+from colorfilters import HSVFilter
 
-from CountsPerSec import CountsPerSec
+from ImageAnalyser import ImageAnalyser
+from TrackedObject import TrackedObject
 from VideoCamera import VideoCamera
-from VideoShow import VideoShow
 from globals import GUI
-from gui import Gui
-from thread_demo import putIterationsPerSec
 
 
 def test_camera():
-    url = args["cameraURL"]
-
-    video_getter = VideoCamera(url).start()
-    cps = CountsPerSec().start()
-
-    print("Hit q to quit.")
+    video_getter = VideoCamera(args["cameraURL"]).start()
 
     GUI.putText("Hit q to quit.", 25)
 
@@ -32,21 +25,27 @@ def test_camera():
             break
 
         frame = video_getter.frame
-        frame = putIterationsPerSec(frame, cps.countsPerSec())
-        cps.increment()
         GUI.set_video_frame(frame)
-        screen = GUI.get_screen()
-        cv2.imshow("Robosheep", screen)
-        time.sleep(1)
-
-
-def track():
-    print("track not implemented yet.")
-    pass
+        cv2.imshow("Robosheep", GUI.get_screen())
+        time.sleep(0.1) # show 10 fps
 
 
 def analyse_image():
-    print("analyse_image not implemented yet.")
+    """
+    analyse image given by argument argImageName
+    """
+
+    print("see https://github.com/alkasm/colorfilters")
+
+    img = cv2.imread(args["cameraURL"])
+    window = HSVFilter(img)
+    window.show()
+
+    print(f"Image filtered in HSV between {window.lowerb} and {window.upperb}.")
+    pass
+
+def track():
+    print("track not implemented yet.")
     pass
 
 
