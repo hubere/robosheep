@@ -32,7 +32,7 @@ def test_camera():
 
 def analyse_image():
     """
-    analyse image given by argument argImageName
+    analyse image given by argument cameraURL
     """
 
     print("see https://github.com/alkasm/colorfilters")
@@ -44,8 +44,26 @@ def analyse_image():
     print(f"Image filtered in HSV between {window.lowerb} and {window.upperb}.")
     pass
 
+
 def track():
-    print("track not implemented yet.")
+    video_getter = VideoCamera(args["cameraURL"]).start()
+    trackedObject = TrackedObject()
+    imageAnalyser = ImageAnalyser()
+
+    GUI.putText("Hit q to quit.", 25)
+
+    while True:
+        if (cv2.waitKey(1) == ord("q")) or video_getter.stopped:
+            video_getter.stop()
+            break
+
+        frame = video_getter.frame
+        imageAnalyser.detectObjectPositionByMoments(frame, trackedObject)
+
+        GUI.set_video_frame(frame)
+        cv2.imshow("Robosheep", GUI.get_screen())
+
+        time.sleep(0.1) # show 10 fps
     pass
 
 

@@ -1,6 +1,8 @@
 import cv2
+import numpy as np
 
 from TrackedObject import TrackedObject
+from globals import GUI
 
 
 def findContours(imageToAnalyse, colorBlob):
@@ -78,6 +80,30 @@ class ImageAnalyser:
         """
         pass
 
-    def analyse(self, imageToAnalyse, trackedObject):
+    def analyse(self, imageToAnalyse, trackedObject: TrackedObject):
+        pass
+
+    def detectObjectPositionByMoments(self, frame, trackedObject: TrackedObject):
+
+        #treshColorLow = np.array([20, 100, 100])
+        #treshColorHi = np.array([30, 255, 255])
+        treshColorLow = np.array([92, 102, 134])
+        treshColorHi = np.array([102, 219, 244])
+
+        imgHSV = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        imgThreshed = cv2.inRange(imgHSV, treshColorLow, treshColorHi)
+
+        GUI.set_frame_aux1(imgHSV)
+        GUI.set_frame_aux2(imgThreshed)
+
+        moments = cv2.moments(imgThreshed);
+
+        print("done")
+#        trackedObject.setAktualPos(Point_ < int > (int(floor(moment10 / area)), int(floor(moment01 / area))));
+
+        pass
+
+    def detectObjectPositionByContours(self, frame, trackedObject: TrackedObject):
+
         pass
 
