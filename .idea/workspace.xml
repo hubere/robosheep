@@ -20,25 +20,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b1169ea1-08b2-4f85-a2f3-bf8b0f5fc14c" name="Default Changelist" comment="Adjust direction.">
-      <change afterPath="$PROJECT_DIR$/py-vision/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/py-vision/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/py-vision/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/py-vision/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/py-vision/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/py-vision/.idea/py-vision.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/py-vision/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/py-vision/CountsPerSec.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/py-vision/VideoCamera.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/py-vision/VideoShow.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/py-vision/gui.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/py-vision/main.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/py-vision/thread_demo.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/simple_demo/.vscode/settings.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/resources/vlcsnap-2021-01-12-12h30m33s007.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/resources/vlcsnap-2021-01-12-16h15m07s270.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vision/.vscode/c_cpp_properties.json" beforeDir="false" afterPath="$PROJECT_DIR$/vision/.vscode/c_cpp_properties.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vision/.vscode/launch.json" beforeDir="false" afterPath="$PROJECT_DIR$/vision/.vscode/launch.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vision/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/vision/src/main.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vision/src/sensors/VideoCamera.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/vision/src/sensors/VideoCamera.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/py-vision/ImageAnalyser.py" beforeDir="false" afterPath="$PROJECT_DIR$/py-vision/ImageAnalyser.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/py-vision/TrackedObject.py" beforeDir="false" afterPath="$PROJECT_DIR$/py-vision/TrackedObject.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -138,7 +124,9 @@
       <workItem from="1607517073609" duration="11723000" />
       <workItem from="1607584099542" duration="3602000" />
       <workItem from="1607601445515" duration="8189000" />
-      <workItem from="1608122297902" duration="26890000" />
+      <workItem from="1608122297902" duration="26894000" />
+      <workItem from="1610379896416" duration="126000" />
+      <workItem from="1610384029236" duration="12889000" />
     </task>
     <task id="LOCAL-00001" summary="Used WebServer and Json, but does not compile">
       <created>1606501281915</created>

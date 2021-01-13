@@ -96,10 +96,24 @@ class ImageAnalyser:
         GUI.set_frame_aux1(imgHSV)
         GUI.set_frame_aux2(imgThreshed)
 
-        moments = cv2.moments(imgThreshed);
+        mo = cv2.moments(imgThreshed);
+
+        area = mo['m00']
+        mo10 = mo['m10']
+        mo01 = mo['m01']
+
+        if area == 0:
+            print("could not find color. Maybe we got a grayscale image?!")
+            area = 0.1
 
         print("done")
-#        trackedObject.setAktualPos(Point_ < int > (int(floor(moment10 / area)), int(floor(moment01 / area))));
+        GUI.putText("Moments: ", 10)
+        GUI.putText(" area=" + str(area), 11)
+        GUI.putText(" mo10=" + str(mo10), 12)
+        GUI.putText(" mo01=" + str(mo01), 13)
+        GUI.putText(" center=(" + str(int(mo10/area)) + "," + str(int(mo01/area)) + ")", 14)
+
+        trackedObject.setAktualPos((int(mo10/area), int(mo01/area)))
 
         pass
 

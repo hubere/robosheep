@@ -59,6 +59,7 @@ def track():
 
         frame = video_getter.frame
         imageAnalyser.detectObjectPositionByMoments(frame, trackedObject)
+        trackedObject.draw_position_history(frame)
 
         GUI.set_video_frame(frame)
         cv2.imshow("Robosheep", GUI.get_screen())
