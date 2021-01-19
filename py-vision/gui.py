@@ -31,7 +31,7 @@ class Gui:
         if self.dirty:
             self.frame_info = np.zeros((HIGHT, WIDTH, 3), np.uint8)
             for num, info in enumerate(self.info_lines, start=1):
-                cv2.putText(self.frame_info, info, (10, num * 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255))
+                cv2.putText(self.frame_info, info, (10, num * 10), cv2.FONT_HERSHEY_SIMPLEX, 0.25, (255, 255, 255))
 
             scaled_video_frame = cv2.resize(self.frame_video, (WIDTH, HIGHT))
             scaled_frame_aux1 = cv2.resize(self.frame_aux1, (WIDTH, HIGHT))
