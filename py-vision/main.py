@@ -9,8 +9,11 @@ import cv2
 from colorfilters import HSVFilter
 
 from ImageAnalyser import ImageAnalyser
+from MowerControler import MowerControler
+from Planner import Planner
 from TrackedObject import TrackedObject
 from VideoCamera import VideoCamera
+from VirtualSheep import VirtualSheep
 from globals import GUI
 
 
@@ -19,15 +22,11 @@ def test_camera():
 
     GUI.putText("Hit q to quit.", 25)
 
-    while True:
-        if (cv2.waitKey(1) == ord("q")) or video_getter.stopped:
-            video_getter.stop()
-            break
-
+    while not quit_loop():
         frame = video_getter.frame
         GUI.set_video_frame(frame)
         cv2.imshow("Robosheep", GUI.get_screen())
-        time.sleep(0.1) # show 10 fps
+        time.sleep(0.1)  # show 10 fps
 
 
 def analyse_image():
@@ -64,12 +63,39 @@ def track():
         GUI.set_video_frame(frame)
         cv2.imshow("Robosheep", GUI.get_screen())
 
-        time.sleep(0.1) # show 10 fps
+        time.sleep(0.1)  # show 10 fps
     pass
 
 
+def quit_loop() -> bool:
+    return cv2.waitKey(1) == ord("q")
+
+
 def control_sheep():
-    print("control_sheep not implemented yet.")
+    video_getter = VideoCamera(args["cameraURL"]).start()
+    trackedObject = TrackedObject()
+    imageAnalyser = ImageAnalyser()
+    planner = Planner(trackedObject)
+    mowerControler = MowerControler(args["mowerURL"])
+    virtualSheep = VirtualSheep(args["mowerURL"])
+
+    GUI.putText("Hit q to quit.", 25)
+
+    while not quit_loop():
+        frame = video_getter.frame
+        virtualSheep.draw_your_self(frame)
+        imageAnalyser.detectObjectPositionByMoments(frame, trackedObject)
+        trackedObject.draw_position_history(frame)
+        planner.plan()
+        virtualSheep.update()
+        virtualSheep.move(planner.motorSpeed1, planner.motorSpeed2)
+        mowerControler.move(planner.motorSpeed1, planner.motorSpeed2)
+
+        GUI.set_video_frame(frame)
+        cv2.imshow("Robosheep", GUI.get_screen())
+        time.sleep(0.1)  # show 10 fps
+
+    video_getter.stop()
     pass
 
 
@@ -88,8 +114,12 @@ if __name__ == '__main__':
                     default="noCameraURL",
                     help="URL of video stream. As can be viewed by VLC")
     ap.add_argument("--mowerURL",
-                    default="none",
+                    default="simulateSheep",
                     help="URL of sheep controller.")
+    ap.add_argument("--algorithm",
+                    default="momements",
+                    help="algorithm used to find position and direction of sheep",
+                    choices=["momements", "backgroungSubstraction"])
     ap.add_argument("--thread", "-t",
                     default="none",
                     help="Threading mode: get (video read in its own thread),"

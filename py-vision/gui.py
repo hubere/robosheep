@@ -6,8 +6,10 @@ import numpy as np
 
 
 # orig 1920 x 1080
-HIGHT = 540
-WIDTH = 960
+#HIGHT = 540
+#WIDTH = 960
+HIGHT = 270
+WIDTH = 480
 
 
 class Gui:
@@ -35,7 +37,8 @@ class Gui:
             scaled_frame_aux1 = cv2.resize(self.frame_aux1, (WIDTH, HIGHT))
             scaled_frame_aux2 = cv2.resize(self.frame_aux2, (WIDTH, HIGHT))
 
-            scaled_frame_aux2 = cv2.cvtColor(scaled_frame_aux2, cv2.COLOR_GRAY2BGR)
+            if len(scaled_frame_aux2.shape) == 2:
+                scaled_frame_aux2 = cv2.cvtColor(scaled_frame_aux2, cv2.COLOR_GRAY2BGR)
 
             left_screen = np.concatenate((self.frame_info, scaled_video_frame), axis=0)
             right_screen = np.concatenate((scaled_frame_aux1, scaled_frame_aux2), axis=0)

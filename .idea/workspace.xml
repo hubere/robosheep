@@ -20,11 +20,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b1169ea1-08b2-4f85-a2f3-bf8b0f5fc14c" name="Default Changelist" comment="Adjust direction.">
-      <change afterPath="$PROJECT_DIR$/resources/vlcsnap-2021-01-12-12h30m33s007.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/vlcsnap-2021-01-12-16h15m07s270.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/py-vision/MowerControler.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/py-vision/Planner.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/py-vision/Utils.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/py-vision/VirtualSheep.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/py-vision/ImageAnalyser.py" beforeDir="false" afterPath="$PROJECT_DIR$/py-vision/ImageAnalyser.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/py-vision/TrackedObject.py" beforeDir="false" afterPath="$PROJECT_DIR$/py-vision/TrackedObject.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/py-vision/VideoCamera.py" beforeDir="false" afterPath="$PROJECT_DIR$/py-vision/VideoCamera.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/py-vision/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/py-vision/gui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/py-vision/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/py-vision/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -126,7 +131,9 @@
       <workItem from="1607601445515" duration="8189000" />
       <workItem from="1608122297902" duration="26894000" />
       <workItem from="1610379896416" duration="126000" />
-      <workItem from="1610384029236" duration="12889000" />
+      <workItem from="1610384029236" duration="19958000" />
+      <workItem from="1610637369693" duration="618000" />
+      <workItem from="1610993571953" duration="3054000" />
     </task>
     <task id="LOCAL-00001" summary="Used WebServer and Json, but does not compile">
       <created>1606501281915</created>
@@ -344,10 +351,10 @@
       <screen x="72" y="27" width="2488" height="1413" />
     </state>
     <state x="164" y="87" width="1034" height="1213" key="com.intellij.history.integration.ui.views.FileHistoryDialog/72.27.2488.1413/2560.728.1920.1080@72.27.2488.1413" timestamp="1607929140645" />
-    <state x="380" y="472" width="618" height="522" key="find.popup" timestamp="1606839025889">
+    <state x="380" y="472" width="821" height="522" key="find.popup" timestamp="1610998798700">
       <screen x="72" y="27" width="2488" height="1413" />
     </state>
-    <state x="380" y="472" width="618" height="522" key="find.popup/72.27.2488.1413/2560.728.1920.1080@72.27.2488.1413" timestamp="1606839025889" />
+    <state x="380" y="472" width="821" height="522" key="find.popup/72.27.2488.1413/2560.728.1920.1080@72.27.2488.1413" timestamp="1610998798700" />
     <state x="1041" y="625" width="540" height="223" key="vcs.readOnlyHandler.ReadOnlyStatusDialog" timestamp="1606580178074">
       <screen x="72" y="27" width="2488" height="1413" />
     </state>

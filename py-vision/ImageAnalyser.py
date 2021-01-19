@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 
 from TrackedObject import TrackedObject
+from Utils import Point
 from globals import GUI
 
 
@@ -106,14 +107,13 @@ class ImageAnalyser:
             print("could not find color. Maybe we got a grayscale image?!")
             area = 0.1
 
-        print("done")
         GUI.putText("Moments: ", 10)
         GUI.putText(" area=" + str(area), 11)
         GUI.putText(" mo10=" + str(mo10), 12)
         GUI.putText(" mo01=" + str(mo01), 13)
         GUI.putText(" center=(" + str(int(mo10/area)) + "," + str(int(mo01/area)) + ")", 14)
 
-        trackedObject.setAktualPos((int(mo10/area), int(mo01/area)))
+        trackedObject.setAktualPos(Point(int(mo10/area), int(mo01/area)))
 
         pass
 

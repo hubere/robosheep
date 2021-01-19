@@ -1,4 +1,6 @@
 from threading import Thread
+from time import sleep
+
 import cv2
 
 from CountsPerSec import CountsPerSec
@@ -12,6 +14,7 @@ class VideoCamera:
     """
 
     def __init__(self, src=0):
+        self.src = src
         self.stream = cv2.VideoCapture(src)
         (self.grabbed, self.frame) = self.stream.read()
         self.stopped = False
@@ -23,10 +26,14 @@ class VideoCamera:
     def get(self):
         cps = CountsPerSec().start()
         while not self.stopped:
-            (self.grabbed, self.frame) = self.stream.read()
+            (self.grabbed, frame) = self.stream.read()
             if not self.grabbed:
-                self.stop()
+                # no frame could be read from camera ... try to read from file
+                self.frame = cv2.imread(self.src)
+                sleep(0.1)
+                #self.stop()
             else:
+                self.frame = frame
                 cps.increment()
                 GUI.putText("VideoCamera: {:.0f} fps".format(cps.countsPerSec()), 1)
 
