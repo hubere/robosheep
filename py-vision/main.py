@@ -74,7 +74,7 @@ def quit_loop() -> bool:
 def control_sheep():
     video_getter = VideoCamera(args["cameraURL"]).start()
     trackedObject = TrackedObject()
-    imageAnalyser = ImageAnalyser()
+    imageAnalyser = ImageAnalyser(algorithm=args['algorithm'])
     planner = Planner(trackedObject)
     mowerControler = MowerControler(args["mowerURL"])
     virtualSheep = VirtualSheep(args["mowerURL"])
@@ -84,7 +84,7 @@ def control_sheep():
     while not quit_loop():
         frame = video_getter.frame
         virtualSheep.draw_your_self(frame)
-        imageAnalyser.detectObjectPositionByMoments(frame, trackedObject)
+        imageAnalyser.detect(frame, trackedObject)
         trackedObject.draw_position_history(frame)
         planner.plan()
         virtualSheep.update()
@@ -119,7 +119,7 @@ if __name__ == '__main__':
     ap.add_argument("--algorithm",
                     default="momements",
                     help="algorithm used to find position and direction of sheep",
-                    choices=["momements", "backgroungSubstraction"])
+                    choices=["momements", "contours", "tracker", "backgroundSubstraction"])
     ap.add_argument("--thread", "-t",
                     default="none",
                     help="Threading mode: get (video read in its own thread),"

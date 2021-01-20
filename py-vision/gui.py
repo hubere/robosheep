@@ -31,11 +31,14 @@ class Gui:
         if self.dirty:
             self.frame_info = np.zeros((HIGHT, WIDTH, 3), np.uint8)
             for num, info in enumerate(self.info_lines, start=1):
-                cv2.putText(self.frame_info, info, (10, num * 10), cv2.FONT_HERSHEY_SIMPLEX, 0.25, (255, 255, 255))
+                cv2.putText(self.frame_info, info, (10, num * 15), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 255))
 
             scaled_video_frame = cv2.resize(self.frame_video, (WIDTH, HIGHT))
             scaled_frame_aux1 = cv2.resize(self.frame_aux1, (WIDTH, HIGHT))
             scaled_frame_aux2 = cv2.resize(self.frame_aux2, (WIDTH, HIGHT))
+
+            if len(scaled_frame_aux1.shape) == 2:
+                scaled_frame_aux1 = cv2.cvtColor(scaled_frame_aux1, cv2.COLOR_GRAY2BGR)
 
             if len(scaled_frame_aux2.shape) == 2:
                 scaled_frame_aux2 = cv2.cvtColor(scaled_frame_aux2, cv2.COLOR_GRAY2BGR)

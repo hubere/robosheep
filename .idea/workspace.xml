@@ -20,10 +20,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b1169ea1-08b2-4f85-a2f3-bf8b0f5fc14c" name="Default Changelist" comment="Adjust direction.">
-      <change afterPath="$PROJECT_DIR$/resources/orange-blue.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/py-vision/Utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/py-vision/Utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/py-vision/VirtualSheep.py" beforeDir="false" afterPath="$PROJECT_DIR$/py-vision/VirtualSheep.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/py-vision/ImageAnalyser.py" beforeDir="false" afterPath="$PROJECT_DIR$/py-vision/ImageAnalyser.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/py-vision/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/py-vision/gui.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -129,7 +127,7 @@
       <workItem from="1610379896416" duration="126000" />
       <workItem from="1610384029236" duration="19958000" />
       <workItem from="1610637369693" duration="618000" />
-      <workItem from="1610993571953" duration="4617000" />
+      <workItem from="1610993571953" duration="5324000" />
     </task>
     <task id="LOCAL-00001" summary="Used WebServer and Json, but does not compile">
       <created>1606501281915</created>

@@ -17,31 +17,17 @@ class VirtualSheep:
         self.speedM1 = 0
         self.speedM2 = 0
         self.dir = 45
-        self.velocity = 1
+        self.velocity = 0
+        self.sheep_image = cv2.resize(self.sheep_image, (100, 100))
 
     def draw_your_self(self, frame):
         if self.url != "simulateSheep":
             return
 
-        #
-        # draw sheep in original frame
-        #
         if self.position != Point(0, 0):
             sheep_rotated = self.rotate_image_without_cropping(self.sheep_image, self.dir)
             frame = self.merge_image2_into_image1(frame, sheep_rotated)
 
-        if self.lastpos != Point(0, 0):
-            cv2.line(frame, self.lastpos.tupel(), self.position.tupel(), (255, 0, 0), 2)
-            cv2.circle(frame, self.position.tupel(), 4, (255, 0, 0), 2)
-
-        #
-        # output text in copy of frame
-        #
-
-        # sprintf(buffer, "Use 'w','y','a','s','+','-' to control sheep");
-        # putText(newFame, buffer, Point(40, 50), FONT_HERSHEY_COMPLEX_SMALL, 1, Scalar::all(255), 1, 8);
-        # sprintf(buffer, "(%.0f,%.0f): v=%d, d=%d\n", pos.x, pos.y, velocity, dir);
-        # putText(newFame, buffer, Point(40, 100), FONT_HERSHEY_COMPLEX_SMALL, 1, Scalar::all(255), 1, 8);
 
     def merge_image2_into_image1(self, img1, img2):
         """

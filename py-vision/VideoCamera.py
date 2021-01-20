@@ -25,6 +25,10 @@ class VideoCamera:
 
     def get(self):
         cps = CountsPerSec().start()
+
+        # initialize the FPS throughput estimator
+        fps = None
+
         while not self.stopped:
             (self.grabbed, frame) = self.stream.read()
             if not self.grabbed:
