@@ -15,7 +15,6 @@ class Planner:
         self.proximity = 5
         self.trackedObject = trackedObject
         self.velocity = 0
-        self.rotate = 0
         self.motorSpeed1 = 0
         self.motorSpeed2 = 0
 
@@ -34,22 +33,23 @@ class Planner:
 
         if self.aim is not None:
             akt_pos: Point = self.trackedObject.position
-            tiDegree, tsDegree = self.calc_direction_to_head(akt_pos)
-            rotate = self.calc_movement_commands(tiDegree, tsDegree)
-            self.motorSpeed1, self.motorSpeed2 = self.calc_motor_speeds(rotate)
+            ti_degree = self.trackedObject.direction
+            ts_degree = self.calc_direction_to_head(akt_pos)
+            if ti_degree is not None:
+                rotate = self.calc_movement_commands(ti_degree, ts_degree)
+                self.motorSpeed1, self.motorSpeed2 = self.calc_motor_speeds(rotate)
 
         GUI.putText("Planer:", 20)
         GUI.putText(" aim=" + str(self.aim) + " vel=" + str(self.velocity), 21)
         GUI.putText(" :", 22)
         pass
 
-    def calc_direction_to_head(self, pos: Point) -> Tuple[int, int]:
-        tiDegree = Utils.getKurswinkelDegree(Point(), self.trackedObject.direction)  # Kurswinkel ist aus ImageAnalyser
-        tsDegree = Utils.getKurswinkelDegree(pos, self.aim)  # Kurswinkel soll
-        return tiDegree, tsDegree
+    def calc_direction_to_head(self, pos: Point) -> int:
+        ts_degree = Utils.getKurswinkelDegree(pos, self.aim)  # Kurswinkel soll
+        return ts_degree
 
-    def calc_movement_commands(self, tsDegree: int, tiDegree: int ) -> int:
-        rotate = tsDegree - tiDegree
+    def calc_movement_commands(self, ti_degree: int, ts_degree: int) -> int:
+        rotate = ts_degree - ti_degree
         if rotate > 180:
             rotate = rotate - 360
         if rotate < -180:
@@ -58,14 +58,14 @@ class Planner:
 
     def calc_motor_speeds(self, rotate: int) -> Tuple[int, int]:
         if rotate > 0:
-            motorSpeed1 = self.velocity + self.velocity / 4
-            motorSpeed2 = self.velocity - self.velocity / 4
+            motor_speed1 = self.velocity + self.velocity / 4
+            motor_speed2 = self.velocity - self.velocity / 4
 
         else:
-            motorSpeed1 = self.velocity - self.velocity / 4
-            motorSpeed2 = self.velocity + self.velocity / 4
+            motor_speed1 = self.velocity - self.velocity / 4
+            motor_speed2 = self.velocity + self.velocity / 4
 
-        return int(motorSpeed1), int(motorSpeed2)
+        return int(motor_speed1), int(motor_speed2)
 
     def draw_info(self, frame):
         radius = 40

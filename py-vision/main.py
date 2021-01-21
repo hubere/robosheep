@@ -80,7 +80,7 @@ def control_sheep():
     mowerControler = MowerControler(args["mowerURL"])
     virtualSheep = VirtualSheep(args["mowerURL"])
 
-    GUI.putText("Hit q to quit.", 25)
+    GUI.putText("Middle click video to set aim.   '+/-' to increase/decrease speed.   Hit q to quit.", 25)
 
     while not quit_loop():
         frame = video_getter.frame

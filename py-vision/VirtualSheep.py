@@ -73,13 +73,17 @@ class VirtualSheep:
             self.speedM1 -= MOTOR_SPEED_ADJUSTMENT
         if self.desired_speedM2 > self.speedM2:
             self.speedM2 += MOTOR_SPEED_ADJUSTMENT
-        elif self.desired_speedM1 < self.speedM2:
+        elif self.desired_speedM2 < self.speedM2:
             self.speedM2 -= MOTOR_SPEED_ADJUSTMENT
         pass
 
     def adjust_velocity_and_dir(self):
         self.velocity = int((self.speedM1 + self.speedM2) / 2)
         self.dir += self.speedM1 - self.speedM2
+        if self.dir > 360:
+            self.dir -= 360
+        if self.dir < 0:
+            self.dir += 360
 
     def calculate_new_position(self):
         radian = self.dir * (pi / 180)

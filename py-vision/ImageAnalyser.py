@@ -122,13 +122,13 @@ class ImageAnalyser:
             print("could not find color. Maybe we got a grayscale image?!")
             area = 0.1
 
-        GUI.putText("Moments: ", 10)
-        GUI.putText(" area=" + str(area), 11)
-        GUI.putText(" mo10=" + str(mo10), 12)
-        GUI.putText(" mo01=" + str(mo01), 13)
-        GUI.putText(" center=(" + str(int(mo10 / area)) + "," + str(int(mo01 / area)) + ")", 14)
+#        GUI.putText("ImageAnalyse: ", 10)
+#        GUI.putText(" area=" + str(area), 11)
+#        GUI.putText(" mo10=" + str(mo10), 12)
+#        GUI.putText(" mo01=" + str(mo01), 13)
+#        GUI.putText(" center=(" + str(int(mo10 / area)) + "," + str(int(mo01 / area)) + ")", 14)
 
-        tracked_object.setAktualPos(Point(int(mo10 / area), int(mo01 / area)))
+        tracked_object.set_position_and_direction(Point(int(mo10 / area), int(mo01 / area)))
         pass
 
     def detectObjectPositionByBackgroundSubstraction(self, frame, tracked_object: TrackedObject):
@@ -141,7 +141,6 @@ class ImageAnalyser:
 
         # update the background model
         fgmask = self.backSub.apply(frame)
-
 
         GUI.set_frame_aux1(fgmask)
 
@@ -158,18 +157,17 @@ class ImageAnalyser:
             # draw bounding box
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
+            tracked_object.set_position_and_direction(Point(int(x+w/2), int(y+h/2)))
 
 
-        GUI.putText("Moments: ", 10)
+#        GUI.putText("Moments: ", 10)
 #        GUI.putText(" area=" + str(area), 11)
 #        GUI.putText(" mo10=" + str(mo10), 12)
 #        GUI.putText(" mo01=" + str(mo01), 13)
 #        GUI.putText(" center=(" + str(int(mo10 / area)) + "," + str(int(mo01 / area)) + ")", 14)
 
-#        tracked_object.setAktualPos(Point(int(mo10 / area), int(mo01 / area)))
 
         pass
-
 
     def detect_by_tracker(self, frame, traced_object: TrackedObject):
         """
