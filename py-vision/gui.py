@@ -3,13 +3,16 @@ from time import sleep
 
 import cv2
 import numpy as np
+from Utils import Point
 
 
 # orig 1920 x 1080
-#HIGHT = 540
-#WIDTH = 960
-HIGHT = 270
-WIDTH = 480
+IMAGE_HIGHT = 1080
+IMAGE_WIDTH = 1920
+SCALE = 4
+
+HIGHT = int(IMAGE_HIGHT / SCALE)
+WIDTH = int(IMAGE_WIDTH / SCALE)
 
 
 class Gui:
@@ -26,12 +29,28 @@ class Gui:
         self.dirty = True
         w, h = 2, 2
         self.info_lines = ["" for x in range(26)]
+        self.last_click = None
+        self.last_key = None
+        cv2.namedWindow("Robosheep")
+        cv2.setMouseCallback("Robosheep", self.click)
+
+    def update(self):
+        cv2.imshow("Robosheep", self.get_screen())
+        self.last_key = cv2.waitKey(100)
+        if self.last_key == ord("q"):
+            exit()
+
+    def click(self, event, x, y, flags, param):
+        # if the left mouse button was clicked, record the starting
+        # (x, y) coordinates
+        if event == cv2.EVENT_MBUTTONDOWN:
+            self.last_click = Point(x * SCALE, (y-HIGHT) * SCALE)
 
     def get_screen(self):
         if self.dirty:
             self.frame_info = np.zeros((HIGHT, WIDTH, 3), np.uint8)
             for num, info in enumerate(self.info_lines, start=1):
-                cv2.putText(self.frame_info, info, (10, num * 15), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 255))
+                cv2.putText(self.frame_info, info, (10, num * 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 255))
 
             scaled_video_frame = cv2.resize(self.frame_video, (WIDTH, HIGHT))
             scaled_frame_aux1 = cv2.resize(self.frame_aux1, (WIDTH, HIGHT))

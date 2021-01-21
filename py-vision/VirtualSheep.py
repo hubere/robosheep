@@ -7,27 +7,135 @@ from Utils import Point2f, Point, RRect
 from globals import GUI
 
 
+def rotate_image_without_cropping(mat, angle):
+    """
+    see https://stackoverflow.com/questions/22041699/rotate-an-image-without-cropping-in-opencv-in-c/33564950#33564950
+    :param mat:
+    :param angle:
+    :return:
+    """
+    height, width = mat.shape[:2]
+    image_center = (width / 2, height / 2)
+
+    rotation_mat = cv2.getRotationMatrix2D(image_center, angle, 1)
+
+    radians = math.radians(angle)
+    sin = math.sin(radians)
+    cos = math.cos(radians)
+    bound_w = int((height * abs(sin)) + (width * abs(cos)))
+    bound_h = int((height * abs(cos)) + (width * abs(sin)))
+
+    rotation_mat[0, 2] += ((bound_w / 2) - image_center[0])
+    rotation_mat[1, 2] += ((bound_h / 2) - image_center[1])
+
+    rotated_mat = cv2.warpAffine(mat, rotation_mat, (bound_w, bound_h))
+    return rotated_mat
+
+
 class VirtualSheep:
 
     def __init__(self, url: str):
+        # parameter
         self.url = url
         self.sheep_image = cv2.imread("../resources/orange-blue.png")
-        self.position = Point(500, 500)
-        self.lastpos = Point(500, 500)
+        self.sheep_image = cv2.resize(self.sheep_image, (100, 100))
+
+        # desired motor speeds set via mowerController::move()
+        self.desired_speedM1 = 0
+        self.desired_speedM2 = 0
+
+        # calculated
         self.speedM1 = 0
         self.speedM2 = 0
-        self.dir = 45
-        self.velocity = 0
-        self.sheep_image = cv2.resize(self.sheep_image, (100, 100))
+        self.position = Point(500, 500)  # starting position
+        self.dir = 45  # staring angle
+        self.velocity = 0  # starting speed
+
+    def move(self, m1: int, m2: int):
+        self.desired_speedM1 = m1
+        self.desired_speedM2 = m2
+
+    def update(self):
+        self.adjust_motor_speeds_2_desired()
+        self.adjust_velocity_and_dir()
+        self.calculate_new_position()
+        self.move_sheep_by_hand(GUI.last_key)
+
+        GUI.putText("Sheep:", 16)
+        GUI.putText(" pos  = " + str(self.position) + "    dir  = " + str(self.dir), 17)
+        GUI.putText(" speed= (" + str(self.speedM1) + " / " + str(self.speedM2) + ")", 18)
+
+    def adjust_motor_speeds_2_desired(self):
+        MOTOR_SPEED_ADJUSTMENT = 1  # check if this does not toggle when chosen values > 1!
+        if self.desired_speedM1 > self.speedM1:
+            self.speedM1 += MOTOR_SPEED_ADJUSTMENT
+        elif self.desired_speedM1 < self.speedM1:
+            self.speedM1 -= MOTOR_SPEED_ADJUSTMENT
+        if self.desired_speedM2 > self.speedM2:
+            self.speedM2 += MOTOR_SPEED_ADJUSTMENT
+        elif self.desired_speedM1 < self.speedM2:
+            self.speedM2 -= MOTOR_SPEED_ADJUSTMENT
+        pass
+
+    def adjust_velocity_and_dir(self):
+        self.velocity = int((self.speedM1 + self.speedM2) / 2)
+        self.dir += self.speedM1 - self.speedM2
+
+    def calculate_new_position(self):
+        radian = self.dir * (pi / 180)
+        incX = cos(radian)
+        incY = -sin(radian)
+
+        if self.dir > 90:
+            incX = cos(pi / 180 - radian)
+            incY = sin(pi / 180 - radian)
+
+        if self.dir > 180:
+            incX = cos(radian)
+            incY = -sin(radian)
+
+        if self.dir > 270:
+            incX = cos(radian)
+            incY = -sin(radian)
+
+        self.position = Point(int(self.position.x + incX * self.velocity), int(self.position.y + incY * self.velocity))
+
+        if self.position.x < 0:
+            self.position.x = 0
+        if self.position.y < 0:
+            self.position.y = 0
+        if self.position.x > 1920:  # TODO FIXME HU 500 seems max width / hight
+            self.position.x = 1920
+        if self.position.y > 1080:
+            self.position.y = 1080
+        pass
+
+    def move_sheep_by_hand(self, key):
+        if key == ord("a"):
+            self.position.x -= 10
+        if key == ord("d"):
+            self.position.x += 10
+        if key == ord("w"):
+            self.position.y -= 10
+        if key == ord("s"):
+            self.position.y += 10
+        if key == ord("y"):
+            self.dir += 10
+        if key == ord("c"):
+            self.dir -= 10
+        if key == ord("y"):
+            self.velocity = 0
+            self.desired_speedM1 = 0
+            self.desired_speedM2 = 0
+        pass
 
     def draw_your_self(self, frame):
         if self.url != "simulateSheep":
             return
 
         if self.position != Point(0, 0):
-            sheep_rotated = self.rotate_image_without_cropping(self.sheep_image, self.dir)
+            sheep_rotated = rotate_image_without_cropping(self.sheep_image, self.dir)
             frame = self.merge_image2_into_image1(frame, sheep_rotated)
-
 
     def merge_image2_into_image1(self, img1, img2):
         """
@@ -57,79 +165,3 @@ class VirtualSheep:
         img1[self.position.y:self.position.y + rows, self.position.x:self.position.x + cols] = dst
         return img1
 
-    def rotate_image_without_cropping(self, mat, angle):
-        """
-        see https://stackoverflow.com/questions/22041699/rotate-an-image-without-cropping-in-opencv-in-c/33564950#33564950
-        :param mat:
-        :param angle:
-        :return:
-        """
-        height, width = mat.shape[:2]
-        image_center = (width / 2, height / 2)
-
-        rotation_mat = cv2.getRotationMatrix2D(image_center, angle, 1)
-
-        radians = math.radians(angle)
-        sin = math.sin(radians)
-        cos = math.cos(radians)
-        bound_w = int((height * abs(sin)) + (width * abs(cos)))
-        bound_h = int((height * abs(cos)) + (width * abs(sin)))
-
-        rotation_mat[0, 2] += ((bound_w / 2) - image_center[0])
-        rotation_mat[1, 2] += ((bound_h / 2) - image_center[1])
-
-        rotated_mat = cv2.warpAffine(mat, rotation_mat, (bound_w, bound_h))
-        return rotated_mat
-
-    def move(self, m1: int, m2: int):
-        self.speedM1 = m1
-        self.speedM2 = m2
-
-    def update(self):
-        if self.position == Point():
-            return
-
-        radian = self.dir * (pi / 180)
-        incX = cos(radian)
-        incY = -sin(radian)
-
-        if self.dir > 90:
-            incX = cos(pi / 180 - radian)
-            incY = sin(pi / 180 - radian)
-
-        if self.dir > 180:
-            incX = cos(radian)
-            incY = -sin(radian)
-
-        if self.dir > 270:
-            incX = cos(radian)
-            incY = -sin(radian)
-
-        self.position = Point(int(self.position.x + incX * self.velocity), int(self.position.y + incY * self.velocity))
-
-        if self.position.x < 0:
-            self.position.x = 0
-        if self.position.y < 0:
-            self.position.y = 0
-        if self.position.x > 1920:  # TODO FIXME HU 500 seems max width / hight
-            self.position.x = 1920
-        if self.position.y > 1080:
-            self.position.y = 1080
-
-        key = cv2.waitKey(100)
-        if key == ord("a"):
-            self.position.x -= 10
-        if key == ord("d"):
-            self.position.x += 10
-        if key == ord("w"):
-            self.position.y -= 10
-        if key == ord("s"):
-            self.position.y += 10
-        if key == ord("y"):
-            self.dir += 10
-        if key == ord("c"):
-            self.dir -= 10
-
-        GUI.putText("Sheep:", 16)
-        GUI.putText(" pos  = " + str(self.position) + "    dir  = " + str(self.dir), 17)
-        GUI.putText(" speed= (" + str(self.speedM1) + " / " + str(self.speedM2) + ")", 18)

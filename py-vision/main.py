@@ -52,23 +52,24 @@ def track():
     GUI.putText("Hit q to quit.", 25)
 
     while True:
-        if (cv2.waitKey(1) == ord("q")) or video_getter.stopped:
-            video_getter.stop()
-            break
 
         frame = video_getter.frame
         imageAnalyser.detectObjectPositionByMoments(frame, trackedObject)
         trackedObject.draw_position_history(frame)
 
         GUI.set_video_frame(frame)
-        cv2.imshow("Robosheep", GUI.get_screen())
+        GUI.update()
+
+        if GUI.last_key == ord("q"):
+            video_getter.stop()
+            break
 
         time.sleep(0.1)  # show 10 fps
     pass
 
 
 def quit_loop() -> bool:
-    return cv2.waitKey(1) == ord("q")
+    return GUI.last_key == ord("q")
 
 
 def control_sheep():
@@ -87,12 +88,13 @@ def control_sheep():
         imageAnalyser.detect(frame, trackedObject)
         trackedObject.draw_position_history(frame)
         planner.plan()
+        planner.draw_info(frame)
         virtualSheep.update()
         virtualSheep.move(planner.motorSpeed1, planner.motorSpeed2)
         mowerControler.move(planner.motorSpeed1, planner.motorSpeed2)
 
         GUI.set_video_frame(frame)
-        cv2.imshow("Robosheep", GUI.get_screen())
+        GUI.update()
         time.sleep(0.1)  # show 10 fps
 
     video_getter.stop()
