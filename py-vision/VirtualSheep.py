@@ -3,8 +3,11 @@ from math import pi, cos, sin
 
 import cv2
 
+import Utils
 from Utils import Point2f, Point, RRect
 from globals import GUI
+
+COLOR_SHEEP = (255, 255, 0)
 
 
 def rotate_image_without_cropping(mat, angle):
@@ -41,6 +44,7 @@ class VirtualSheep:
         self.sheep_image = cv2.resize(self.sheep_image, (100, 100))
 
         # desired motor speeds set via mowerController::move()
+        # measured in real world motor speed (0-255)
         self.desired_speedM1 = 0
         self.desired_speedM2 = 0
 
@@ -48,8 +52,8 @@ class VirtualSheep:
         self.speedM1 = 0
         self.speedM2 = 0
         self.position = Point(500, 500)  # starting position
-        self.dir = 45  # staring angle
-        self.velocity = 0  # starting speed
+        self.dir = 45  # in pixel speed
+        self.velocity = 0  # in pixel speed
 
     def move(self, m1: int, m2: int):
         self.desired_speedM1 = m1
@@ -78,8 +82,10 @@ class VirtualSheep:
         pass
 
     def adjust_velocity_and_dir(self):
-        self.velocity = int((self.speedM1 + self.speedM2) / 2)
-        self.dir += self.speedM1 - self.speedM2
+        pixel_speed_m1 = self.speedM1 / 1
+        pixel_speed_m2 = self.speedM2 / 1
+        self.velocity = int((pixel_speed_m1 + pixel_speed_m2) / 2)
+        self.dir += pixel_speed_m1 - pixel_speed_m2
         if self.dir > 360:
             self.dir -= 360
         if self.dir < 0:
@@ -138,8 +144,16 @@ class VirtualSheep:
             return
 
         if self.position != Point(0, 0):
+            # draw image
             sheep_rotated = rotate_image_without_cropping(self.sheep_image, self.dir)
             frame = self.merge_image2_into_image1(frame, sheep_rotated)
+
+            # draw position
+            radius = 30
+            cv2.circle(frame, self.position.tupel(), radius, COLOR_SHEEP, 4)
+
+            # draw heading
+            Utils.draw_direction(frame, self.position, self.dir, 80, COLOR_SHEEP)
 
     def merge_image2_into_image1(self, img1, img2):
         """
@@ -168,4 +182,3 @@ class VirtualSheep:
         dst = cv2.add(img1_bg, img2_fg)
         img1[self.position.y:self.position.y + rows, self.position.x:self.position.x + cols] = dst
         return img1
-

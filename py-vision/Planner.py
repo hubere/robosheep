@@ -1,3 +1,5 @@
+import math
+from math import cos, sin
 from typing import Tuple
 
 import cv2
@@ -7,6 +9,8 @@ from  Utils import Point
 from TrackedObject import TrackedObject
 from globals import GUI
 
+
+COLOR_PLANNER = (0, 255, 0)
 
 class Planner:
 
@@ -38,10 +42,10 @@ class Planner:
             if ti_degree is not None:
                 rotate = self.calc_movement_commands(ti_degree, ts_degree)
                 self.motorSpeed1, self.motorSpeed2 = self.calc_motor_speeds(rotate)
+            else:
+                # start moving in any direction
+                self.motorSpeed1, self.motorSpeed2 = self.calc_motor_speeds(None)
 
-        GUI.putText("Planer:", 20)
-        GUI.putText(" aim=" + str(self.aim) + " vel=" + str(self.velocity), 21)
-        GUI.putText(" :", 22)
         pass
 
     def calc_direction_to_head(self, pos: Point) -> int:
@@ -57,19 +61,53 @@ class Planner:
         return rotate
 
     def calc_motor_speeds(self, rotate: int) -> Tuple[int, int]:
-        if rotate > 0:
-            motor_speed1 = self.velocity + self.velocity / 4
-            motor_speed2 = self.velocity - self.velocity / 4
+        if rotate is None:
+            motor_speed1 = + self.velocity / 4
+            motor_speed2 = + self.velocity / 4
+
+        elif rotate > 90:
+            motor_speed1 = - self.velocity / 4
+            motor_speed2 = + self.velocity / 4
+
+        elif rotate > 10:
+            motor_speed1 = 0
+            motor_speed2 = + self.velocity / 4
+
+        elif rotate > -10:
+            motor_speed1 = + self.velocity / 4
+            motor_speed2 = + self.velocity / 4
+
+        elif rotate > -90:
+            motor_speed1 = + self.velocity / 4
+            motor_speed2 = 0
 
         else:
-            motor_speed1 = self.velocity - self.velocity / 4
-            motor_speed2 = self.velocity + self.velocity / 4
+            motor_speed1 = + self.velocity / 4
+            motor_speed2 = - self.velocity / 4
+
+#        if rotate > 0:
+#            motor_speed1 = self.motorSpeed1 - self.velocity / 4
+#            motor_speed2 = self.motorSpeed2 + self.velocity / 4
+
+#        else:
+#            motor_speed1 = self.motorSpeed1 + self.velocity / 4
+#            motor_speed2 = self.motorSpeed2 - self.velocity / 4
 
         return int(motor_speed1), int(motor_speed2)
 
     def draw_info(self, frame):
         radius = 40
         if self.aim is not None:
-            cv2.circle(frame, self.aim.tupel(), radius, (0, 255, 0), 4)
+            # draw aim
+            cv2.circle(frame, self.aim.tupel(), radius, COLOR_PLANNER, 4)
+
+            # draw heading
+            ts_degree = self.calc_direction_to_head(self.trackedObject.position)
+            Utils.draw_direction(frame, self.trackedObject.position, ts_degree, 80, COLOR_PLANNER )
+
+            GUI.putText("Planer:", 20)
+            GUI.putText(" aim=" + str(self.aim) + " vel=" + str(self.velocity), 21)
+            GUI.putText(" heading: " + str(self.trackedObject.direction), 22)
+
         pass
 

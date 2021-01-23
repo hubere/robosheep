@@ -1,3 +1,4 @@
+import math
 from math import atan2, floor, pi
 from typing import Tuple
 
@@ -33,6 +34,7 @@ class RRect:
     """
     taken from https://stackoverflow.com/questions/18207181/opencv-python-draw-minarearect-rotatedrect-not-implemented
     """
+
     def __init__(self, p0, s, ang):
         self.p0 = (int(p0[0]), int(p0[1]))
         (self.W, self.H) = s
@@ -50,12 +52,13 @@ class RRect:
 
     def draw(self, image):
         print(self.verts)
- #       for i in range(len(self.verts) - 1):
- #           cv2.line(image, (self.verts[i][0], self.verts[i][1]), (self.verts[i + 1][0], self.verts[i + 1][1]),
- #                    (0, 255, 0), 2)
-#        cv2.line(image, (self.verts[3][0], self.verts[3][1]), (self.verts[0][0], self.verts[0][1]), (0, 255, 0), 2)
+        #       for i in range(len(self.verts) - 1):
+        #           cv2.line(image, (self.verts[i][0], self.verts[i][1]), (self.verts[i + 1][0], self.verts[i + 1][1]),
+        #                    (0, 255, 0), 2)
+        #        cv2.line(image, (self.verts[3][0], self.verts[3][1]), (self.verts[0][0], self.verts[0][1]), (0, 255, 0), 2)
 
-        contours = numpy.array([[self.verts[0][0], self.verts[0][1]], [self.verts[1][0], self.verts[1][1]], [self.verts[2][0], self.verts[2][1]],[self.verts[3][0], self.verts[3][1]]])
+        contours = numpy.array([[self.verts[0][0], self.verts[0][1]], [self.verts[1][0], self.verts[1][1]],
+                                [self.verts[2][0], self.verts[2][1]], [self.verts[3][0], self.verts[3][1]]])
         cv2.fillPoly(image, pts=[contours], color=(0, 255, 0))
 
 
@@ -73,3 +76,11 @@ def getKurswinkelDegree(Aufpunkt: Point, Zielpunkt: Point) -> int:
     if t < 0:
         t += 360
     return t
+
+
+def draw_direction(frame, start, dir_degrees, length, color):
+    x2 = start.x + length * math.cos(math.radians(dir_degrees))
+    y2 = start.y - length * math.sin(math.radians(dir_degrees))
+    dir_to_aim = (int(x2), int(y2))
+    cv2.line(frame, start.tupel(), dir_to_aim, color, 4)
+    return None

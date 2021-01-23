@@ -11,7 +11,7 @@ from Utils import Point2f, Point
 from globals import GUI
 
 POSITION_HISTORY_BUFFER = 100
-
+COLOR_TRACKED_OBJECT = (0, 0, 255)
 
 def distance(start: Point, end: Point):
     # return cv2.norm(start.tupel() - end.tupel())  <= gäht ned
@@ -26,7 +26,7 @@ class TrackedObject:
     def __init__(self):
         self.position = Point(0, 0)
         self.position_history = deque(maxlen=POSITION_HISTORY_BUFFER)
-        self.direction = None
+        self.direction = 0
 
     def __str__(self):
         return "TrackedObject: pos: " + str(self.position) + " dir: " + str(self.direction)
@@ -43,14 +43,7 @@ class TrackedObject:
         if direction is not None:
             self.direction = int(direction)
         else:
-            # find point with certain distance
-            last_point = position
-            for x in self.position_history:
-                if distance(x, position) > 10:
-                    last_point = x
-                    break
-            if last_point is not None:
-                self.direction = Utils.getKurswinkelDegree(last_point, position)
+            self.infer_direction()
 
         GUI.putText(str(self), 10)
         pass
@@ -68,5 +61,21 @@ class TrackedObject:
             # otherwise, compute the thickness of the line and
             # draw the connecting lines
             thickness = int(np.sqrt(POSITION_HISTORY_BUFFER / float(i + 1)) * 2.5)
-            cv2.line(frame, self.position_history[i - 1].tupel(), self.position_history[i].tupel(), (0, 0, 255),
+            cv2.line(frame, self.position_history[i - 1].tupel(), self.position_history[i].tupel(), COLOR_TRACKED_OBJECT,
                      thickness)
+
+        # draw heading
+        if self.direction is not None:
+            Utils.draw_direction(frame, self.position, self.direction, 160, COLOR_TRACKED_OBJECT )
+
+    def infer_direction(self):
+        if len(self.position_history) < 2:
+            # not able to infer heading direction
+            return
+
+        last_point = self.position_history[1]
+        confidence = int(distance(last_point, self.position))
+        confidence = min(100, confidence)
+        calculated_direction = Utils.getKurswinkelDegree(last_point, self.position)
+
+        self.direction = int((self.direction * (100-confidence) + calculated_direction * confidence) / 100)
