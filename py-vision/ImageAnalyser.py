@@ -5,6 +5,7 @@ from imutils.video import FPS, fps
 import argparse
 import imutils
 
+import Utils
 from TrackedObject import TrackedObject
 from Utils import Point
 from globals import GUI
@@ -67,7 +68,7 @@ class ImageAnalyser:
         #
         # tracked object where we cannot distinguish colorblobs by color range, e.g. light by night
         #
-        if color_blobs.size() == 1:
+        if len(color_blobs) == 1:
             color_blob = color_blobs[0]
             left_contours = findContours(image_to_analyse, color_blob)
             right_contours = left_contours
@@ -84,7 +85,7 @@ class ImageAnalyser:
         #
         # tracked Object with two colors
         #
-        if color_blobs.size() == 2:
+        if len(color_blobs) == 2:
             color_blob = color_blobs[0]
             left_contours = findContours(image_to_analyse, color_blob)
             left_blob_idx = findBestContour(left_contours, color_blob.getMinSize(), color_blob.getMaxSize());
@@ -101,35 +102,63 @@ class ImageAnalyser:
 
     def detectObjectPositionByMoments(self, frame, tracked_object: TrackedObject):
 
-        # tresh_color_low = np.array([20, 100, 100])
-        # tresh_color_hi = np.array([30, 255, 255])
-        tresh_color_low = np.array([92, 102, 134])
-        tresh_color_hi = np.array([102, 219, 244])
 
-        img_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        img_threshed = cv2.inRange(img_hsv, tresh_color_low, tresh_color_hi)
+        color_blobs = tracked_object.getColorBlobs()
+        if len(color_blobs) == 2:
 
-        GUI.set_frame_aux1(img_hsv)
-        GUI.set_frame_aux2(img_threshed)
+            # tresh_color_low = np.array([20, 100, 100])
+            # tresh_color_hi = np.array([30, 255, 255])
+    #        tresh_color_low = np.array([92, 102, 134])
+    #        tresh_color_hi = np.array([102, 219, 244])
+            color_left = tracked_object.getColorBlobs()[0]
+            color_right = tracked_object.getColorBlobs()[1]
+            tresh_color_low = tracked_object.getColorBlobs()[0].tresh_low
+            tresh_color_hi = tracked_object.getColorBlobs()[0].tresh_hi
 
-        mo = cv2.moments(img_threshed);
+            img = frame.copy()
+            img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+            img_threshed_left = cv2.inRange(img_hsv, color_left.tresh_low, color_left.tresh_hi)
+            img_threshed_right = cv2.inRange(img_hsv, color_right.tresh_low, color_right.tresh_hi)
 
-        area = mo['m00']
-        mo10 = mo['m10']
-        mo01 = mo['m01']
+            GUI.set_frame_aux1(img_threshed_left)
+            GUI.set_frame_aux2(img_threshed_right)
 
-        if area == 0:
-            print("could not find color. Maybe we got a grayscale image?!")
-            area = 0.1
+            mo = cv2.moments(img_threshed_left)
 
-#        GUI.putText("ImageAnalyse: ", 10)
-#        GUI.putText(" area=" + str(area), 11)
-#        GUI.putText(" mo10=" + str(mo10), 12)
-#        GUI.putText(" mo01=" + str(mo01), 13)
-#        GUI.putText(" center=(" + str(int(mo10 / area)) + "," + str(int(mo01 / area)) + ")", 14)
+            area = mo['m00']
+            mo10 = mo['m10']
+            mo01 = mo['m01']
 
-        tracked_object.set_position_and_direction(Point(int(mo10 / area), int(mo01 / area)))
-        pass
+            if area == 0:
+                print("could not find color. Maybe we got a grayscale image?!")
+                area = 0.1
+
+            position_left = Point(int(mo10 / area), int(mo01 / area))
+
+            mo = cv2.moments(img_threshed_right)
+
+            area = mo['m00']
+            mo10 = mo['m10']
+            mo01 = mo['m01']
+
+            if area == 0:
+                print("could not find color. Maybe we got a grayscale image?!")
+                area = 0.1
+
+            position_right = Point(int(mo10 / area), int(mo01 / area))
+
+    #        GUI.putText("ImageAnalyse: ", 10)
+    #        GUI.putText(" area=" + str(area), 11)
+    #        GUI.putText(" mo10=" + str(mo10), 12)
+    #        GUI.putText(" mo01=" + str(mo01), 13)
+    #        GUI.putText(" center=(" + str(int(mo10 / area)) + "," + str(int(mo01 / area)) + ")", 14)
+
+            center = Point((position_left.x + position_right.x) / 2, (position_left.y + position_right.y) / 2)
+            direction = Utils.getKurswinkelDegree(position_left, position_right) + 90
+            if direction > 360:
+                direction = direction - 360
+            tracked_object.set_position_and_direction(center, direction)
+            pass
 
     def detectObjectPositionByBackgroundSubstraction(self, frame, tracked_object: TrackedObject):
         """
@@ -178,7 +207,7 @@ class ImageAnalyser:
         :return:
         """
         # tracker_algo = args["tracker"]
-        tracker_algo = "csrt"
+        tracker_algo = "mil"
 
         if self.initBB is None:
 

@@ -42,6 +42,7 @@ class VirtualSheep:
         self.url = url
         self.sheep_image = cv2.imread("../resources/orange-blue.png")
         self.sheep_image = cv2.resize(self.sheep_image, (100, 100))
+        self.sheep_image = rotate_image_without_cropping(self.sheep_image, 90)
 
         # desired motor speeds set via mowerController::move()
         # measured in real world motor speed (0-255)
@@ -52,7 +53,7 @@ class VirtualSheep:
         self.speedM1 = 0
         self.speedM2 = 0
         self.position = Point(500, 500)  # starting position
-        self.dir = 45  # in pixel speed
+        self.dir = 0  # in degree
         self.velocity = 0  # in pixel speed
 
     def move(self, m1: int, m2: int):

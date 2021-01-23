@@ -1,4 +1,5 @@
 import cv2
+import numpy
 
 
 class TrackedColorBlob:
@@ -11,10 +12,14 @@ Datasets of color blobs.
  That will open a color wheel where one can read HSV values.
     """
 
-    def __init__(self, datasetidx: int):
-        self.high_H = 70
-        self.high_S = 30
-        self.high_V = 97
-        self.color_range = 20
-        self.maxSize = None # TODO FIXME HU cv2.Size(10, 15);
-        self.name = "GARDEN_YELLOW_DINA4"
+    def __init__(self, low, hi):
+        self.tresh_low = low
+        self.tresh_hi = hi
+
+
+COLOR_BLOB_BLUE = TrackedColorBlob(numpy.array([92, 102, 134]), numpy.array([102, 219, 244]))
+COLOR_BLOB_ORANGE = TrackedColorBlob(numpy.array([4, 145, 117]), numpy.array([15, 255, 255]))
+
+
+
+

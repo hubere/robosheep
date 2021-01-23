@@ -108,39 +108,41 @@ class Planner:
         return rotate
 
     def calc_motor_speeds(self, rotate: int) -> Tuple[int, int]:
-        if rotate is None:
-            motor_speed1 = + self.velocity / 4
-            motor_speed2 = + self.velocity / 4
 
-        elif rotate > 90:
+        # TODO FIXME HU   implement increating speed of motors according to rotate (and distance from aim)
+        if rotate is None:
+            motor_speed1 = + self.velocity
+            motor_speed2 = + self.velocity
+
+        elif rotate > 90:  # rotate fast
+            motor_speed1 = - self.velocity
+            motor_speed2 = + self.velocity
+
+        elif rotate > 10:  # rotate slowly
             motor_speed1 = - self.velocity / 4
             motor_speed2 = + self.velocity / 4
 
-        elif rotate > 10:
-            motor_speed1 = 0
-            motor_speed2 = + self.velocity / 4
+        elif rotate > 5:   # moving curve
+            motor_speed1 = + self.velocity / 2
+            motor_speed2 = + self.velocity
 
-        elif rotate > -10:
-            motor_speed1 = + self.velocity / 4
-            motor_speed2 = + self.velocity / 4
+        elif rotate > -5:  # full speed ahead
+            motor_speed1 = + self.velocity
+            motor_speed2 = + self.velocity
 
-        elif rotate > -90:
-            motor_speed1 = + self.velocity / 4
-            motor_speed2 = 0
+        elif rotate > -10:  # move in curve
+            motor_speed1 = + self.velocity
+            motor_speed2 = + self.velocity / 2
 
-        else:
+        elif rotate > -90:  # rotate slowly
             motor_speed1 = + self.velocity / 4
             motor_speed2 = - self.velocity / 4
 
-#        if rotate > 0:
-#            motor_speed1 = self.motorSpeed1 - self.velocity / 4
-#            motor_speed2 = self.motorSpeed2 + self.velocity / 4
+        else:               # rotate fast
+            motor_speed1 = + self.velocity
+            motor_speed2 = - self.velocity
 
-#        else:
-#            motor_speed1 = self.motorSpeed1 + self.velocity / 4
-#            motor_speed2 = self.motorSpeed2 - self.velocity / 4
-
-        return int(motor_speed1), int(motor_speed2)
+        return int(motor_speed2), int(motor_speed1)
 
     def draw_info(self, frame):
         radius = 40

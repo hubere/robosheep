@@ -4,7 +4,7 @@ from collections import deque
 import cv2
 
 import Utils
-from TrackedColorBlob import TrackedColorBlob
+from TrackedColorBlob import TrackedColorBlob, COLOR_BLOB_BLUE, COLOR_BLOB_ORANGE
 import numpy as np
 
 from Utils import Point2f, Point
@@ -24,7 +24,7 @@ def distance(start: Point, end: Point):
 class TrackedObject:
 
     def __init__(self):
-        self.initialized = False
+        self.initialized = True
         self.position = Point(0, 0)
         self.position_history = deque(maxlen=POSITION_HISTORY_BUFFER)
         self.direction = 0
@@ -34,8 +34,8 @@ class TrackedObject:
 
     def getColorBlobs(self):
         color_blobs = []
-        color_blobs.append(TrackedColorBlob())
-        color_blobs.append(TrackedColorBlob())
+        color_blobs.append(COLOR_BLOB_BLUE)
+        color_blobs.append(COLOR_BLOB_ORANGE)
         return color_blobs
 
     def set_position_and_direction(self, position: Point, direction=None):
@@ -79,5 +79,5 @@ class TrackedObject:
         confidence = min(100, confidence)
         calculated_direction = Utils.getKurswinkelDegree(last_point, self.position)
 
-        # self.direction = int((self.direction * (100-confidence) + calculated_direction * confidence) / 100)
+        self.direction = int((self.direction * (100-confidence) + calculated_direction * confidence) / 100)
 

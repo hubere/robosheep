@@ -33,9 +33,15 @@ class VideoCamera:
             (self.grabbed, frame) = self.stream.read()
             if not self.grabbed:
                 # no frame could be read from camera ... try to read from file
-                self.frame = cv2.imread(self.src)
+                frame = cv2.imread(self.src)
+                #dampen image
+                hsvImg = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+                # decreasing the V channel by a factor from the original
+                hsvImg[..., 2] = hsvImg[..., 2] * 0.6
+                frame = cv2.cvtColor(hsvImg, cv2.COLOR_HSV2BGR)
+                self.frame = frame
                 sleep(0.1)
-                #self.stop()
+
             else:
                 self.frame = frame
                 cps.increment()
