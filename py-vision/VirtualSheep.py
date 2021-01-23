@@ -165,7 +165,11 @@ class VirtualSheep:
 
         # I want to put logo on top-left corner, So I create a ROI
         rows, cols, channels = img2.shape
-        roi = img1[self.position.y:self.position.y + rows, self.position.x:self.position.x + cols]
+        x = self.position.x
+        y = self.position.y
+        ext_x = math.ceil(cols / 2)
+        ext_y = math.ceil(rows / 2)
+        roi = img1[y-math.floor(rows/2):y+math.ceil(rows/2), x-math.floor(cols/2):x+math.ceil(cols / 2)]
 
         # Now create a mask of logo and create its inverse mask also
         img2gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
@@ -180,5 +184,5 @@ class VirtualSheep:
 
         # Put logo in ROI and modify the main image
         dst = cv2.add(img1_bg, img2_fg)
-        img1[self.position.y:self.position.y + rows, self.position.x:self.position.x + cols] = dst
+        img1[y-math.floor(rows/2):y+math.ceil(rows/2), x-math.floor(cols/2):x+math.ceil(cols / 2)] = dst
         return img1

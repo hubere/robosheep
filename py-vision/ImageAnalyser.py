@@ -229,7 +229,7 @@ class ImageAnalyser:
                 cv2.rectangle(frame, (x, y), (x + w, y + h),
                               (0, 255, 0), 2)
 
-                traced_object.setAktualPos(Point(x + w/2, y + h/2))
+                traced_object.set_position_and_direction(Point(x + w/2, y + h/2))
 
             # update the FPS counter
             self.fps.update()

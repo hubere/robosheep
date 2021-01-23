@@ -19,8 +19,16 @@ class Planner:
         self.proximity = 5
         self.trackedObject = trackedObject
         self.velocity = 0
+        self.direction = 0
         self.motorSpeed1 = 0
         self.motorSpeed2 = 0
+        # used for initialization
+        self.init_start = None
+        self.init_wend = None
+        self.init_end = None
+        self.angle_in_10_iterations = None
+        self.init_moves = 0
+
 
     def set_aim(self, aim):
         self.aim = aim
@@ -34,6 +42,45 @@ class Planner:
 
         if GUI.last_key == ord("-"):
             self.velocity -= 10
+
+        if not self.trackedObject.initialized:
+            MOTOR_SPEED = 80
+            self.init_moves += 1
+            if self.init_moves == 1:  # run in straight forward for 10 iterations
+                self.init_start = self.trackedObject.position
+                self.motorSpeed1 = MOTOR_SPEED
+                self.motorSpeed2 = MOTOR_SPEED
+
+            elif self.init_moves == 10:  # slow down
+                self.motorSpeed1 = 0
+                self.motorSpeed2 = 0
+
+            elif self.init_moves == 20:  # rotate for 4 iterations
+                self.direction = Utils.getKurswinkelDegree(self.init_start, self.trackedObject.position)
+                self.motorSpeed1 = MOTOR_SPEED
+                self.motorSpeed2 = -MOTOR_SPEED
+
+            elif self.init_moves == 28:  # come to a still
+                self.motorSpeed1 = 0
+                self.motorSpeed2 = 0
+
+            elif self.init_moves == 40:  # run straight in another direction
+                self.init_wend = self.trackedObject.position
+                self.motorSpeed1 = MOTOR_SPEED
+                self.motorSpeed2 = MOTOR_SPEED
+
+            elif self.init_moves == 60:  # come to a still
+                # init moves done
+                self.init_end = self.trackedObject.position
+                self.motorSpeed1 = 0
+                self.motorSpeed2 = 0
+                new_direction = Utils.getKurswinkelDegree(self.init_wend, self.init_end)
+                self.angle_in_10_iterations = self.direction - new_direction
+                self.direction = new_direction
+
+                print("edi")
+
+
 
         if self.aim is not None:
             akt_pos: Point = self.trackedObject.position

@@ -24,6 +24,7 @@ def distance(start: Point, end: Point):
 class TrackedObject:
 
     def __init__(self):
+        self.initialized = False
         self.position = Point(0, 0)
         self.position_history = deque(maxlen=POSITION_HISTORY_BUFFER)
         self.direction = 0
@@ -78,4 +79,5 @@ class TrackedObject:
         confidence = min(100, confidence)
         calculated_direction = Utils.getKurswinkelDegree(last_point, self.position)
 
-        self.direction = int((self.direction * (100-confidence) + calculated_direction * confidence) / 100)
+        # self.direction = int((self.direction * (100-confidence) + calculated_direction * confidence) / 100)
+

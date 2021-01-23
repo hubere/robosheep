@@ -21,9 +21,9 @@
   <component name="ChangeListManager">
     <list default="true" id="b1169ea1-08b2-4f85-a2f3-bf8b0f5fc14c" name="Default Changelist" comment="Adjust direction.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/py-vision/ImageAnalyser.py" beforeDir="false" afterPath="$PROJECT_DIR$/py-vision/ImageAnalyser.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/py-vision/Planner.py" beforeDir="false" afterPath="$PROJECT_DIR$/py-vision/Planner.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/py-vision/TrackedObject.py" beforeDir="false" afterPath="$PROJECT_DIR$/py-vision/TrackedObject.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/py-vision/Utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/py-vision/Utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/py-vision/VirtualSheep.py" beforeDir="false" afterPath="$PROJECT_DIR$/py-vision/VirtualSheep.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
