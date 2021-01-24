@@ -110,37 +110,20 @@ class Planner:
     def calc_motor_speeds(self, rotate: int) -> Tuple[int, int]:
 
         # TODO FIXME HU   implement increating speed of motors according to rotate (and distance from aim)
+
+        acceleration = 10
         if rotate is None:
-            motor_speed1 = + self.velocity
-            motor_speed2 = + self.velocity
+            rotate = 0
 
-        elif rotate > 90:  # rotate fast
-            motor_speed1 = - self.velocity
-            motor_speed2 = + self.velocity
-
-        elif rotate > 10:  # rotate slowly
-            motor_speed1 = - self.velocity / 4
-            motor_speed2 = + self.velocity / 4
-
-        elif rotate > 5:   # moving curve
-            motor_speed1 = + self.velocity / 2
-            motor_speed2 = + self.velocity
-
-        elif rotate > -5:  # full speed ahead
-            motor_speed1 = + self.velocity
-            motor_speed2 = + self.velocity
-
-        elif rotate > -10:  # move in curve
-            motor_speed1 = + self.velocity
-            motor_speed2 = + self.velocity / 2
-
-        elif rotate > -90:  # rotate slowly
-            motor_speed1 = + self.velocity / 4
-            motor_speed2 = - self.velocity / 4
-
-        else:               # rotate fast
-            motor_speed1 = + self.velocity
-            motor_speed2 = - self.velocity
+        accelerate = acceleration - int(rotate / 10)
+        motor_speed1 = self.motorSpeed1 + accelerate
+        motor_speed2 = self.motorSpeed2 + accelerate
+        motor_speed1 = max(min(self.velocity, motor_speed1), -self.velocity)
+        motor_speed2 = max(min(self.velocity, motor_speed2), -self.velocity)
+        motor_speed1 -= math.ceil(rotate / 10)  # add a 10th rotation
+        motor_speed2 += math.ceil(rotate / 10)
+    #        self.motorSpeed1 = max(self.motorSpeed1, -self.velocity)
+    #        self.motorSpeed2 = max(self.motorSpeed2, -self.velocity)
 
         return int(motor_speed2), int(motor_speed1)
 
@@ -158,5 +141,15 @@ class Planner:
             GUI.putText(" aim=" + str(self.aim) + " vel=" + str(self.velocity), 21)
             GUI.putText(" heading: " + str(self.trackedObject.direction), 22)
 
+        pass
+
+    def forward(self, acceleration, rotate):
+        accelerate = acceleration - int(rotate / 100)
+        self.motorSpeed1 += accelerate + int(rotate / 100)  # add a 100th rotation
+        self.motorSpeed2 += accelerate - int(rotate / 100)
+        self.motorSpeed1 = min(self.motorSpeed1, self.velocity)
+        self.motorSpeed2 = min(self.motorSpeed2, self.velocity)
+#        self.motorSpeed1 = max(self.motorSpeed1, -self.velocity)
+#        self.motorSpeed2 = max(self.motorSpeed2, -self.velocity)
         pass
 
