@@ -25,8 +25,11 @@ def test_camera():
     while not quit_loop():
         frame = video_getter.frame
         GUI.set_video_frame(frame)
-        cv2.imshow("Robosheep", GUI.get_screen())
+        GUI.update()
         time.sleep(0.1)  # show 10 fps
+
+    video_getter.stop()
+    pass
 
 
 def analyse_image():
@@ -46,25 +49,21 @@ def analyse_image():
 
 def track():
     video_getter = VideoCamera(args["cameraURL"]).start()
-    trackedObject = TrackedObject()
-    imageAnalyser = ImageAnalyser()
+    tracked_object = TrackedObject()
+    image_analyser = ImageAnalyser()
 
     GUI.putText("Hit q to quit.", 25)
 
-    while True:
-
+    while not quit_loop():
         frame = video_getter.frame
-        imageAnalyser.detectObjectPositionByMoments(frame, trackedObject)
-        trackedObject.draw_position_history(frame)
+        image_analyser.detect(frame, tracked_object)
+        tracked_object.draw_position_history(frame)
 
         GUI.set_video_frame(frame)
         GUI.update()
-
-        if GUI.last_key == ord("q"):
-            video_getter.stop()
-            break
-
         time.sleep(0.1)  # show 10 fps
+
+    video_getter.stop()
     pass
 
 
@@ -74,24 +73,24 @@ def quit_loop() -> bool:
 
 def control_sheep():
     video_getter = VideoCamera(args["cameraURL"]).start()
-    trackedObject = TrackedObject()
-    imageAnalyser = ImageAnalyser(algorithm=args['algorithm'])
-    planner = Planner(trackedObject)
-    mowerControler = MowerControler(args["mowerURL"])
-    virtualSheep = VirtualSheep(args["mowerURL"])
+    tracked_object = TrackedObject()
+    image_analyser = ImageAnalyser(algorithm=args['algorithm'])
+    planner = Planner(tracked_object)
+    mower_controler = MowerControler(args["mowerURL"])
+    virtual_sheep = VirtualSheep(args["mowerURL"])
 
     GUI.putText("Middle click video to set aim.   '+/-' to increase/decrease speed.   Hit q to quit.", 25)
 
     while not quit_loop():
         frame = video_getter.frame
-        virtualSheep.draw_your_self(frame)
-        imageAnalyser.detect(frame, trackedObject)
-        trackedObject.draw_position_history(frame)
+        virtual_sheep.draw_your_self(frame)
+        image_analyser.detect(frame, tracked_object)
+        tracked_object.draw_position_history(frame)
         planner.plan()
         planner.draw_info(frame)
-        virtualSheep.update()
-        virtualSheep.move(planner.motorSpeed1, planner.motorSpeed2)
-        mowerControler.move(planner.motorSpeed1, planner.motorSpeed2)
+        virtual_sheep.update()
+        virtual_sheep.move(planner.motorSpeed1, planner.motorSpeed2)
+        mower_controler.move(planner.motorSpeed1, planner.motorSpeed2)
 
         GUI.set_video_frame(frame)
         GUI.update()
@@ -113,7 +112,11 @@ if __name__ == '__main__':
                     help="Select feature(s) of robosheep",
                     choices=["testCamera", "track", "analyseImage", "controlSheep"])
     ap.add_argument("--cameraURL",
-                    default="noCameraURL",
+                    #default="noCameraURL",
+                    default="rtsp://admin:123456@192.168.1.231", # for mibao
+                    #default="http://192.168.1.162/video.cgi?x.mjpg", # for ???
+                    #default="rtsp://admin:123456@192.168.0.48:554/live/ch0", # for wansview HD
+                    #default="rtsp://admin:123456@192.168.0.48:554/live/ch1", # for wansview SD
                     help="URL of video stream. As can be viewed by VLC")
     ap.add_argument("--mowerURL",
                     default="simulateSheep",

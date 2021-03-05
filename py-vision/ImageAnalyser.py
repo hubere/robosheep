@@ -46,16 +46,27 @@ class ImageAnalyser:
         self.tracker = None
 
     def detect(self, frame, tracked_object: TrackedObject):
-        if self.algorithm == "backgroundSubstraction":
-            self.detectObjectPositionByBackgroundSubstraction(frame, tracked_object)
-        elif self.algorithm == "contours":
-            self.detectObjectPositionByContours(frame, tracked_object)
-        elif self.algorithm == "tracker":
-            self.detect_by_tracker(frame, tracked_object)
-        else:
-            self.detectObjectPositionByMoments(frame, tracked_object)
+        if GUI.last_key == ord("h"):
+            self.algorithm = "moments"
+        if GUI.last_key == ord("j"):
+            self.algorithm = "backgroundSubstraction"
+        if GUI.last_key == ord("k"):
+            self.algorithm = "contours"
+        if GUI.last_key == ord("l"):
+            self.algorithm = "tracker"
 
-    def detectObjectPositionByContours(self, frame, tracked_object: TrackedObject):
+        GUI.putText("ImageAnalyser: %s (h-moments  j-backgroundSubstraction  k-contours  l-tracker)" % self.algorithm, 3)
+
+        if self.algorithm == "backgroundSubstraction":
+            self._detectObjectPositionByBackgroundSubstraction(frame, tracked_object)
+        elif self.algorithm == "contours":
+            self._detectObjectPositionByContours(frame, tracked_object)
+        elif self.algorithm == "tracker":
+            self._detect_by_tracker(frame, tracked_object)
+        else:
+            self._detectObjectPositionByMoments(frame, tracked_object)
+
+    def _detectObjectPositionByContours(self, frame, tracked_object: TrackedObject):
 
         image_to_analyse = frame.copy()
 
@@ -100,9 +111,7 @@ class ImageAnalyser:
         if left_blob_idx < 0 or right_blob_idx < 0:
             return False
 
-    def detectObjectPositionByMoments(self, frame, tracked_object: TrackedObject):
-
-
+    def _detectObjectPositionByMoments(self, frame, tracked_object: TrackedObject):
         color_blobs = tracked_object.getColorBlobs()
         if len(color_blobs) == 2:
 
@@ -147,11 +156,10 @@ class ImageAnalyser:
 
             position_right = Point(int(mo10 / area), int(mo01 / area))
 
-    #        GUI.putText("ImageAnalyse: ", 10)
-    #        GUI.putText(" area=" + str(area), 11)
-    #        GUI.putText(" mo10=" + str(mo10), 12)
-    #        GUI.putText(" mo01=" + str(mo01), 13)
-    #        GUI.putText(" center=(" + str(int(mo10 / area)) + "," + str(int(mo01 / area)) + ")", 14)
+            GUI.putText(" area=" + str(area), 4)
+            GUI.putText(" mo10=" + str(mo10), 5)
+            GUI.putText(" mo01=" + str(mo01), 6)
+            GUI.putText(" center=(" + str(int(mo10 / area)) + "," + str(int(mo01 / area)) + ")", 14)
 
             center = Point((position_left.x + position_right.x) / 2, (position_left.y + position_right.y) / 2)
             direction = Utils.getKurswinkelDegree(position_left, position_right) + 90
@@ -160,7 +168,7 @@ class ImageAnalyser:
             tracked_object.set_position_and_direction(center, direction)
             pass
 
-    def detectObjectPositionByBackgroundSubstraction(self, frame, tracked_object: TrackedObject):
+    def _detectObjectPositionByBackgroundSubstraction(self, frame, tracked_object: TrackedObject):
         """
         taken from https://docs.opencv.org/3.4/d1/dc5/tutorial_background_subtraction.html
         :param frame:
@@ -198,7 +206,7 @@ class ImageAnalyser:
 
         pass
 
-    def detect_by_tracker(self, frame, traced_object: TrackedObject):
+    def _detect_by_tracker(self, frame, traced_object: TrackedObject):
         """
         taken from https://www.pyimagesearch.com/2018/07/30/opencv-object-tracking/
 

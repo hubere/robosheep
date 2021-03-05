@@ -39,6 +39,7 @@ class Gui:
         self.last_key = cv2.waitKey(100)
         if self.last_key == ord("q"):
             exit()
+        self.putText("Hit q to quit.    last_key=%s  last_click: %s" % (self.last_key, self.last_click), 25)
 
     def click(self, event, x, y, flags, param):
         # if the left mouse button was clicked, record the starting
@@ -70,16 +71,19 @@ class Gui:
         return self.screen
 
     def set_video_frame(self, frame):
-        self.frame_video = frame
-        self.dirty = True
+        if frame is not None:
+            self.frame_video = frame
+            self.dirty = True
 
     def set_frame_aux1(self, frame):
-        self.frame_aux1 = frame
-        self.dirty = True
+        if frame is not None:
+            self.frame_aux1 = frame
+            self.dirty = True
 
     def set_frame_aux2(self, frame):
-        self.frame_aux2 = frame
-        self.dirty = True
+        if frame is not None:
+            self.frame_aux2 = frame
+            self.dirty = True
 
     def putText(self, text: str, line: int):
         self.info_lines[line] = text
