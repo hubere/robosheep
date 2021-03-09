@@ -490,14 +490,14 @@ void adjustMotorSpeeds(){
  */
 void connectWiFi()
 {
-  while (WiFi.status() != WL_CONNECTED)
+  while (true)
   {
       if (connectWIFI(WIFI_SSID1, WIFI_PASS1)) return;
       if (connectWIFI(WIFI_SSID2, WIFI_PASS2)) return;
       if (connectWIFI(WIFI_SSID3, WIFI_PASS3)) return;
       if (connectWIFI(WIFI_SSID4, WIFI_PASS4)) return;
       if (connectWIFI(WIFI_SSID5, WIFI_PASS5)) return;
-      delay(500);
+      delay(5000);
   }
 }
 
@@ -508,27 +508,29 @@ boolean connectWIFI(const char* ssid, const char* passwd)
 {
   Serial.println();
   Serial.println();
-  Serial.print("Connecting to ");
+  Serial.print("Trying to connect to ");
   Serial.println(ssid);
   
   WiFi.begin(ssid, passwd);
+  delay(10000);  // give 'em 10 seconds...
 
-  if (WiFi.status() == WL_CONNECTED){
-    Serial.println("");
-    Serial.println("WiFi connected");
-    Serial.println(WiFi.localIP());
-
-  
-    // Measure Signal Strength (RSSI) of Wi-Fi connection
-    unsigned long before = millis();    
-    long rssi = WiFi.RSSI();  
-    Serial.println("RSSI: " + String(rssi) + " (" + String(millis() - before) + ")");
-    
-    
-    return true;   
+  if (WiFi.status() != WL_CONNECTED){
+    Serial.println("... connection failed.");
+    return false;
   }
- 
-  return false;
+    
+  Serial.println("");
+  Serial.print("WiFi connected to ");
+  Serial.println(ssid);
+  Serial.println(WiFi.localIP());
+
+  // Measure Signal Strength (RSSI) of Wi-Fi connection
+  unsigned long before = millis();    
+  long rssi = WiFi.RSSI();  
+  Serial.println("RSSI: " + String(rssi) + " (" + String(millis() - before) + ")");
+      
+  return true;   
+  
 }
 
 

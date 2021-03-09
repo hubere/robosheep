@@ -19,22 +19,8 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b1169ea1-08b2-4f85-a2f3-bf8b0f5fc14c" name="Default Changelist" comment="Adjust direction.">
-      <change afterPath="$PROJECT_DIR$/resources/snapshots/2021y3M8d8h54m52s.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/snapshots/2021y3M8d8h55m21s.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/snapshots/2021y3M8d8h55m33s.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/snapshots/2021y3M8d8h55m50s.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/snapshots/2021y3M8d8h55m6s.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gui/plain/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/gui/plain/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/py-vision/TrackedColorBlob.py" beforeDir="false" afterPath="$PROJECT_DIR$/py-vision/TrackedColorBlob.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/py-vision/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/py-vision/gui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/py-vision/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/py-vision/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/simple_demo/.vscode/settings.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sketchbook/Motordriver/HTML.h" beforeDir="false" afterPath="$PROJECT_DIR$/sketchbook/Motordriver/HTML.h" afterDir="false" />
+    <list default="true" id="b1169ea1-08b2-4f85-a2f3-bf8b0f5fc14c" name="Default Changelist" comment="Improvements">
       <change beforePath="$PROJECT_DIR$/sketchbook/Motordriver/Motordriver.ino" beforeDir="false" afterPath="$PROJECT_DIR$/sketchbook/Motordriver/Motordriver.ino" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sketchbook/Motordriver/test.html" beforeDir="false" afterPath="$PROJECT_DIR$/sketchbook/Motordriver/test.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/testVideoCamera" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -142,7 +128,7 @@
       <workItem from="1610993571953" duration="10447000" />
       <workItem from="1611591324751" duration="420000" />
       <workItem from="1614765600885" duration="58000" />
-      <workItem from="1615195359171" duration="5082000" />
+      <workItem from="1615195359171" duration="5754000" />
     </task>
     <task id="LOCAL-00001" summary="Used WebServer and Json, but does not compile">
       <created>1606501281915</created>
@@ -242,7 +228,14 @@
       <option name="project" value="LOCAL" />
       <updated>1608631240589</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="Improvements">
+      <created>1615281846782</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1615281846782</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -285,7 +278,8 @@
     <MESSAGE value="New measuring power supply" />
     <MESSAGE value="FIX send one command per second at most. vertical status bars." />
     <MESSAGE value="Adjust direction." />
-    <option name="LAST_COMMIT_MESSAGE" value="Adjust direction." />
+    <MESSAGE value="Improvements" />
+    <option name="LAST_COMMIT_MESSAGE" value="Improvements" />
   </component>
   <component name="WindowStateProjectService">
     <state x="774" y="391" width="1084" height="736" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1606838921426">
