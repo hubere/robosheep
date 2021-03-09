@@ -1,8 +1,6 @@
-from VideoCamera import VideoCamera
-from VirtualSheep import VirtualSheep
 
 
-class MowerControler:
+class MowerController:
 
     def __init__(self, url: str):
         self.url = url
