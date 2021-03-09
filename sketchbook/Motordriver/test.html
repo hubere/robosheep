@@ -168,11 +168,14 @@
     // global vars
     //
     let ip = location.host;
-    if (location.host == "") ip = "192.168.0.112";
+    if (location.host == "localhost:63342") ip = "192.168.1.30";
+    console.log("communication with ip: " + ip)
+
     const url_sheep_state = "http://" + ip + "/sheep/state";
     const url_sheep_move = "http://" + ip + "/sheep/move";
     const url_motor = "http://" + ip + "/motor";
     var speed = 0;
+    console.log("speed set to " + speed);
 
     //
     // motor bars
@@ -233,7 +236,7 @@
         const powerSupplyCtrl = document.getElementById('powerSupply');
         powerSupplyCtrl.style.height = barHeight+'%';
         powerSupplyCtrl.innerHTML = voltage + 'V';
-        console.log("Voltage: " + voltage)
+        //console.log("Voltage: " + voltage)
     }
 
 
@@ -393,15 +396,18 @@
     };
 
     function speed1() {
-        speed = 25;
+        speed = 12;
+        console.log("speed set to " + speed);
     }
 
     function speed2() {
-        speed = 50;
+        speed = 25;
+        console.log("speed set to " + speed);
     }
 
     function speed3() {
         speed = 100;
+        console.log("speed set to " + speed);
     }
 
     function stop() {

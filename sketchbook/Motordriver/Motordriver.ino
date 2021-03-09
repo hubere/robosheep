@@ -41,14 +41,21 @@
 
 
 // WiFi connection configuration
-#define WIFI_PASS1       "Welpenspiel"
 #define WIFI_SSID1       "Huabas"
-#define WIFI_PASS2       "LeInternetUwant11"
+#define WIFI_PASS1       "Welpenspiel"
+
 #define WIFI_SSID2       "Buergernetz-WLAN"
-#define WIFI_PASS3       "Welpenspiel"
+#define WIFI_PASS2       "LeInternetUwant11"
+
 #define WIFI_SSID3       "TP-Huabas"
-#define WIFI_PASS4       "Ihaveastream"
+#define WIFI_PASS3       "Welpenspiel"
+
 #define WIFI_SSID4       "MartinRouterKing"
+#define WIFI_PASS4       "Ihaveastream"
+
+#define WIFI_SSID5       "Hubflepuff Common Rooms"
+#define WIFI_PASS5       "AccioWLAN"
+
 // maximum number of tries during wifi connection setup
 #define WIFI_MAX_TRIES  30
 // delay in ms between checks during wifi connection setup
@@ -201,7 +208,8 @@ void loop()
   loopCount=0;  // <- they are usually about 800 once we get here
   bigLoopCount++;  
   endOfLastLoopInMillis = millis();  
-  rssi = WiFi.RSSI();  
+  if (WiFi.status() != WL_CONNECTED) connectWiFi();
+  rssi = WiFi.RSSI();
 
   //
   // indicate operation
@@ -226,7 +234,7 @@ void loop()
   // listen for incoming clients
   //
   // Serial.println("listen " + String(millis()));
-  WiFiClient client = server.available();  
+  WiFiClient client = server.available();
   if (client)
   {
     handleClientRequest(client);
@@ -482,10 +490,15 @@ void adjustMotorSpeeds(){
  */
 void connectWiFi()
 {
-  if (connectWIFI(WIFI_SSID1, WIFI_PASS1)) return;
-  if (connectWIFI(WIFI_SSID2, WIFI_PASS2)) return;
-  if (connectWIFI(WIFI_SSID3, WIFI_PASS3)) return;  
-  if (connectWIFI(WIFI_SSID4, WIFI_PASS4)) return;  
+  while (WiFi.status() != WL_CONNECTED)
+  {
+      if (connectWIFI(WIFI_SSID1, WIFI_PASS1)) return;
+      if (connectWIFI(WIFI_SSID2, WIFI_PASS2)) return;
+      if (connectWIFI(WIFI_SSID3, WIFI_PASS3)) return;
+      if (connectWIFI(WIFI_SSID4, WIFI_PASS4)) return;
+      if (connectWIFI(WIFI_SSID5, WIFI_PASS5)) return;
+      delay(500);
+  }
 }
 
 /*
@@ -500,11 +513,6 @@ boolean connectWIFI(const char* ssid, const char* passwd)
   
   WiFi.begin(ssid, passwd);
 
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  
   if (WiFi.status() == WL_CONNECTED){
     Serial.println("");
     Serial.println("WiFi connected");

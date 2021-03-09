@@ -40,10 +40,17 @@ def analyse_image():
     print("see https://github.com/alkasm/colorfilters")
 
     img = cv2.imread(args["cameraURL"])
+    if img is None:
+        print("could not find '%s' in '%s'" % (args["cameraURL"], os.getcwd()))
+        exit(-1)
     window = HSVFilter(img)
     window.show()
 
-    print(f"Image filtered in HSV between {window.lowerb} and {window.upperb}.")
+#    print(f"Image filtered in HSV between {window.lowerb} and {window.upperb}.")
+    print()
+    print("TrackedColorBlob(numpy.%s, numpy.%s)" % (repr(window.lowerb), repr(window.upperb)))
+
+
     pass
 
 

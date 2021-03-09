@@ -39,7 +39,7 @@ class Gui:
         self.last_key = cv2.waitKey(100)
         if self.last_key == ord("q"):
             exit()
-        self.putText("Hit q to quit.    last_key=%s  last_click: %s" % (self.last_key, self.last_click), 25)
+        self.putText("Hit q to quit.    key=%s  click: %s" % (self.last_key, self.last_click), 25)
 
     def click(self, event, x, y, flags, param):
         # if the left mouse button was clicked, record the starting
