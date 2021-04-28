@@ -4,7 +4,7 @@ from collections import deque
 import cv2
 
 import Utils
-from TrackedColorBlob import TrackedColorBlob, COLOR_BLOB_BLUE, COLOR_BLOB_ORANGE
+from TrackedColorBlob import *
 import numpy as np
 
 from Utils import Point2f, Point
@@ -34,8 +34,10 @@ class TrackedObject:
 
     def getColorBlobs(self):
         color_blobs = []
-        color_blobs.append(COLOR_BLOB_BLUE)
-        color_blobs.append(COLOR_BLOB_ORANGE)
+#        color_blobs.append(COLOR_BLOB_BLUE)
+#        color_blobs.append(COLOR_BLOB_ORANGE)
+        color_blobs.append(COLOR_BLOB_BLUE_1)
+        color_blobs.append(COLOR_BLOB_WHITE_1)
         return color_blobs
 
     def set_position_and_direction(self, position: Point, direction=None):

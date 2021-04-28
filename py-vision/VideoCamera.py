@@ -8,7 +8,12 @@ from CountsPerSec import CountsPerSec
 from globals import GUI
 
 GARDEN_TRANSFORM_PERSPECTIVE = None
-GARDEN_TRANSFORM_PERSPECTIVE = np.array(eval("[(672, 0), (1300, 700), (1300, 1030), (500, 700)]"), dtype = "float32")
+
+# vlcsnap-2021-03-23-16h41m32s576.png
+GARDEN_TRANSFORM_PERSPECTIVE = np.array(eval("[(850, 70), (1300, 600), (1300, 1070), (850, 900)]"), dtype = "float32")
+#GARDEN_TRANSFORM_PERSPECTIVE = np.array(eval("[(1120, 0), (1700, 610), (1700, 920), (1100, 750)]"), dtype = "float32")
+
+#GARDEN_TRANSFORM_PERSPECTIVE = np.array(eval("[(672, 0), (1300, 700), (1300, 1030), (500, 700)]"), dtype = "float32")
 #GARDEN_TRANSFORM_PERSPECTIVE = np.array(eval("[(0, 688), (1300, 334), (1800, 360), (756, 1012)]"), dtype = "float32")
 
 VIDEO_ROTATE = None

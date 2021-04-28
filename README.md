@@ -10,7 +10,7 @@ Robosheep will control a lawn mower by means of an IP camera. The camera will de
 
 ## Components / folder structure
 ### docu (documentation)
-Contains all documentation about this project. There is also a wordpress page at http://boezerbastler.wordpress.com
+Contains all documentation about this project. There is also a wordpress page at http://boezerbastler.wordpress.com ("hubimobil":s-passwd)
  
 ### gui (sheep controller UI)
 A flask server that serves gui/plain/templates/index.html. This Java Script web site will be deployed onto the robosheep

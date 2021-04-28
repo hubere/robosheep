@@ -41,8 +41,8 @@
 
 
 // WiFi connection configuration
-#define WIFI_SSID1       "Huabas"
-#define WIFI_PASS1       "Welpenspiel"
+#define WIFI_SSID1       "Hubflepuff Common Rooms"
+#define WIFI_PASS1       "AccioWLAN"
 
 #define WIFI_SSID2       "Buergernetz-WLAN"
 #define WIFI_PASS2       "LeInternetUwant11"
@@ -53,8 +53,9 @@
 #define WIFI_SSID4       "MartinRouterKing"
 #define WIFI_PASS4       "Ihaveastream"
 
-#define WIFI_SSID5       "Hubflepuff Common Rooms"
-#define WIFI_PASS5       "AccioWLAN"
+#define WIFI_SSID5       "Huabas"
+#define WIFI_PASS5       "Welpenspiel"
+
 
 // maximum number of tries during wifi connection setup
 #define WIFI_MAX_TRIES  30
@@ -204,11 +205,16 @@ void loop()
   //
   if (loopCount < 1){
     Serial.println("Warning! loopCount < 1 (" + String(loopCount) + "): ");       
-  }  
+  }    
   loopCount=0;  // <- they are usually about 800 once we get here
   bigLoopCount++;  
+  //Serial.println("BigLoop (" + String(bigLoopCount) + "): ");       
+
   endOfLastLoopInMillis = millis();  
-  if (WiFi.status() != WL_CONNECTED) connectWiFi();
+  if (WiFi.status() != WL_CONNECTED){
+    Serial.println("WiFi connection lost!");       
+    connectWiFi();
+  }
   rssi = WiFi.RSSI();
 
   //
@@ -233,7 +239,7 @@ void loop()
   //
   // listen for incoming clients
   //
-  // Serial.println("listen " + String(millis()));
+  //Serial.println("listen " + String(millis()));
   WiFiClient client = server.available();
   if (client)
   {

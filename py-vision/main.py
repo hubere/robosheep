@@ -9,7 +9,7 @@ import cv2
 from colorfilters import HSVFilter
 
 from ImageAnalyser import ImageAnalyser
-from MowerControler import MowerControler
+from MowerController import MowerController
 from Planner import Planner
 from TrackedObject import TrackedObject
 from VideoCamera import VideoCamera
@@ -83,7 +83,7 @@ def control_sheep():
     tracked_object = TrackedObject()
     image_analyser = ImageAnalyser(algorithm=args['algorithm'])
     planner = Planner(tracked_object)
-    mower_controler = MowerControler(args["mowerURL"])
+    mower_controller = MowerController(args["mowerURL"])
     virtual_sheep = VirtualSheep(args["mowerURL"])
 
     GUI.putText("Middle click video to set aim.   '+/-' to increase/decrease speed.   Hit q to quit.", 25)
@@ -97,7 +97,7 @@ def control_sheep():
         planner.draw_info(frame)
         virtual_sheep.update()
         virtual_sheep.move(planner.motorSpeed1, planner.motorSpeed2)
-        mower_controler.move(planner.motorSpeed1, planner.motorSpeed2)
+        mower_controller.move(planner.motorSpeed1, planner.motorSpeed2)
 
         GUI.set_video_frame(frame)
         GUI.update()
@@ -120,13 +120,15 @@ if __name__ == '__main__':
                     choices=["testCamera", "track", "analyseImage", "controlSheep"])
     ap.add_argument("--cameraURL",
                     #default="noCameraURL",
-                    default="rtsp://admin:123456@192.168.1.231", # for mibao
+#                    default="rtsp://admin:123456@192.168.1.231", # for mibao
+                    default="rtsp://admin:123456@192.168.1.131", # for mibao
                     #default="http://192.168.1.162/video.cgi?x.mjpg", # for ???
                     #default="rtsp://admin:123456@192.168.0.48:554/live/ch0", # for wansview HD
                     #default="rtsp://admin:123456@192.168.0.48:554/live/ch1", # for wansview SD
                     help="URL of video stream. As can be viewed by VLC")
     ap.add_argument("--mowerURL",
-                    default="simulateSheep",
+                    #default="simulateSheep",
+                    default="http://192.168.1.140/",
                     help="URL of sheep controller.")
     ap.add_argument("--algorithm",
                     default="momements",

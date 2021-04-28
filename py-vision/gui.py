@@ -1,3 +1,5 @@
+import os
+from datetime import datetime
 from threading import Thread
 from time import sleep
 
@@ -39,7 +41,14 @@ class Gui:
         self.last_key = cv2.waitKey(100)
         if self.last_key == ord("q"):
             exit()
-        self.putText("Hit q to quit.    key=%s  click: %s" % (self.last_key, self.last_click), 25)
+        if self.last_key == ord("1"):
+            now = datetime.now()
+            date_time = now.strftime("%Y%d%m_%H%M%S")
+            filename = '../snapshots/screenshot_'+date_time+'.png'
+            cv2.imwrite(filename, self.frame_video)
+            cwd = os.getcwd()
+            print("Camera image saved to '" + cwd + "/" + filename + "'")
+        self.putText("'q': quit; '1': Screenshot.                   key=%s  click: %s" % (self.last_key, self.last_click), 25)
 
     def click(self, event, x, y, flags, param):
         # if the left mouse button was clicked, record the starting
