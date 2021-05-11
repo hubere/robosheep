@@ -80,7 +80,8 @@ unsigned char _nSF    = D8;
 
 const int RED_LED_PIN = D2;        // red LED
 const int CONNECTED_LED_PIN = D3;  // yellow LED
-const int DIGITAL_PIN = D7;        // Digital pin to be read for M1 measurement.
+const int M1_STEP_PIN = D7;        // Digital pin to be read for M1 measurement.
+const int M2_STEP_PIN = D8;        // Digital pin to be read for M2. NOTE: same as _nSF (which is not used)
 const int ANALOG_PIN = A0;         // The only analog pin on the Thing
 
 
@@ -121,6 +122,14 @@ int batteryPowerMeasurements = 0;
 long summedBatteryPowerValue = 0;
 
 //
+// measurement on motors steps
+//
+boolean M1_isHigh = false;
+boolean M2_isHigh = false;
+int M1_steps = 0;
+int M2_steps = 0;
+
+//
 // global objects
 // 
 WiFiServer server(80);
@@ -136,20 +145,25 @@ void setup()
   Serial.println();
 
 
-
-  // prepare GPIO
-  pinMode(CONNECTED_LED_PIN, OUTPUT);
-  digitalWrite(CONNECTED_LED_PIN, 1);
-  delay(10);
-  digitalWrite(CONNECTED_LED_PIN, 0);
-
-  // prepare battery power measurement
-  pinMode(ANALOG_PIN, INPUT);
-  
   Serial.println("\nInitializing Dual MC33926 Motor Shield");
   md.init();
   delay(10);
 
+  // prepare GPIO
+  pinMode(CONNECTED_LED_PIN, OUTPUT);
+  digitalWrite(CONNECTED_LED_PIN, 1); delay(10);
+
+  pinMode(M1_STEP_PIN,INPUT);
+  Serial.println("pinMode(M1_STEP_PIN (D7),INPUT)"); delay(10);    
+  
+  pinMode(M2_STEP_PIN,INPUT);
+  Serial.println("pinMode(M2_STEP_PIN (D8),INPUT)"); delay(10);    
+
+  // prepare battery power measurement
+  pinMode(ANALOG_PIN, INPUT);
+
+
+    
   Serial.println("\nInitializing Wifi");
   connectWiFi();
   delay(10);
@@ -192,6 +206,9 @@ void loop()
   //
   loopCount++;
 
+  countMotorSteps();
+
+  
   //
   // end of fast loop
   //
@@ -310,6 +327,30 @@ void measureBatteryPower()
   }
 }
 
+/*
+ * 
+ */
+  // when motor is spinning with 12%, signal is low for about 3000 loops and high for about 1600 loops
+  // when motor is spinning with 25%, signal is low for about 1300 loops and high for about 700 loops
+  // when motor is spinning with 100%, signal is low for about 20-300 loops and high for about 20-170 loops
+void countMotorSteps(){
+
+  int M1_signal = digitalRead(M1_STEP_PIN);
+  if (M1_isHigh and !M1_signal){  // changed from high to low      
+    if (speedM1 > 0) M1_steps++; else M1_steps--;
+    Serial.println("M1_steps: " + String(M1_steps) + " " );             
+  }
+  M1_isHigh = M1_signal;
+  
+  int M2_signal = digitalRead(M2_STEP_PIN);
+  if (M2_isHigh and !M2_signal){  // changed from high to low      
+    if (speedM2 > 0) M2_steps++; else M2_steps--;
+    Serial.println("M2_steps: " + String(M2_steps) + "  " );             
+  }
+  M2_isHigh = M2_signal;  
+}
+
+
 
 /*
  * Alive check - if client not alive, stop engines
@@ -336,7 +377,7 @@ void handleClientRequest(WiFiClient client)
   //
   // Wait until the client sends some data
   //
-  Serial.print("\n\nRequest from " + client.remoteIP().toString() + ": ");
+  // Serial.print("\n\nRequest from " + client.remoteIP().toString() + ": ");
 
   //
   // taken from https://arduino-esp8266.readthedocs.io/en/latest/esp8266wifi/server-examples.html
@@ -380,7 +421,7 @@ void handleClientRequest(WiFiClient client)
           client.print(response);
           response ="index.html";
         }
-        // client.flush(); // TODO FIXME HU what it that for?
+        // client.flush(); // TODO FIXME HU what is that for?
         client.print(response);
         unsigned int responseTime = millis()-currentMillis;
         Serial.println("-> " + response + "(" + String(responseTime) + "ms)");   
@@ -498,11 +539,11 @@ void connectWiFi()
 {
   while (true)
   {
-      if (connectWIFI(WIFI_SSID1, WIFI_PASS1)) return;
       if (connectWIFI(WIFI_SSID2, WIFI_PASS2)) return;
-      if (connectWIFI(WIFI_SSID3, WIFI_PASS3)) return;
-      if (connectWIFI(WIFI_SSID4, WIFI_PASS4)) return;
-      if (connectWIFI(WIFI_SSID5, WIFI_PASS5)) return;
+      if (connectWIFI(WIFI_SSID1, WIFI_PASS1)) return;
+//      if (connectWIFI(WIFI_SSID3, WIFI_PASS3)) return;
+//      if (connectWIFI(WIFI_SSID4, WIFI_PASS4)) return;
+//      if (connectWIFI(WIFI_SSID5, WIFI_PASS5)) return;
       delay(5000);
   }
 }

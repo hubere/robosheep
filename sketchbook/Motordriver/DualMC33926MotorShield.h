@@ -40,7 +40,7 @@ class DualMC33926MotorShield
     Serial.println("pinMode(_nD2 (D4),OUTPUT)"); delay(10);    
     
     pinMode(_nSF,INPUT);
-    Serial.println("pinMode(_nSF (D8),OUTPUT)"); delay(10);    
+    Serial.println("pinMode(_nSF (D8),INPUT)"); delay(10);    
 
     digitalWrite(_nD2,HIGH);
     Serial.println("digitalWrite(_nD2,HIGH)"); delay(10);    

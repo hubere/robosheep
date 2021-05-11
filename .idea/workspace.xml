@@ -22,23 +22,10 @@
     <list default="true" id="b1169ea1-08b2-4f85-a2f3-bf8b0f5fc14c" name="Default Changelist" comment="Create README">
       <change afterPath="$PROJECT_DIR$/flask_session/2029240f6d1128be89ddc32729463129" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/flask_session/bf52188bb93711a3d158b74287554ac3" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gui/plain/templates/control.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gui/plain/templates/joystick.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gui/plain/templates/status.html" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/py-vision/screenshot20212804_110039.png" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/py-vision/screenshot_20212804_110446.png" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/resources/snapshots/vlcsnap-2021-03-24-10h30m30s535.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/robosheep.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/robosheep.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gui/plain/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/gui/plain/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/py-vision/TrackedColorBlob.py" beforeDir="false" afterPath="$PROJECT_DIR$/py-vision/TrackedColorBlob.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/py-vision/TrackedObject.py" beforeDir="false" afterPath="$PROJECT_DIR$/py-vision/TrackedObject.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/py-vision/VideoCamera.py" beforeDir="false" afterPath="$PROJECT_DIR$/py-vision/VideoCamera.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/py-vision/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/py-vision/gui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/py-vision/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/py-vision/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sketchbook/Motordriver/Motordriver.ino" beforeDir="false" afterPath="$PROJECT_DIR$/sketchbook/Motordriver/Motordriver.ino" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -275,7 +262,7 @@
       <workItem from="1616514631844" duration="6488000" />
       <workItem from="1617125083214" duration="3060000" />
       <workItem from="1619091037641" duration="1896000" />
-      <workItem from="1619598446142" duration="2379000" />
+      <workItem from="1619598446142" duration="3249000" />
     </task>
     <task id="LOCAL-00001" summary="Used WebServer and Json, but does not compile">
       <created>1606501281915</created>
@@ -410,7 +397,14 @@
       <option name="project" value="LOCAL" />
       <updated>1615290913410</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="Take Snapshot">
+      <created>1619600922504</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1619600922504</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -457,45 +451,46 @@
     <MESSAGE value="Adde run configurations" />
     <MESSAGE value="DEL vision" />
     <MESSAGE value="Create README" />
-    <option name="LAST_COMMIT_MESSAGE" value="Create README" />
+    <MESSAGE value="Take Snapshot" />
+    <option name="LAST_COMMIT_MESSAGE" value="Take Snapshot" />
   </component>
   <component name="WindowStateProjectService">
     <state x="1300" y="146" width="1202" height="710" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1619600726959">
       <screen x="72" y="27" width="2488" height="1413" />
     </state>
     <state x="1300" y="146" width="1202" height="710" key="#com.intellij.execution.impl.EditConfigurationsDialog/72.27.2488.1413/2560.536.1920.1080@72.27.2488.1413" timestamp="1619600726959" />
-    <state width="1198" height="484" key="GridCell.Tab.0.bottom" timestamp="1619600671925">
+    <state width="1198" height="484" key="GridCell.Tab.0.bottom" timestamp="1619611052414">
       <screen x="72" y="27" width="2488" height="1413" />
     </state>
-    <state width="1198" height="484" key="GridCell.Tab.0.bottom/72.27.2488.1413/2560.536.1920.1080@72.27.2488.1413" timestamp="1619600671925" />
-    <state width="1198" height="484" key="GridCell.Tab.0.center" timestamp="1619600671925">
+    <state width="1198" height="484" key="GridCell.Tab.0.bottom/72.27.2488.1413/2560.536.1920.1080@72.27.2488.1413" timestamp="1619611052414" />
+    <state width="1198" height="484" key="GridCell.Tab.0.center" timestamp="1619611052414">
       <screen x="72" y="27" width="2488" height="1413" />
     </state>
-    <state width="1198" height="484" key="GridCell.Tab.0.center/72.27.2488.1413/2560.536.1920.1080@72.27.2488.1413" timestamp="1619600671925" />
-    <state width="1198" height="484" key="GridCell.Tab.0.left" timestamp="1619600671924">
+    <state width="1198" height="484" key="GridCell.Tab.0.center/72.27.2488.1413/2560.536.1920.1080@72.27.2488.1413" timestamp="1619611052414" />
+    <state width="1198" height="484" key="GridCell.Tab.0.left" timestamp="1619611052414">
       <screen x="72" y="27" width="2488" height="1413" />
     </state>
-    <state width="1198" height="484" key="GridCell.Tab.0.left/72.27.2488.1413/2560.536.1920.1080@72.27.2488.1413" timestamp="1619600671924" />
-    <state width="1198" height="484" key="GridCell.Tab.0.right" timestamp="1619600671925">
+    <state width="1198" height="484" key="GridCell.Tab.0.left/72.27.2488.1413/2560.536.1920.1080@72.27.2488.1413" timestamp="1619611052414" />
+    <state width="1198" height="484" key="GridCell.Tab.0.right" timestamp="1619611052414">
       <screen x="72" y="27" width="2488" height="1413" />
     </state>
-    <state width="1198" height="484" key="GridCell.Tab.0.right/72.27.2488.1413/2560.536.1920.1080@72.27.2488.1413" timestamp="1619600671925" />
-    <state width="1198" height="484" key="GridCell.Tab.1.bottom" timestamp="1619600671925">
+    <state width="1198" height="484" key="GridCell.Tab.0.right/72.27.2488.1413/2560.536.1920.1080@72.27.2488.1413" timestamp="1619611052414" />
+    <state width="1198" height="484" key="GridCell.Tab.1.bottom" timestamp="1619611052414">
       <screen x="72" y="27" width="2488" height="1413" />
     </state>
-    <state width="1198" height="484" key="GridCell.Tab.1.bottom/72.27.2488.1413/2560.536.1920.1080@72.27.2488.1413" timestamp="1619600671925" />
-    <state width="1198" height="484" key="GridCell.Tab.1.center" timestamp="1619600671925">
+    <state width="1198" height="484" key="GridCell.Tab.1.bottom/72.27.2488.1413/2560.536.1920.1080@72.27.2488.1413" timestamp="1619611052414" />
+    <state width="1198" height="484" key="GridCell.Tab.1.center" timestamp="1619611052414">
       <screen x="72" y="27" width="2488" height="1413" />
     </state>
-    <state width="1198" height="484" key="GridCell.Tab.1.center/72.27.2488.1413/2560.536.1920.1080@72.27.2488.1413" timestamp="1619600671925" />
-    <state width="1198" height="484" key="GridCell.Tab.1.left" timestamp="1619600671925">
+    <state width="1198" height="484" key="GridCell.Tab.1.center/72.27.2488.1413/2560.536.1920.1080@72.27.2488.1413" timestamp="1619611052414" />
+    <state width="1198" height="484" key="GridCell.Tab.1.left" timestamp="1619611052414">
       <screen x="72" y="27" width="2488" height="1413" />
     </state>
-    <state width="1198" height="484" key="GridCell.Tab.1.left/72.27.2488.1413/2560.536.1920.1080@72.27.2488.1413" timestamp="1619600671925" />
-    <state width="1198" height="484" key="GridCell.Tab.1.right" timestamp="1619600671925">
+    <state width="1198" height="484" key="GridCell.Tab.1.left/72.27.2488.1413/2560.536.1920.1080@72.27.2488.1413" timestamp="1619611052414" />
+    <state width="1198" height="484" key="GridCell.Tab.1.right" timestamp="1619611052414">
       <screen x="72" y="27" width="2488" height="1413" />
     </state>
-    <state width="1198" height="484" key="GridCell.Tab.1.right/72.27.2488.1413/2560.536.1920.1080@72.27.2488.1413" timestamp="1619600671925" />
+    <state width="1198" height="484" key="GridCell.Tab.1.right/72.27.2488.1413/2560.536.1920.1080@72.27.2488.1413" timestamp="1619611052414" />
     <state x="1437" y="368" width="1022" height="737" key="SettingsEditor" timestamp="1616514480597">
       <screen x="72" y="27" width="2488" height="1413" />
     </state>
@@ -524,7 +519,7 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/robosheep$analyse_Image.coverage" NAME="analyse Image Coverage Results" MODIFIED="1619598825149" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/py-vision" />
+    <SUITE FILE_PATH="coverage/robosheep$analyse_Image.coverage" NAME="analyse Image Coverage Results" MODIFIED="1619600964511" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/py-vision" />
     <SUITE FILE_PATH="coverage/robosheep$track_object.coverage" NAME="track object Coverage Results" MODIFIED="1619091101913" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/py-vision" />
     <SUITE FILE_PATH="coverage/robosheep$py_vision_analyseImage.coverage" NAME="py-vision analyseImage Coverage Results" MODIFIED="1615288384600" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/py-vision" />
     <SUITE FILE_PATH="coverage/robosheep$Flask__gui_plain_app_py_.coverage" NAME="Flask (gui/plain/app.py) Coverage Results" MODIFIED="1615290966574" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
