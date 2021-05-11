@@ -81,9 +81,14 @@ unsigned char _nSF    = D8;
 
 const int RED_LED_PIN = D2;        // red LED
 const int CONNECTED_LED_PIN = D3;  // yellow LED
-//const int M1_STEP_PIN = D7;        // Digital pin to be read for M1 measurement.
-//const int M2_STEP_PIN = D8;        // Digital pin to be read for M2. NOTE: same as _nSF (which is not used)
 const int ANALOG_PIN = A0;         // The only analog pin on the Thing
+
+/* 
+ *  The following are defined in SheepState.h
+ *  Since M2_STEP_PIN and _nSF use the same pin, it is important to inititalise MotorDriver BEFORE SheepState!!
+ */
+//const int M1_STEP_PIN = D7;      // Digital pin to be read for M1 measurement. 
+//const int M2_STEP_PIN = D8;      // Digital pin to be read for M2. NOTE: same as _nSF (which is not used)
 
 
 //
@@ -126,6 +131,7 @@ void setup()
 
   Serial.println("\nInitializing Dual MC33926 Motor Shield");
   md.init();
+  sheepState.init();
   delay(10);
 
   // prepare GPIO
@@ -135,16 +141,6 @@ void setup()
   // prepare battery power measurement
   pinMode(ANALOG_PIN, INPUT);
 
-  // prepare interrupts
-  //pinMode(M1_STEP_PIN,INPUT);
-  pinMode(M1_STEP_PIN,INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(M1_STEP_PIN), detectsMovementM1, RISING);
-  Serial.println("pinMode(M1_STEP_PIN (D7),INPUT_PULLUP)"); delay(10);    
-
-  pinMode(M2_STEP_PIN,INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(M2_STEP_PIN), detectsMovementM2, RISING);
-  Serial.println("pinMode(M2_STEP_PIN (D8),INPUT_PULLUP)"); delay(10);      
-    
   Serial.println("\nInitializing Wifi");
   connectWiFi();
   delay(10);
@@ -210,7 +206,7 @@ void loop()
     Serial.println("WiFi connection lost!");       
     connectWiFi();
   }
-  rssi = WiFi.RSSI();
+  sheepState.rssi = WiFi.RSSI();
 
   //
   // indicate operation
@@ -299,7 +295,7 @@ void measureBatteryPower()
     vout = (value * 3.1) / 1024.0; // 2.9 was empeeric factor!!!! No clue why!?!
     vin = vout / (R2/(R1+R2)); 
     if (vin<0.09) vin=0.0;//statement to quash undesired reading !
-    batteryPower = vin*10;
+    sheepState.batteryPower = vin*10;
     batteryPowerMeasurements = 0;
     summedBatteryPowerValue = 0;
   }
@@ -311,11 +307,11 @@ void measureBatteryPower()
  */
 void stopOnLostConnection(unsigned long timeSinceLastCommand)
 {
-  losingConnection = (MAX_ALIVE_DELAY - timeSinceLastCommand); //  / MAX_ALIVE_DELAY * 100;
+  sheepState.losingConnection = (MAX_ALIVE_DELAY - timeSinceLastCommand); //  / MAX_ALIVE_DELAY * 100;
   if (timeSinceLastCommand > MAX_ALIVE_DELAY)
   {
-    desiredSpeedM1 = 0;
-    desiredSpeedM2 = 0;
+    sheepState.desiredSpeedM1 = 0;
+    sheepState.desiredSpeedM2 = 0;
     //Serial.println("Warning! Lost connection to client. timeSinceLastCommand ("+String(timeSinceLastCommand)+") > MAX_ALIVE_DELAY ("+String(MAX_ALIVE_DELAY)+")");       
   }
 }
@@ -357,16 +353,16 @@ void handleClientRequest(WiFiClient client)
         // received valid request?
         //
         if (request.indexOf("/sheep/state") > 0){
-          response = respondWithSheepState();
+          response = sheepState.respondWithSheepState();
             
         }else if (request.indexOf("/sheep/move") > 0){
           extractSpeedAndDir(request);
-          response = respondWithSheepState();          
+          response = sheepState.respondWithSheepState();          
           lastCommandTimestamp = millis(); // A command was issued, reset alive check timer
           
         }else if (request.indexOf("/motor") > 0){
           extractMotorSpeeds(request);    
-          response = respondWithSheepState();
+          response = sheepState.respondWithSheepState();
           lastCommandTimestamp = millis(); // A command was issued, reset alive check timer
           
         }else{ 
@@ -405,17 +401,17 @@ void extractSpeedAndDir(String request){
   if (posSpeed != -1)
   {
     String speedString = request.substring(posSpeed+6, request.length());
-    cmdSpeed =  speedString.toInt();
+    sheepState.cmdSpeed =  speedString.toInt();
   }
   if (posDir != -1)
   {
     String dirString = request.substring(posDir+4, request.length());
-    cmdDir =  dirString.toInt();
+    sheepState.cmdDir =  dirString.toInt();
   }
 
-  desiredSpeedM1 = cmdSpeed + cmdDir;
-  desiredSpeedM2 = cmdSpeed - cmdDir;  
-  Serial.println("Setting desiredSpeedM1 to "+String(desiredSpeedM1));       
+  sheepState.desiredSpeedM1 = sheepState.cmdSpeed + sheepState.cmdDir;
+  sheepState.desiredSpeedM2 = sheepState.cmdSpeed - sheepState.cmdDir;  
+  Serial.println("Setting desiredSpeedM1 to "+String(sheepState.desiredSpeedM1));       
 
 }
 
@@ -428,12 +424,12 @@ void extractMotorSpeeds(String request){
   if (posM1 != -1)
   {
     String speedM1 = request.substring(posM1+3, request.length());
-    desiredSpeedM1 =  speedM1.toInt();
+    sheepState.desiredSpeedM1 =  speedM1.toInt();
   }
   if (posM2 != -1)
   {
     String speedM1 = request.substring(posM2+3, request.length());
-    desiredSpeedM2 =  speedM1.toInt();
+    sheepState.desiredSpeedM2 =  speedM1.toInt();
   }
 }
 
@@ -442,11 +438,11 @@ void extractMotorSpeeds(String request){
  * and send speedMs to I/O
  */
 void adjustMotorSpeeds(){
-  if (speedM1 < desiredSpeedM1)     speedM1++;
-  if (speedM1 > desiredSpeedM1)     speedM1--;
-  if (speedM2 < desiredSpeedM2)     speedM2++;
-  if (speedM2 > desiredSpeedM2)     speedM2--;
-  md.setSpeeds(speedM1, speedM2);
+  if (sheepState.speedM1 < sheepState.desiredSpeedM1)     sheepState.speedM1++;
+  if (sheepState.speedM1 > sheepState.desiredSpeedM1)     sheepState.speedM1--;
+  if (sheepState.speedM2 < sheepState.desiredSpeedM2)     sheepState.speedM2++;
+  if (sheepState.speedM2 > sheepState.desiredSpeedM2)     sheepState.speedM2--;
+  md.setSpeeds(sheepState.speedM1, sheepState.speedM2);
 }
 
 /*
@@ -491,7 +487,7 @@ boolean connectWIFI(const char* ssid, const char* passwd)
   // Measure Signal Strength (RSSI) of Wi-Fi connection
   unsigned long before = millis();    
   long rssi = WiFi.RSSI();  
-  Serial.println("RSSI: " + String(rssi) + " (" + String(millis() - before) + ")");
+  Serial.println("RSSI: " + String(sheepState.rssi) + " (" + String(millis() - before) + ")");
       
   return true;   
   
