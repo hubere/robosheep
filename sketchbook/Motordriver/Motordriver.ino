@@ -27,6 +27,7 @@
 
 #include "DualMC33926MotorShield.h"
 #include "HTML.h"
+#include "SheepState.h"
 #include <ESP8266WiFi.h>
 
 //
@@ -80,8 +81,8 @@ unsigned char _nSF    = D8;
 
 const int RED_LED_PIN = D2;        // red LED
 const int CONNECTED_LED_PIN = D3;  // yellow LED
-const int M1_STEP_PIN = D7;        // Digital pin to be read for M1 measurement.
-const int M2_STEP_PIN = D8;        // Digital pin to be read for M2. NOTE: same as _nSF (which is not used)
+//const int M1_STEP_PIN = D7;        // Digital pin to be read for M1 measurement.
+//const int M2_STEP_PIN = D8;        // Digital pin to be read for M2. NOTE: same as _nSF (which is not used)
 const int ANALOG_PIN = A0;         // The only analog pin on the Thing
 
 
@@ -93,20 +94,6 @@ int bigLoopCount = 0;
 unsigned long endOfLastLoopInMillis = millis();
 unsigned long lastCommandTimestamp = millis();
 int led_state = 0;  // last state set for led
-int batteryPower = 0;  // power of battery in %
-
-
-//
-// sheep state
-//
-int speedM1 = 0;    // actual speed of motor 1 (PWM)
-int speedM2 = 0;    // actual speed of motor 2 (PWM)
-int desiredSpeedM1 = 0;    // desired speed of motor 1 (PWM)
-int desiredSpeedM2 = 0;    // desired speed of motor 2 (PWM)
-int cmdSpeed = 0;   // desired speed 
-int cmdDir = 0;     // desired dir
-long rssi = 0;  
-int losingConnection = 0;  // timer for lost connection / no new commands from client.
 
 //
 // battery power measurement
@@ -120,14 +107,6 @@ float R2 = 10000.0; // resistance of R2 (10K) - see text!
 int value = 0;
 int batteryPowerMeasurements = 0;
 long summedBatteryPowerValue = 0;
-
-//
-// measurement on motors steps
-//
-boolean M1_isHigh = false;
-boolean M2_isHigh = false;
-int M1_steps = 0;
-int M2_steps = 0;
 
 //
 // global objects
@@ -153,16 +132,18 @@ void setup()
   pinMode(CONNECTED_LED_PIN, OUTPUT);
   digitalWrite(CONNECTED_LED_PIN, 1); delay(10);
 
-  pinMode(M1_STEP_PIN,INPUT);
-  Serial.println("pinMode(M1_STEP_PIN (D7),INPUT)"); delay(10);    
-  
-  pinMode(M2_STEP_PIN,INPUT);
-  Serial.println("pinMode(M2_STEP_PIN (D8),INPUT)"); delay(10);    
-
   // prepare battery power measurement
   pinMode(ANALOG_PIN, INPUT);
 
+  // prepare interrupts
+  //pinMode(M1_STEP_PIN,INPUT);
+  pinMode(M1_STEP_PIN,INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(M1_STEP_PIN), detectsMovementM1, RISING);
+  Serial.println("pinMode(M1_STEP_PIN (D7),INPUT_PULLUP)"); delay(10);    
 
+  pinMode(M2_STEP_PIN,INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(M2_STEP_PIN), detectsMovementM2, RISING);
+  Serial.println("pinMode(M2_STEP_PIN (D8),INPUT_PULLUP)"); delay(10);      
     
   Serial.println("\nInitializing Wifi");
   connectWiFi();
@@ -206,9 +187,6 @@ void loop()
   //
   loopCount++;
 
-  countMotorSteps();
-
-  
   //
   // end of fast loop
   //
@@ -327,30 +305,6 @@ void measureBatteryPower()
   }
 }
 
-/*
- * 
- */
-  // when motor is spinning with 12%, signal is low for about 3000 loops and high for about 1600 loops
-  // when motor is spinning with 25%, signal is low for about 1300 loops and high for about 700 loops
-  // when motor is spinning with 100%, signal is low for about 20-300 loops and high for about 20-170 loops
-void countMotorSteps(){
-
-  int M1_signal = digitalRead(M1_STEP_PIN);
-  if (M1_isHigh and !M1_signal){  // changed from high to low      
-    if (speedM1 > 0) M1_steps++; else M1_steps--;
-    Serial.println("M1_steps: " + String(M1_steps) + " " );             
-  }
-  M1_isHigh = M1_signal;
-  
-  int M2_signal = digitalRead(M2_STEP_PIN);
-  if (M2_isHigh and !M2_signal){  // changed from high to low      
-    if (speedM2 > 0) M2_steps++; else M2_steps--;
-    Serial.println("M2_steps: " + String(M2_steps) + "  " );             
-  }
-  M2_isHigh = M2_signal;  
-}
-
-
 
 /*
  * Alive check - if client not alive, stop engines
@@ -440,43 +394,6 @@ void handleClientRequest(WiFiClient client)
   
 }
   
-
-
-/*
- * Build json from internal state
- */
-String respondWithSheepState(){
-
-  String response = "{";
-  response += "\"m1\":\"";
-  response += speedM1;
-  response += "\", ";
-  response += "\"m2\":\""; 
-  response += speedM2;
-  response += "\", ";
-  response += "\"desiredSpeedM1\":\""; 
-  response += desiredSpeedM1;
-  response += "\", ";
-  response += "\"desiredSpeedM2\":\""; 
-  response += desiredSpeedM2;
-  response += "\", ";
-  response += "\"losingConnection\":\"";
-  response += losingConnection;
-  response += "\", ";
-  response += "\"power\":\"";
-  response += batteryPower;
-  response += "\", ";
-  response += "\"rssi\":\"";
-  response += rssi;
-  response += "\"";
-  response += "}";
-
-
-
-  
-  return response; 
-}
-
 
 /*
  * Match the request, i.e. extract speed and dir
