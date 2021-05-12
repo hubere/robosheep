@@ -79,8 +79,14 @@ unsigned char _M2IN2  = D6;
 unsigned char _nSF    = D8;
 */
 
-const int RED_LED_PIN = D2;        // red LED
-const int CONNECTED_LED_PIN = D3;  // yellow LED
+/*
+ * DON' USE THESE (see SheepState....h)
+ * 
+unsigned char M1_STEP_PIN = D2;        // Digital pin to be read for M1 measurement.
+unsigned char M2_STEP_PIN = D3;        // Digital pin to be read for M2 measurement.
+*/ 
+   
+const int CONNECTED_LED_PIN = D7;  // yellow LED
 const int ANALOG_PIN = A0;         // The only analog pin on the Thing
 
 /* 
@@ -131,7 +137,7 @@ void setup()
 
   Serial.println("\nInitializing Dual MC33926 Motor Shield");
   md.init();
-  sheepState.init();
+  state.init();
   delay(10);
 
   // prepare GPIO
@@ -206,7 +212,7 @@ void loop()
     Serial.println("WiFi connection lost!");       
     connectWiFi();
   }
-  sheepState.rssi = WiFi.RSSI();
+  state.rssi = WiFi.RSSI();
 
   //
   // indicate operation
@@ -295,7 +301,7 @@ void measureBatteryPower()
     vout = (value * 3.1) / 1024.0; // 2.9 was empeeric factor!!!! No clue why!?!
     vin = vout / (R2/(R1+R2)); 
     if (vin<0.09) vin=0.0;//statement to quash undesired reading !
-    sheepState.batteryPower = vin*10;
+    state.batteryPower = vin*10;
     batteryPowerMeasurements = 0;
     summedBatteryPowerValue = 0;
   }
@@ -307,11 +313,11 @@ void measureBatteryPower()
  */
 void stopOnLostConnection(unsigned long timeSinceLastCommand)
 {
-  sheepState.losingConnection = (MAX_ALIVE_DELAY - timeSinceLastCommand); //  / MAX_ALIVE_DELAY * 100;
+  state.losingConnection = (MAX_ALIVE_DELAY - timeSinceLastCommand); //  / MAX_ALIVE_DELAY * 100;
   if (timeSinceLastCommand > MAX_ALIVE_DELAY)
   {
-    sheepState.desiredSpeedM1 = 0;
-    sheepState.desiredSpeedM2 = 0;
+    state.desiredSpeedM1 = 0;
+    state.desiredSpeedM2 = 0;
     //Serial.println("Warning! Lost connection to client. timeSinceLastCommand ("+String(timeSinceLastCommand)+") > MAX_ALIVE_DELAY ("+String(MAX_ALIVE_DELAY)+")");       
   }
 }
@@ -353,16 +359,16 @@ void handleClientRequest(WiFiClient client)
         // received valid request?
         //
         if (request.indexOf("/sheep/state") > 0){
-          response = sheepState.respondWithSheepState();
+          response = state.respondWithSheepState();
             
         }else if (request.indexOf("/sheep/move") > 0){
           extractSpeedAndDir(request);
-          response = sheepState.respondWithSheepState();          
+          response = state.respondWithSheepState();          
           lastCommandTimestamp = millis(); // A command was issued, reset alive check timer
           
         }else if (request.indexOf("/motor") > 0){
           extractMotorSpeeds(request);    
-          response = sheepState.respondWithSheepState();
+          response = state.respondWithSheepState();
           lastCommandTimestamp = millis(); // A command was issued, reset alive check timer
           
         }else{ 
@@ -401,18 +407,19 @@ void extractSpeedAndDir(String request){
   if (posSpeed != -1)
   {
     String speedString = request.substring(posSpeed+6, request.length());
-    sheepState.cmdSpeed =  speedString.toInt();
+    state.cmdSpeed =  speedString.toInt();
   }
   if (posDir != -1)
   {
     String dirString = request.substring(posDir+4, request.length());
-    sheepState.cmdDir =  dirString.toInt();
+    state.cmdDir =  dirString.toInt();
   }
 
-  sheepState.desiredSpeedM1 = sheepState.cmdSpeed + sheepState.cmdDir;
-  sheepState.desiredSpeedM2 = sheepState.cmdSpeed - sheepState.cmdDir;  
-  Serial.println("Setting desiredSpeedM1 to "+String(sheepState.desiredSpeedM1));       
-
+  int newDesireM1 = state.cmdSpeed + state.cmdDir;
+  int newDesireM2 = state.cmdSpeed - state.cmdDir;  
+  state.desiredSpeedM1 += newDesireM1; 
+  state.desiredSpeedM2 += newDesireM2; 
+  Serial.println("Setting desiredSpeed to ("+String(state.desiredSpeedM1)+"/"+String(state.desiredSpeedM2)+")");       
 }
 
 /*
@@ -424,12 +431,12 @@ void extractMotorSpeeds(String request){
   if (posM1 != -1)
   {
     String speedM1 = request.substring(posM1+3, request.length());
-    sheepState.desiredSpeedM1 =  speedM1.toInt();
+    state.desiredSpeedM1 =  speedM1.toInt();
   }
   if (posM2 != -1)
   {
     String speedM1 = request.substring(posM2+3, request.length());
-    sheepState.desiredSpeedM2 =  speedM1.toInt();
+    state.desiredSpeedM2 =  speedM1.toInt();
   }
 }
 
@@ -438,11 +445,22 @@ void extractMotorSpeeds(String request){
  * and send speedMs to I/O
  */
 void adjustMotorSpeeds(){
-  if (sheepState.speedM1 < sheepState.desiredSpeedM1)     sheepState.speedM1++;
-  if (sheepState.speedM1 > sheepState.desiredSpeedM1)     sheepState.speedM1--;
-  if (sheepState.speedM2 < sheepState.desiredSpeedM2)     sheepState.speedM2++;
-  if (sheepState.speedM2 > sheepState.desiredSpeedM2)     sheepState.speedM2--;
-  md.setSpeeds(sheepState.speedM1, sheepState.speedM2);
+  if (state.speedM1 < state.desiredSpeedM1)     state.increaseM1();
+  if (state.speedM1 > state.desiredSpeedM1)     state.decreaseM1();
+  if (state.speedM2 < state.desiredSpeedM2)     state.increaseM2();
+  if (state.speedM2 > state.desiredSpeedM2)     state.decreaseM2();
+
+  int speedM1 = state.speedM1;
+  int speedM2 = state.speedM2;
+  int minSpeed = 10;
+  
+  //  void ensureMinimumSpeed()
+  if (speedM1 > 0 && speedM1 <  minSpeed) speedM1 =  minSpeed;
+  if (speedM1 < 0 && speedM1 > -minSpeed) speedM1 = -minSpeed;
+  if (speedM2 > 0 && speedM2 <  minSpeed) speedM2 =  minSpeed;
+  if (speedM2 < 0 && speedM2 > -minSpeed) speedM2 = -minSpeed;
+     
+  md.setSpeeds(speedM1, speedM2);
 }
 
 /*
@@ -487,10 +505,9 @@ boolean connectWIFI(const char* ssid, const char* passwd)
   // Measure Signal Strength (RSSI) of Wi-Fi connection
   unsigned long before = millis();    
   long rssi = WiFi.RSSI();  
-  Serial.println("RSSI: " + String(sheepState.rssi) + " (" + String(millis() - before) + ")");
+  Serial.println("RSSI: " + String(state.rssi) + " (" + String(millis() - before) + ")");
       
   return true;   
-  
 }
 
 

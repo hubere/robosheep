@@ -13,21 +13,25 @@ class SheepState
 {
   
   private:
-    unsigned char M1_STEP_PIN = D7;        // Digital pin to be read for M1 measurement.
-    unsigned char M2_STEP_PIN = D8;        // Digital pin to be read for M2. NOTE: same as _nSF (which is not used)
+    unsigned char M1_STEP_PIN = D2;        // Digital pin to be read for M1 measurement.
+    unsigned char M2_STEP_PIN = D3;        // Digital pin to be read for M2 measurement.
+
+    const int speedIncrease = 1; 
+    const int minSpeed = 10; 
+
 
   public:  
-    int speedM1;    // actual speed of motor 1 (PWM)
-    int speedM2;    // actual speed of motor 2 (PWM)
-    long posM1;
-    long posM2;
-    int desiredSpeedM1;    // desired speed of motor 1 (PWM)
-    int desiredSpeedM2;    // desired speed of motor 2 (PWM)
-    int cmdSpeed;          // desired speed 
-    int cmdDir;            // desired dir
-    long rssi;  
-    int batteryPower;      // power of battery in %
-    int losingConnection;  // timer for lost connection / no new commands from client.
+    int speedM1 = 0;    // actual speed of motor 1 (PWM)
+    int speedM2 = 0;    // actual speed of motor 2 (PWM)
+    long posM1 = 0;
+    long posM2 = 0;
+    int desiredSpeedM1 = 0;    // desired speed of motor 1 (PWM)
+    int desiredSpeedM2 = 0;    // desired speed of motor 2 (PWM)
+    int cmdSpeed = 0;          // desired speed 
+    int cmdDir = 0;            // desired dir
+    long rssi = 0;  
+    int batteryPower = 0;      // power of battery in %
+    int losingConnection = 0;  // timer for lost connection / no new commands from client.
 
     
     // Constructors ////////////////////////////////////////////////////////////////  
@@ -35,27 +39,49 @@ class SheepState
     }
 
     void init() {
+        Serial.println();
         Serial.println("Initializing SheepState");
         
         // prepare interrupts
         pinMode(M1_STEP_PIN,INPUT_PULLUP);
+//        pinMode(M1_STEP_PIN,INPUT);
         attachInterrupt(digitalPinToInterrupt(M1_STEP_PIN), ISRFuncM1, RISING);
         Serial.println("pinMode(M1_STEP_PIN (D7),INPUT_PULLUP)"); delay(10);          
         
-        pinMode(M2_STEP_PIN,INPUT_PULLUP);        
+        pinMode(M2_STEP_PIN,INPUT_PULLUP);
+//        pinMode(M2_STEP_PIN,INPUT);        
         attachInterrupt(digitalPinToInterrupt(M2_STEP_PIN), ISRFuncM2, RISING);
         Serial.println("pinMode(M2_STEP_PIN (D8),INPUT_PULLUP)"); delay(10);                 
     }
 
     void ISR1() {
       if (speedM1 > 0) posM1++; else posM1--;
-      Serial.println("posM1 " + String(posM1));      
+      if (speedM1 == 0){
+        if (desiredSpeedM1 > 0) desiredSpeedM1--; 
+        if (desiredSpeedM1 < 0) desiredSpeedM1++;
+      };
+      if (speedM1 > 0) desiredSpeedM1--; 
+      if (speedM1 < 0) desiredSpeedM1++;            
+      // Serial.println("posM1: " + String(posM1) + " desiredSpeedM1: " + String(desiredSpeedM1));      
+      Serial.println ("ISR1: " + respondWithSheepState());
     }    
 
     void ISR2() {
       if (speedM2 > 0) posM2++; else posM2--;
-      Serial.println("posM2 " + String(posM2));      
+      if (speedM2 == 0){
+        if (desiredSpeedM2 > 0) desiredSpeedM2--;
+        if (desiredSpeedM2 < 0) desiredSpeedM2++;
+      };
+      if (speedM2 > 0) desiredSpeedM2--; 
+      if (speedM2 < 0) desiredSpeedM2++;            
+      // Serial.println("posM2: " + String(posM2) + " desiredSpeedM2: " + String(desiredSpeedM2));      
+      Serial.println ("ISR2: " + respondWithSheepState());
     }    
+
+    void increaseM1(){      speedM1 += speedIncrease;    }
+    void decreaseM1(){      speedM1 -= speedIncrease;    }
+    void increaseM2(){      speedM2 += speedIncrease;    }
+    void decreaseM2(){      speedM2 -= speedIncrease;    }
 
     /*
      * Build json from internal state
@@ -82,11 +108,11 @@ class SheepState
 };
 
 
-SheepState sheepState;
+SheepState state;
 
 // Checks if motion was detected on M1 or M2
-ICACHE_RAM_ATTR void ISRFuncM1() {  sheepState.ISR1();};
-ICACHE_RAM_ATTR void ISRFuncM2() {  sheepState.ISR2();};
+ICACHE_RAM_ATTR void ISRFuncM1() {  state.ISR1();};
+ICACHE_RAM_ATTR void ISRFuncM2() {  state.ISR2();};
 
 
 
