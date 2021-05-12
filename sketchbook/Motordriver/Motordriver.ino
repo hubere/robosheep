@@ -25,10 +25,11 @@
  */
 
 
+#include "Wifi.h"
 #include "DualMC33926MotorShield.h"
 #include "HTML.h"
 #include "SheepState.h"
-#include <ESP8266WiFi.h>
+#include "BatteryPower.h"
 
 //
 // programm behavior
@@ -39,29 +40,6 @@
 
 // The loops delay. Each loop delays for at least LOOP_DELAY ms.
 #define LOOP_DELAY         10 
-
-
-// WiFi connection configuration
-#define WIFI_SSID1       "Hubflepuff Common Rooms"
-#define WIFI_PASS1       "AccioWLAN"
-
-#define WIFI_SSID2       "Buergernetz-WLAN"
-#define WIFI_PASS2       "LeInternetUwant11"
-
-#define WIFI_SSID3       "TP-Huabas"
-#define WIFI_PASS3       "Welpenspiel"
-
-#define WIFI_SSID4       "MartinRouterKing"
-#define WIFI_PASS4       "Ihaveastream"
-
-#define WIFI_SSID5       "Huabas"
-#define WIFI_PASS5       "Welpenspiel"
-
-
-// maximum number of tries during wifi connection setup
-#define WIFI_MAX_TRIES  30
-// delay in ms between checks during wifi connection setup
-#define WIFI_DELAY_TRY  1000
 
 
 /////////////////////
@@ -80,21 +58,20 @@ unsigned char _nSF    = D8;
 */
 
 /*
- * DON' USE THESE (see SheepState....h)
+ * DON' USE THESE (see SheepState.h)
  * 
 unsigned char M1_STEP_PIN = D2;        // Digital pin to be read for M1 measurement.
 unsigned char M2_STEP_PIN = D3;        // Digital pin to be read for M2 measurement.
 */ 
+
+/*
+ * DON' USE THESE (see BatteryPower.h)
+ * 
+const int ANALOG_PIN = A0;         // The only analog pin on the Thing
+*/
    
 const int CONNECTED_LED_PIN = D7;  // yellow LED
-const int ANALOG_PIN = A0;         // The only analog pin on the Thing
 
-/* 
- *  The following are defined in SheepState.h
- *  Since M2_STEP_PIN and _nSF use the same pin, it is important to inititalise MotorDriver BEFORE SheepState!!
- */
-//const int M1_STEP_PIN = D7;      // Digital pin to be read for M1 measurement. 
-//const int M2_STEP_PIN = D8;      // Digital pin to be read for M2. NOTE: same as _nSF (which is not used)
 
 
 //
@@ -107,19 +84,6 @@ unsigned long lastCommandTimestamp = millis();
 int led_state = 0;  // last state set for led
 
 //
-// battery power measurement
-// see (https://www.electroschematics.com/arduino-digital-voltmeter/)
-// 
-// int analogInput = 0; -> see ANALOG_PIN
-float vout = 0.0;
-float vin = 0.0;
-float R1 = 100000.0; // resistance of R1 (100K) -see text!
-float R2 = 10000.0; // resistance of R2 (10K) - see text!
-int value = 0;
-int batteryPowerMeasurements = 0;
-long summedBatteryPowerValue = 0;
-
-//
 // global objects
 // 
 WiFiServer server(80);
@@ -130,12 +94,8 @@ void setup()
 {
   Serial.begin(115200);
   delay(10);
-  Serial.println();
-  Serial.println();
-  Serial.println();
 
-
-  Serial.println("\nInitializing Dual MC33926 Motor Shield");
+  Serial.println("\n\nInitializing Dual MC33926 Motor Shield");
   md.init();
   state.init();
   delay(10);
@@ -158,7 +118,6 @@ void setup()
   printUsage();
 
   endOfLastLoopInMillis = millis();  
-
 }
 
 /*
@@ -178,65 +137,48 @@ void setup()
  * With a Serial.println, one loop takes 3 to 4ms
  * Without a Serial.println, we do about 800 loopCounts in 10 ms
  * 
+ * fast loop (about 800 executions in 10ms => 80MHz)
  * 
  */
 void loop()
 {
   unsigned long currentMillis = millis();
-
-  //
-  // fast loop (about 800 executions in 10ms => 80MHz)
-  //
   loopCount++;
 
-  //
-  // end of fast loop
-  //
-  if (not timeForBigLoop(currentMillis - endOfLastLoopInMillis))
-    return;
-    
-  //
-  // ----------------------------------------------------------
-  // time for big loop!
-  // we get here all LOOP_DELAY ms
-  //
+  if (timeForBigLoop(currentMillis - endOfLastLoopInMillis)) bigLoop();
+}
+
+
+/*
+ * time for big loop!
+ * we get here all LOOP_DELAY ms
+ */
+void bigLoop(){
   if (loopCount < 1){
     Serial.println("Warning! loopCount < 1 (" + String(loopCount) + "): ");       
   }    
+  
   loopCount=0;  // <- they are usually about 800 once we get here
   bigLoopCount++;  
-  //Serial.println("BigLoop (" + String(bigLoopCount) + "): ");       
 
-  endOfLastLoopInMillis = millis();  
-  if (WiFi.status() != WL_CONNECTED){
-    Serial.println("WiFi connection lost!");       
-    connectWiFi();
-  }
-  state.rssi = WiFi.RSSI();
+  stopOnLostConnection(millis() - lastCommandTimestamp); // Stop if connection is lost, i.e. no commands issued anymore
+  toggleLED(bigLoopCount);  // indicate operation
+  measureBatteryPower();    // battery power  
+  adjustMotorSpeeds();      // Adjust motor speeds towards desiredSpeed.
+  checkWifiConnection();
+  listenForIncomingRequests();
 
-  //
-  // indicate operation
-  //
-  toggleLED(bigLoopCount);
+  endOfLastLoopInMillis = millis();    
+}
 
-  // battery power
-  measureBatteryPower();
 
-  //
-  // Stop if connection is lost, i.e. no commands issued anymore
-  //
-  // Serial.println("currentMillis: ("+String(currentMillis)+"); lastCommandTimestamp: "+String(lastCommandTimestamp)+")");         
-  stopOnLostConnection(currentMillis - lastCommandTimestamp);
-    
-  //
-  // Adjust motor speeds towards desiredSpeed.
-  //
-  adjustMotorSpeeds();
- 
-  //
-  // listen for incoming clients
-  //
-  //Serial.println("listen " + String(millis()));
+
+// --------- helper functions ---------
+
+/*
+ * 
+ */
+void listenForIncomingRequests(){
   WiFiClient client = server.available();
   if (client)
   {
@@ -244,20 +186,23 @@ void loop()
 
     delay(1);      // give the web browser time to receive the data
     client.stop(); // close the connection
-  }
-
-  //
-  // end of big loop
-  //
+  } 
+   
   // The client will actually be disconnected 
   // when the function returns and 'client' object is detroyed
-  //
-  endOfLastLoopInMillis = millis();
-  
-  
 }
 
-// --------- helper functions ---------
+
+/*
+ * check if WIFI is still connected and update rssi
+ */
+void checkWifiConnection(){
+  if (WiFi.status() != WL_CONNECTED){
+    Serial.println("WiFi connection lost!");       
+    connectWiFi();
+  }
+  state.rssi = WiFi.RSSI();  
+}
 
 /*
  * returns true if timeSinceLastLoop exceeds LOOP_DELAY.
@@ -281,30 +226,6 @@ void toggleLED(int bigLoopCount)
     }
     digitalWrite(CONNECTED_LED_PIN, led_state);   
   }  
-}
-
-/*
- * Measure battery power
- * (see https://www.engineersgarage.com/esp8266/nodemcu-battery-voltage-monitor/)
- * (see https://www.electroschematics.com/arduino-digital-voltmeter/)
- */
-void measureBatteryPower()
-{
-  const int POWER_READINGS_COUNT = 10;
-  
-  summedBatteryPowerValue += analogRead(ANALOG_PIN);    
-  batteryPowerMeasurements++;
-  if (batteryPowerMeasurements >= POWER_READINGS_COUNT)
-  {
-    value = summedBatteryPowerValue / POWER_READINGS_COUNT;
-    vout = (value * 3.3) / 1024.0; // Convert voltage to 5V factor
-    vout = (value * 3.1) / 1024.0; // 2.9 was empeeric factor!!!! No clue why!?!
-    vin = vout / (R2/(R1+R2)); 
-    if (vin<0.09) vin=0.0;//statement to quash undesired reading !
-    state.batteryPower = vin*10;
-    batteryPowerMeasurements = 0;
-    summedBatteryPowerValue = 0;
-  }
 }
 
 
@@ -461,53 +382,6 @@ void adjustMotorSpeeds(){
   if (speedM2 < 0 && speedM2 > -minSpeed) speedM2 = -minSpeed;
      
   md.setSpeeds(speedM1, speedM2);
-}
-
-/*
- * Connect to all known WIFIs
- */
-void connectWiFi()
-{
-  while (true)
-  {
-      if (connectWIFI(WIFI_SSID2, WIFI_PASS2)) return;
-      if (connectWIFI(WIFI_SSID1, WIFI_PASS1)) return;
-//      if (connectWIFI(WIFI_SSID3, WIFI_PASS3)) return;
-//      if (connectWIFI(WIFI_SSID4, WIFI_PASS4)) return;
-//      if (connectWIFI(WIFI_SSID5, WIFI_PASS5)) return;
-      delay(5000);
-  }
-}
-
-/*
- * Try to connect to a certain WIFI
- */
-boolean connectWIFI(const char* ssid, const char* passwd)
-{
-  Serial.println();
-  Serial.println();
-  Serial.print("Trying to connect to ");
-  Serial.println(ssid);
-  
-  WiFi.begin(ssid, passwd);
-  delay(10000);  // give 'em 10 seconds...
-
-  if (WiFi.status() != WL_CONNECTED){
-    Serial.println("... connection failed.");
-    return false;
-  }
-    
-  Serial.println("");
-  Serial.print("WiFi connected to ");
-  Serial.println(ssid);
-  Serial.println(WiFi.localIP());
-
-  // Measure Signal Strength (RSSI) of Wi-Fi connection
-  unsigned long before = millis();    
-  long rssi = WiFi.RSSI();  
-  Serial.println("RSSI: " + String(state.rssi) + " (" + String(millis() - before) + ")");
-      
-  return true;   
 }
 
 
