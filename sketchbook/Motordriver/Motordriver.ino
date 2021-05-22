@@ -97,8 +97,9 @@ void setup()
 
   Serial.println("\n\nInitializing Dual MC33926 Motor Shield");
   md.init();
-  state.init();
   delay(10);
+
+  state.init();
 
   // prepare GPIO
   pinMode(CONNECTED_LED_PIN, OUTPUT);
@@ -282,6 +283,11 @@ void handleClientRequest(WiFiClient client)
         if (request.indexOf("/sheep/state") > 0){
           response = state.respondWithSheepState();
             
+        }else if (request.indexOf("/sheep/set") > 0){
+          extractSetParameter(request);
+          response = state.respondWithSheepState();          
+          lastCommandTimestamp = millis(); // A command was issued, reset alive check timer
+          
         }else if (request.indexOf("/sheep/move") > 0){
           extractSpeedAndDir(request);
           response = state.respondWithSheepState();          
@@ -317,6 +323,19 @@ void handleClientRequest(WiFiClient client)
   
 }
   
+
+/*
+ * Match the request, i.e. extract parameter to set and value
+ */
+void extractSetParameter(String request){
+  int posMaxSpeed = request.indexOf("maxSpeed=");
+  if (posMaxSpeed != -1)
+  {
+    String maxSpeedString = request.substring(posMaxSpeed+9, request.length());
+    state.maxSpeed =  maxSpeedString.toInt();
+    Serial.println("Setting maxSpeed to "+String(state.maxSpeed));       
+  }
+}
 
 /*
  * Match the request, i.e. extract speed and dir

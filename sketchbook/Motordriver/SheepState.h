@@ -21,6 +21,7 @@ class SheepState
 
 
   public:  
+    int maxSpeed = 25;  // max speed of a motor
     int speedM1 = 0;    // actual speed of motor 1 (PWM)
     int speedM2 = 0;    // actual speed of motor 2 (PWM)
     long posM1 = 0;
@@ -78,10 +79,10 @@ class SheepState
       Serial.println ("ISR2: " + respondWithSheepState());
     }    
 
-    void increaseM1(){      speedM1 += speedIncrease;    }
-    void decreaseM1(){      speedM1 -= speedIncrease;    }
-    void increaseM2(){      speedM2 += speedIncrease;    }
-    void decreaseM2(){      speedM2 -= speedIncrease;    }
+    void increaseM1(){ speedM1 += speedIncrease; speedM1 = min(speedM1,  maxSpeed);   }
+    void decreaseM1(){ speedM1 -= speedIncrease; speedM1 = max(speedM1, -maxSpeed);   }
+    void increaseM2(){ speedM2 += speedIncrease; speedM2 = min(speedM2,  maxSpeed);   }
+    void decreaseM2(){ speedM2 -= speedIncrease; speedM2 = max(speedM2, -maxSpeed);   }
 
     /*
      * Build json from internal state
@@ -95,6 +96,7 @@ class SheepState
       doc["desiredSpeedM2"] = desiredSpeedM2;
       doc["posM1"] = posM1;
       doc["posM2"] = posM2;
+      doc["maxSpeed"] = maxSpeed;
       doc["losingConnection"] = losingConnection;
       doc["power"] = batteryPower;
       doc["rssi"] = rssi;
