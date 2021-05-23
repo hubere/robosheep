@@ -7,12 +7,12 @@
 class DualMC33926MotorShield
 {
   private:
-    unsigned char _M1IN1  = D0;
-    unsigned char _M1IN2  = D1;
-    unsigned char _M2IN1  = D5;
-    unsigned char _M2IN2  = D6;
-    unsigned char _nD2    = D4;
-    unsigned char _nSF    = D8;
+    // unsigned char _nD2    = D0;  -> set _nD2 on Mottordrivershield to high!
+    unsigned char _M1IN1  = D1;
+    unsigned char _M1IN2  = D2;
+    unsigned char _M2IN1  = D3;
+    unsigned char _M2IN2  = D4;
+    // unsigned char _nSF    = D8;  -> no posibility to read error state
 
   public:  
   // Constructors ////////////////////////////////////////////////////////////////
@@ -36,14 +36,14 @@ class DualMC33926MotorShield
     pinMode(_M2IN2,OUTPUT);
     Serial.println("pinMode(_M2IN2 (D6),OUTPUT)"); delay(10);    
     
-    pinMode(_nD2,OUTPUT);
-    Serial.println("pinMode(_nD2 (D4),OUTPUT)"); delay(10);    
+    //pinMode(_nD2,OUTPUT);
+    //Serial.println("pinMode(_nD2 (D4),OUTPUT)"); delay(10);    
     
-    pinMode(_nSF,INPUT);
-    Serial.println("pinMode(_nSF (D8),INPUT)"); delay(10);    
+    //pinMode(_nSF,INPUT);
+    //Serial.println("pinMode(_nSF (D8),INPUT)"); delay(10);    
 
-    digitalWrite(_nD2,HIGH);
-    Serial.println("digitalWrite(_nD2,HIGH)"); delay(10);    
+    //digitalWrite(_nD2,HIGH);
+    // Serial.println("digitalWrite(_nD2,HIGH)"); delay(10);    
   }
 
   void setSpeed(unsigned char pinForward, unsigned char pinBackward, int speed)
@@ -75,10 +75,12 @@ class DualMC33926MotorShield
   //
   // Return error status
   //
+  /*
   unsigned char getFault()
   {
     return !digitalRead(_nSF);
   }
+  */
     
 };
 

@@ -13,8 +13,8 @@ class SheepState
 {
   
   private:
-    unsigned char M1_STEP_PIN = D2;        // Digital pin to be read for M1 measurement.
-    unsigned char M2_STEP_PIN = D3;        // Digital pin to be read for M2 measurement.
+    unsigned char M1_STEP_PIN = D5;        // Digital pin to be read for M1 measurement.
+    unsigned char M2_STEP_PIN = D6;        // Digital pin to be read for M2 measurement.
 
     const int speedIncrease = 1; 
     const int minSpeed = 10; 
@@ -63,7 +63,6 @@ class SheepState
       };
       if (speedM1 > 0) desiredSpeedM1--; 
       if (speedM1 < 0) desiredSpeedM1++;            
-      // Serial.println("posM1: " + String(posM1) + " desiredSpeedM1: " + String(desiredSpeedM1));      
       Serial.println ("ISR1: " + respondWithSheepState());
     }    
 
@@ -75,7 +74,6 @@ class SheepState
       };
       if (speedM2 > 0) desiredSpeedM2--; 
       if (speedM2 < 0) desiredSpeedM2++;            
-      // Serial.println("posM2: " + String(posM2) + " desiredSpeedM2: " + String(desiredSpeedM2));      
       Serial.println ("ISR2: " + respondWithSheepState());
     }    
 
@@ -83,6 +81,8 @@ class SheepState
     void decreaseM1(){ speedM1 -= speedIncrease; speedM1 = max(speedM1, -maxSpeed);   }
     void increaseM2(){ speedM2 += speedIncrease; speedM2 = min(speedM2,  maxSpeed);   }
     void decreaseM2(){ speedM2 -= speedIncrease; speedM2 = max(speedM2, -maxSpeed);   }
+
+    int diffDesired(){ return desiredSpeedM1 - desiredSpeedM2; }
 
     /*
      * Build json from internal state

@@ -46,22 +46,23 @@
 // Pin Definitions //
 /////////////////////
 
+unsigned char CONNECTED_LED_PIN = D0;  // yellow LED
+
 /*
  * DON' USE THESE (see DualMC....h)
  * 
-unsigned char _M1IN1  = D0;
-unsigned char _M1IN2  = D1;
-unsigned char _nD2    = D4;
-unsigned char _M2IN1  = D5;
-unsigned char _M2IN2  = D6;
-unsigned char _nSF    = D8;
+unsigned char _M1IN1  = D1;
+unsigned char _M1IN2  = D2;
+unsigned char _M2IN1  = D3;
+unsigned char _M2IN2  = D4;
 */
+
 
 /*
  * DON' USE THESE (see SheepState.h)
  * 
-unsigned char M1_STEP_PIN = D2;        // Digital pin to be read for M1 measurement.
-unsigned char M2_STEP_PIN = D3;        // Digital pin to be read for M2 measurement.
+unsigned char M1_STEP_PIN = D5;        // Digital pin to be read for M1 measurement.
+unsigned char M2_STEP_PIN = D6;        // Digital pin to be read for M2 measurement.
 */ 
 
 /*
@@ -70,8 +71,10 @@ unsigned char M2_STEP_PIN = D3;        // Digital pin to be read for M2 measurem
 const int ANALOG_PIN = A0;         // The only analog pin on the Thing
 */
    
-const int CONNECTED_LED_PIN = D7;  // yellow LED
-
+unsigned char PIN_D7_NOT_USED = D7;
+unsigned char PIN_D8_NOT_USED = D8;
+unsigned char PIN_D9_NOT_USED = D9;
+unsigned char PIN_D10_NOT_USED = D10;
 
 
 //
@@ -293,6 +296,39 @@ void handleClientRequest(WiFiClient client)
           response = state.respondWithSheepState();          
           lastCommandTimestamp = millis(); // A command was issued, reset alive check timer
           
+        }else if (request.indexOf("/sheep/forward") > 0){
+          int dist = extractDistance(request);
+          state.desiredSpeedM1 = dist; 
+          state.desiredSpeedM2 = dist;           
+          response = state.respondWithSheepState();          
+          lastCommandTimestamp = millis(); // A command was issued, reset alive check timer
+          Serial.println("Setting desiredSpeed to ("+String(state.desiredSpeedM1)+"/"+String(state.desiredSpeedM2)+")");       
+
+        }else if (request.indexOf("/sheep/backward") > 0){
+          int dist = extractDistance(request);
+          state.desiredSpeedM1 = -dist; 
+          state.desiredSpeedM2 = -dist;           
+          response = state.respondWithSheepState();          
+          lastCommandTimestamp = millis(); // A command was issued, reset alive check timer
+          Serial.println("Setting desiredSpeed to ("+String(state.desiredSpeedM1)+"/"+String(state.desiredSpeedM2)+")");       
+
+        }else if (request.indexOf("/sheep/left") > 0){
+          int dist = extractDistance(request);
+          state.desiredSpeedM1 = dist; 
+          state.desiredSpeedM2 = -dist;           
+          response = state.respondWithSheepState();          
+          lastCommandTimestamp = millis(); // A command was issued, reset alive check timer
+          Serial.println("Setting desiredSpeed to ("+String(state.desiredSpeedM1)+"/"+String(state.desiredSpeedM2)+")");       
+
+        }else if (request.indexOf("/sheep/right") > 0){
+          int dist = extractDistance(request);
+          state.desiredSpeedM1 = -dist; 
+          state.desiredSpeedM2 = dist;           
+          response = state.respondWithSheepState();          
+          lastCommandTimestamp = millis(); // A command was issued, reset alive check timer
+          Serial.println("Setting desiredSpeed to ("+String(state.desiredSpeedM1)+"/"+String(state.desiredSpeedM2)+")");       
+
+          
         }else if (request.indexOf("/motor") > 0){
           extractMotorSpeeds(request);    
           response = state.respondWithSheepState();
@@ -363,6 +399,19 @@ void extractSpeedAndDir(String request){
 }
 
 /*
+ * Match the request, i.e. extract distance
+ */
+int extractDistance(String request){
+  int posDist = request.indexOf("dist=");
+  if (posDist != -1)
+  {
+    String distString = request.substring(posDist+5, request.length());
+    return distString.toInt();
+  }
+  return 0;
+}
+
+/*
  * Match the request, i.e. extract speed for both motors,e.g. motor?m1=-10&m2=20
  */
 void extractMotorSpeeds(String request){
@@ -399,6 +448,10 @@ void adjustMotorSpeeds(){
   if (speedM1 < 0 && speedM1 > -minSpeed) speedM1 = -minSpeed;
   if (speedM2 > 0 && speedM2 <  minSpeed) speedM2 =  minSpeed;
   if (speedM2 < 0 && speedM2 > -minSpeed) speedM2 = -minSpeed;
+
+  // pay respect to nonkongruent speeds
+  speedM1 -= state.diffDesired();
+  speedM2 += state.diffDesired();
      
   md.setSpeeds(speedM1, speedM2);
 }
