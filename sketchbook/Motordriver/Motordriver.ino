@@ -30,6 +30,8 @@
 #include "HTML.h"
 #include "SheepState.h"
 #include "BatteryPower.h"
+#include "WebServer.h"
+
 
 //
 // programm behavior
@@ -77,19 +79,18 @@ unsigned char PIN_D9_NOT_USED = D9;
 unsigned char PIN_D10_NOT_USED = D10;
 
 
+
 //
 // global variables
 // 
 int loopCount = 0;
 int bigLoopCount = 0;
 unsigned long endOfLastLoopInMillis = millis();
-unsigned long lastCommandTimestamp = millis();
 int led_state = 0;  // last state set for led
 
 //
 // global objects
 // 
-WiFiServer server(80);
 DualMC33926MotorShield md;
 
 
@@ -98,26 +99,15 @@ void setup()
   Serial.begin(115200);
   delay(10);
 
-  Serial.println("\n\nInitializing Dual MC33926 Motor Shield");
-  md.init();
-  delay(10);
-
-  state.init();
-
   // prepare GPIO
   pinMode(CONNECTED_LED_PIN, OUTPUT);
   digitalWrite(CONNECTED_LED_PIN, 1); delay(10);
 
-  // prepare battery power measurement
-  pinMode(ANALOG_PIN, INPUT);
-
-  Serial.println("\nInitializing Wifi");
-  connectWiFi();
-  delay(10);
-
-  Serial.println("\nStarting Webserver");
-  server.begin();
-  delay(10);
+  batteryPower.init();
+  md.init();
+  state.init();
+  myWifi.init();
+  webServer.init();
 
   printUsage();
 
@@ -165,12 +155,12 @@ void bigLoop(){
   loopCount=0;  // <- they are usually about 800 once we get here
   bigLoopCount++;  
 
-  stopOnLostConnection(millis() - lastCommandTimestamp); // Stop if connection is lost, i.e. no commands issued anymore
-  toggleLED(bigLoopCount);  // indicate operation
-  measureBatteryPower();    // battery power  
-  adjustMotorSpeeds();      // Adjust motor speeds towards desiredSpeed.
-  checkWifiConnection();
-  listenForIncomingRequests();
+  stopOnLostConnection(millis() - state.lastCommandTimestamp); // Stop if connection is lost, i.e. no commands issued anymore
+  toggleLED(bigLoopCount);                // indicate operation
+  batteryPower.measureBatteryPower();     // battery power  
+  adjustMotorSpeeds();                    // Adjust motor speeds towards desiredSpeed.
+  myWifi.checkWifiConnection();
+  webServer.listenForIncomingRequests();
 
   endOfLastLoopInMillis = millis();    
 }
@@ -179,34 +169,6 @@ void bigLoop(){
 
 // --------- helper functions ---------
 
-/*
- * 
- */
-void listenForIncomingRequests(){
-  WiFiClient client = server.available();
-  if (client)
-  {
-    handleClientRequest(client);
-
-    delay(1);      // give the web browser time to receive the data
-    client.stop(); // close the connection
-  } 
-   
-  // The client will actually be disconnected 
-  // when the function returns and 'client' object is detroyed
-}
-
-
-/*
- * check if WIFI is still connected and update rssi
- */
-void checkWifiConnection(){
-  if (WiFi.status() != WL_CONNECTED){
-    Serial.println("WiFi connection lost!");       
-    connectWiFi();
-  }
-  state.rssi = WiFi.RSSI();  
-}
 
 /*
  * returns true if timeSinceLastLoop exceeds LOOP_DELAY.
@@ -247,187 +209,7 @@ void stopOnLostConnection(unsigned long timeSinceLastCommand)
   }
 }
 
-/*
- * Handle requests von web interface.
- * 
- */
-void handleClientRequest(WiFiClient client)
-{
-  unsigned long currentMillis = millis();
   
-  //
-  // Wait until the client sends some data
-  //
-  // Serial.print("\n\nRequest from " + client.remoteIP().toString() + ": ");
-
-  //
-  // taken from https://arduino-esp8266.readthedocs.io/en/latest/esp8266wifi/server-examples.html
-  //
-  String request = "";
-  String response = "";
-  while (client.connected())
-  {    
-    // read line by line what the client (web browser) is requesting
-    if (client.available())
-    {
-      String line = client.readStringUntil('\r');
-      // Serial.println(line); // <- good for debugging purposes
-      if (line.indexOf("GET") >= 0)
-        request = line;
-      
-      // wait for end of client's request, that is marked with an empty line
-      if (line.length() == 1 && line[0] == '\n')
-      {        
-        Serial.print(request);
-        
-        //
-        // received valid request?
-        //
-        if (request.indexOf("/sheep/state") > 0){
-          response = state.respondWithSheepState();
-            
-        }else if (request.indexOf("/sheep/set") > 0){
-          extractSetParameter(request);
-          response = state.respondWithSheepState();          
-          lastCommandTimestamp = millis(); // A command was issued, reset alive check timer
-          
-        }else if (request.indexOf("/sheep/move") > 0){
-          extractSpeedAndDir(request);
-          response = state.respondWithSheepState();          
-          lastCommandTimestamp = millis(); // A command was issued, reset alive check timer
-          
-        }else if (request.indexOf("/sheep/forward") > 0){
-          int dist = extractDistance(request);
-          state.desiredSpeedM1 = dist; 
-          state.desiredSpeedM2 = dist;           
-          response = state.respondWithSheepState();          
-          lastCommandTimestamp = millis(); // A command was issued, reset alive check timer
-          Serial.println("Setting desiredSpeed to ("+String(state.desiredSpeedM1)+"/"+String(state.desiredSpeedM2)+")");       
-
-        }else if (request.indexOf("/sheep/backward") > 0){
-          int dist = extractDistance(request);
-          state.desiredSpeedM1 = -dist; 
-          state.desiredSpeedM2 = -dist;           
-          response = state.respondWithSheepState();          
-          lastCommandTimestamp = millis(); // A command was issued, reset alive check timer
-          Serial.println("Setting desiredSpeed to ("+String(state.desiredSpeedM1)+"/"+String(state.desiredSpeedM2)+")");       
-
-        }else if (request.indexOf("/sheep/left") > 0){
-          int dist = extractDistance(request);
-          state.desiredSpeedM1 = dist; 
-          state.desiredSpeedM2 = -dist;           
-          response = state.respondWithSheepState();          
-          lastCommandTimestamp = millis(); // A command was issued, reset alive check timer
-          Serial.println("Setting desiredSpeed to ("+String(state.desiredSpeedM1)+"/"+String(state.desiredSpeedM2)+")");       
-
-        }else if (request.indexOf("/sheep/right") > 0){
-          int dist = extractDistance(request);
-          state.desiredSpeedM1 = -dist; 
-          state.desiredSpeedM2 = dist;           
-          response = state.respondWithSheepState();          
-          lastCommandTimestamp = millis(); // A command was issued, reset alive check timer
-          Serial.println("Setting desiredSpeed to ("+String(state.desiredSpeedM1)+"/"+String(state.desiredSpeedM2)+")");       
-
-          
-        }else if (request.indexOf("/motor") > 0){
-          extractMotorSpeeds(request);    
-          response = state.respondWithSheepState();
-          lastCommandTimestamp = millis(); // A command was issued, reset alive check timer
-          
-        }else{ 
-          // serve index.html
-          response = prepareHtmlPage();
-          client.print(response);
-          response ="index.html";
-        }
-        // client.flush(); // TODO FIXME HU what is that for?
-        client.print(response);
-        unsigned int responseTime = millis()-currentMillis;
-        Serial.println("-> " + response + "(" + String(responseTime) + "ms)");   
-        break;
-      }
-    }
-  }
-
-  while (client.available()) {
-    // but first, let client finish its request
-    // that's diplomatic compliance to protocols
-    // (and otherwise some clients may complain, like curl)
-    // (that is an example, prefer using a proper webserver library)
-    client.read();
-  }
-  
-}
-  
-
-/*
- * Match the request, i.e. extract parameter to set and value
- */
-void extractSetParameter(String request){
-  int posMaxSpeed = request.indexOf("maxSpeed=");
-  if (posMaxSpeed != -1)
-  {
-    String maxSpeedString = request.substring(posMaxSpeed+9, request.length());
-    state.maxSpeed =  maxSpeedString.toInt();
-    Serial.println("Setting maxSpeed to "+String(state.maxSpeed));       
-  }
-}
-
-/*
- * Match the request, i.e. extract speed and dir
- * and set desiredSpeedM1 and desiredSpeedM2
- */
-void extractSpeedAndDir(String request){
-  int posSpeed = request.indexOf("speed=");
-  int posDir = request.indexOf("dir=");
-  if (posSpeed != -1)
-  {
-    String speedString = request.substring(posSpeed+6, request.length());
-    state.cmdSpeed =  speedString.toInt();
-  }
-  if (posDir != -1)
-  {
-    String dirString = request.substring(posDir+4, request.length());
-    state.cmdDir =  dirString.toInt();
-  }
-
-  int newDesireM1 = state.cmdSpeed + state.cmdDir;
-  int newDesireM2 = state.cmdSpeed - state.cmdDir;  
-  state.desiredSpeedM1 += newDesireM1; 
-  state.desiredSpeedM2 += newDesireM2; 
-  Serial.println("Setting desiredSpeed to ("+String(state.desiredSpeedM1)+"/"+String(state.desiredSpeedM2)+")");       
-}
-
-/*
- * Match the request, i.e. extract distance
- */
-int extractDistance(String request){
-  int posDist = request.indexOf("dist=");
-  if (posDist != -1)
-  {
-    String distString = request.substring(posDist+5, request.length());
-    return distString.toInt();
-  }
-  return 0;
-}
-
-/*
- * Match the request, i.e. extract speed for both motors,e.g. motor?m1=-10&m2=20
- */
-void extractMotorSpeeds(String request){
-  int posM1 = request.indexOf("m1=");
-  int posM2 = request.indexOf("m2=");
-  if (posM1 != -1)
-  {
-    String speedM1 = request.substring(posM1+3, request.length());
-    state.desiredSpeedM1 =  speedM1.toInt();
-  }
-  if (posM2 != -1)
-  {
-    String speedM1 = request.substring(posM2+3, request.length());
-    state.desiredSpeedM2 =  speedM1.toInt();
-  }
-}
 
 /*
  * Bring motor speeds towards desiredSpeeds by steps of 1
@@ -456,24 +238,6 @@ void adjustMotorSpeeds(){
   md.setSpeeds(speedM1, speedM2);
 
   Serial.print(".");
-}
-
-
-/*
- * prepare a web page to be send to a client (web browser)
- */
-String prepareHtmlPage()
-{
-  String htmlPage;
-  htmlPage.reserve(1024);               // prevent ram fragmentation
-  htmlPage = F("HTTP/1.1 200 OK\r\n"
-               "Content-Type: text/html\r\n"
-               "Connection: close\r\n"  // the connection will be closed after completion of the response
-               // "Refresh: 5\r\n"         // refresh the page automatically every 5 sec
-               "\r\n");
-  htmlPage += page1;
-  htmlPage += F("\r\n");
-  return htmlPage;
 }
 
 

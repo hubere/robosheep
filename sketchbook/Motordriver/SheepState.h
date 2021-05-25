@@ -2,6 +2,9 @@
  * This file handles state of sheep / motors
  */
 
+#ifndef SHEEP_STATE_h
+#define SHEEP_STATE_h 
+
 #include <ArduinoJson.h>
 
 // forward declarations
@@ -33,6 +36,8 @@ class SheepState
     long rssi = 0;  
     int batteryPower = 0;      // power of battery in %
     int losingConnection = 0;  // timer for lost connection / no new commands from client.
+    unsigned long lastCommandTimestamp; // timestamp of last command 
+
 
     
     // Constructors ////////////////////////////////////////////////////////////////  
@@ -45,12 +50,10 @@ class SheepState
         
         // prepare interrupts
         pinMode(M1_STEP_PIN,INPUT_PULLUP);
-//        pinMode(M1_STEP_PIN,INPUT);
         attachInterrupt(digitalPinToInterrupt(M1_STEP_PIN), ISRFuncM1, RISING);
         Serial.println("pinMode(M1_STEP_PIN (D7),INPUT_PULLUP)"); delay(10);          
         
         pinMode(M2_STEP_PIN,INPUT_PULLUP);
-//        pinMode(M2_STEP_PIN,INPUT);        
         attachInterrupt(digitalPinToInterrupt(M2_STEP_PIN), ISRFuncM2, RISING);
         Serial.println("pinMode(M2_STEP_PIN (D8),INPUT_PULLUP)"); delay(10);                 
     }
@@ -167,3 +170,5 @@ void countMotorSteps(){
   M2_isHigh = M2_signal;  
 }
 */
+
+#endif

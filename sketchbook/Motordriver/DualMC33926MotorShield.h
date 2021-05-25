@@ -23,6 +23,7 @@ class DualMC33926MotorShield
 
   // Public Methods //////////////////////////////////////////////////////////////
   void init(){
+    Serial.println("\n\nInitializing Dual MC33926 Motor Shield");
     
     pinMode(_M1IN1,OUTPUT);
     Serial.println("pinMode(_M1IN1 (D0),OUTPUT)"); delay(10);    
@@ -44,6 +45,9 @@ class DualMC33926MotorShield
 
     //digitalWrite(_nD2,HIGH);
     // Serial.println("digitalWrite(_nD2,HIGH)"); delay(10);    
+
+    delay(10);
+
   }
 
   void setSpeed(unsigned char pinForward, unsigned char pinBackward, int speed)
