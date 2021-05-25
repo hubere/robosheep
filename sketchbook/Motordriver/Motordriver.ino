@@ -443,17 +443,19 @@ void adjustMotorSpeeds(){
   int speedM2 = state.speedM2;
   int minSpeed = 10;
   
-  //  void ensureMinimumSpeed()
+  // pay respect to nonkongruent speeds
+  speedM1 -= state.diffDesired();
+  speedM2 += state.diffDesired();
+     
+  //  ensure a minimum speed
   if (speedM1 > 0 && speedM1 <  minSpeed) speedM1 =  minSpeed;
   if (speedM1 < 0 && speedM1 > -minSpeed) speedM1 = -minSpeed;
   if (speedM2 > 0 && speedM2 <  minSpeed) speedM2 =  minSpeed;
   if (speedM2 < 0 && speedM2 > -minSpeed) speedM2 = -minSpeed;
 
-  // pay respect to nonkongruent speeds
-  speedM1 -= state.diffDesired();
-  speedM2 += state.diffDesired();
-     
   md.setSpeeds(speedM1, speedM2);
+
+  Serial.print(".");
 }
 
 

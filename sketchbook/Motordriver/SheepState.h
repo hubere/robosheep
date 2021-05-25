@@ -63,7 +63,10 @@ class SheepState
       };
       if (speedM1 > 0) desiredSpeedM1--; 
       if (speedM1 < 0) desiredSpeedM1++;            
-      Serial.println ("ISR1: " + respondWithSheepState());
+      //Serial.println ("ISR1: " + respondWithSheepState());
+      Serial.print ("#");
+
+      // TODO FIXME HU adjust Motorspeeds
     }    
 
     void ISR2() {
@@ -74,7 +77,11 @@ class SheepState
       };
       if (speedM2 > 0) desiredSpeedM2--; 
       if (speedM2 < 0) desiredSpeedM2++;            
-      Serial.println ("ISR2: " + respondWithSheepState());
+      //Serial.println ("ISR2: " + respondWithSheepState());
+      Serial.print ("*");
+
+      // TODO FIXME HU adjust Motorspeeds
+
     }    
 
     void increaseM1(){ speedM1 += speedIncrease; speedM1 = min(speedM1,  maxSpeed);   }
@@ -88,8 +95,11 @@ class SheepState
      * Build json from internal state
      */
     String respondWithSheepState(){
-    
-      StaticJsonDocument<200> doc;
+
+    /*
+     *  this approach seems to have memory problems :-(
+     * 
+      StaticJsonDocument<1000> doc;
       doc["m1"] = speedM1;
       doc["m2"] = speedM2;
       doc["desiredSpeedM1"] = desiredSpeedM1;
@@ -100,10 +110,24 @@ class SheepState
       doc["losingConnection"] = losingConnection;
       doc["power"] = batteryPower;
       doc["rssi"] = rssi;
-    
+
       String response;
       serializeJson(doc, response);
-        
+    */
+
+      // example of json string: char json[] = "{\"sensor\":\"gps\",\"time\":1351824120,\"data\":[48.756080,2.302038]}"      
+
+      String response;
+      response =  "{";
+      response = response  + "\"m1\":"+ speedM1 +", \"m2\":"+ speedM2 +",";
+      response = response  + "\"desiredSpeedM1\":"+ desiredSpeedM1 +", \"desiredSpeedM2\":"+ desiredSpeedM2 +",";
+      response = response  + "\"posM1\":"+ posM1 +", \"posM2\":"+ posM2 +",";
+      response = response  + "\"maxSpeed\":"+ maxSpeed +",";
+      response = response  + "\"power\":"+ batteryPower +",";
+      response = response  + "\"rssi\":"+ rssi +",";
+      response = response  + "\"losingConnection\":"+ losingConnection +",";
+      response = response  + "}";
+      
       return response; 
     }
 
