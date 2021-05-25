@@ -155,9 +155,9 @@ void bigLoop(){
   loopCount=0;  // <- they are usually about 800 once we get here
   bigLoopCount++;  
 
-  stopOnLostConnection(millis() - state.lastCommandTimestamp); // Stop if connection is lost, i.e. no commands issued anymore
   toggleLED(bigLoopCount);                // indicate operation
   batteryPower.measureBatteryPower();     // battery power  
+  stopOnLostConnection();                 // Stop if connection is lost, i.e. no commands issued anymore
   adjustMotorSpeeds();                    // Adjust motor speeds towards desiredSpeed.
   myWifi.checkWifiConnection();
   webServer.listenForIncomingRequests();
@@ -198,8 +198,9 @@ void toggleLED(int bigLoopCount)
 /*
  * Alive check - if client not alive, stop engines
  */
-void stopOnLostConnection(unsigned long timeSinceLastCommand)
+void stopOnLostConnection()
 {
+  unsigned long timeSinceLastCommand = millis() - state.lastCommandTimestamp;
   state.losingConnection = (MAX_ALIVE_DELAY - timeSinceLastCommand); //  / MAX_ALIVE_DELAY * 100;
   if (timeSinceLastCommand > MAX_ALIVE_DELAY)
   {
