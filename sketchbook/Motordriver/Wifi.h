@@ -84,8 +84,7 @@ class MyWifi
         
           // Measure Signal Strength (RSSI) of Wi-Fi connection
           unsigned long before = millis();    
-          long rssi = WiFi.RSSI();  
-          Serial.println("RSSI: " + String(rssi) + " (" + String(millis() - before) + ")");
+          Serial.println("RSSI: " + String(WiFi.RSSI()) + " (" + String(millis() - before) + ")");
               
           return true;         
         }

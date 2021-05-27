@@ -19,11 +19,11 @@ class SheepState
     unsigned char M1_STEP_PIN = D5;        // Digital pin to be read for M1 measurement.
     unsigned char M2_STEP_PIN = D6;        // Digital pin to be read for M2 measurement.
 
-    const int speedIncrease = 1; 
+    const int speedIncrease = 10; 
     const int minSpeed = 10; 
 
-
   public:  
+    long rssi = 0;  
     int maxSpeed = 25;  // max speed of a motor
     int speedM1 = 0;    // actual speed of motor 1 (PWM)
     int speedM2 = 0;    // actual speed of motor 2 (PWM)
@@ -33,10 +33,10 @@ class SheepState
     int desiredSpeedM2 = 0;    // desired speed of motor 2 (PWM)
     int cmdSpeed = 0;          // desired speed 
     int cmdDir = 0;            // desired dir
-    long rssi = 0;  
     int batteryPower = 0;      // power of battery in %
     int losingConnection = 0;  // timer for lost connection / no new commands from client.
     unsigned long lastCommandTimestamp; // timestamp of last command 
+
 
 
     
@@ -56,6 +56,21 @@ class SheepState
         pinMode(M2_STEP_PIN,INPUT_PULLUP);
         attachInterrupt(digitalPinToInterrupt(M2_STEP_PIN), ISRFuncM2, RISING);
         Serial.println("pinMode(M2_STEP_PIN (D8),INPUT_PULLUP)"); delay(10);                 
+    }
+
+    void setBatteryPower(int power){
+      batteryPower = power;
+    }
+
+    boolean connectionLost(int maxAliveDelay){
+      unsigned long timeSinceLastCommand = millis() - lastCommandTimestamp;
+      losingConnection = (maxAliveDelay - timeSinceLastCommand); //  / MAX_ALIVE_DELAY * 100;
+      return (timeSinceLastCommand > maxAliveDelay);
+    }
+
+    void setDesiredSpeeds(int m1, int m2){
+      desiredSpeedM1 = m1;
+      desiredSpeedM2 = m2;      
     }
 
     void ISR1() {

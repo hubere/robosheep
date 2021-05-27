@@ -200,14 +200,11 @@ void toggleLED(int bigLoopCount)
  */
 void stopOnLostConnection()
 {
-  unsigned long timeSinceLastCommand = millis() - state.lastCommandTimestamp;
-  state.losingConnection = (MAX_ALIVE_DELAY - timeSinceLastCommand); //  / MAX_ALIVE_DELAY * 100;
-  if (timeSinceLastCommand > MAX_ALIVE_DELAY)
+  if (state.connectionLost(MAX_ALIVE_DELAY))
   {
-    state.desiredSpeedM1 = 0;
-    state.desiredSpeedM2 = 0;
-    //Serial.println("Warning! Lost connection to client. timeSinceLastCommand ("+String(timeSinceLastCommand)+") > MAX_ALIVE_DELAY ("+String(MAX_ALIVE_DELAY)+")");       
-  }
+    state.setDesiredSpeeds(0,0);
+    //Serial.println("Warning! Lost connection to client. timeSinceLastCommand ("+String(timeSinceLastCommand)+") > MAX_ALIVE_DELAY ("+String(MAX_ALIVE_DELAY)+")");           
+  }  
 }
 
   

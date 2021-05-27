@@ -52,7 +52,7 @@ class BatteryPower
         vout = (value * 3.1) / 1024.0; // 2.9 was empeeric factor!!!! No clue why!?!
         vin = vout / (R2/(R1+R2)); 
         if (vin<0.09) vin=0.0;//statement to quash undesired reading !
-        state.batteryPower = vin*10;
+        state.setBatteryPower(vin*10);
         batteryPowerMeasurements = 0;
         summedBatteryPowerValue = 0;
       }
