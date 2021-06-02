@@ -18,6 +18,8 @@ class SheepState
   private:
     unsigned char M1_STEP_PIN = D5;        // Digital pin to be read for M1 measurement.
     unsigned char M2_STEP_PIN = D6;        // Digital pin to be read for M2 measurement.
+    unsigned char PIN_CUTTER = D7;         // start / stop cutter 
+
 
     const int speedIncrease = 10; 
     const int minSpeed = 10; 
@@ -35,6 +37,7 @@ class SheepState
     int cmdDir = 0;            // desired dir
     int batteryPower = 0;      // power of battery in %
     int losingConnection = 0;  // timer for lost connection / no new commands from client.
+    bool isCutterOn = false;
     unsigned long lastCommandTimestamp; // timestamp of last command 
 
 
@@ -51,11 +54,16 @@ class SheepState
         // prepare interrupts
         pinMode(M1_STEP_PIN,INPUT_PULLUP);
         attachInterrupt(digitalPinToInterrupt(M1_STEP_PIN), ISRFuncM1, RISING);
-        Serial.println("pinMode(M1_STEP_PIN (D7),INPUT_PULLUP)"); delay(10);          
+        Serial.println("pinMode(M1_STEP_PIN (D5),INPUT_PULLUP)"); delay(10);          
         
         pinMode(M2_STEP_PIN,INPUT_PULLUP);
         attachInterrupt(digitalPinToInterrupt(M2_STEP_PIN), ISRFuncM2, RISING);
-        Serial.println("pinMode(M2_STEP_PIN (D8),INPUT_PULLUP)"); delay(10);                 
+        Serial.println("pinMode(M2_STEP_PIN (D6),INPUT_PULLUP)"); delay(10);        
+
+        pinMode(PIN_CUTTER, OUTPUT);
+        digitalWrite(PIN_CUTTER, 1); delay(10);
+        Serial.println("pinMode(PIN_CUTTER (D7),OUTPUT)"); delay(10);              
+                 
     }
 
     void setBatteryPower(int power){
@@ -107,6 +115,17 @@ class SheepState
     void increaseM2(){ speedM2 += speedIncrease; speedM2 = min(speedM2,  maxSpeed);   }
     void decreaseM2(){ speedM2 -= speedIncrease; speedM2 = max(speedM2, -maxSpeed);   }
 
+    void cutterOn(){
+      digitalWrite(PIN_CUTTER, 0); delay(10);
+      isCutterOn = true;
+    }
+
+    void cutterOff(){
+      digitalWrite(PIN_CUTTER, 1); delay(10);
+      isCutterOn = false;
+    }
+
+
     int diffDesired(){ return desiredSpeedM1 - desiredSpeedM2; }
 
     /*
@@ -141,9 +160,10 @@ class SheepState
       response = response  + "\"desiredSpeedM1\":"+ desiredSpeedM1 +", \"desiredSpeedM2\":"+ desiredSpeedM2 +",";
       response = response  + "\"posM1\":"+ posM1 +", \"posM2\":"+ posM2 +",";
       response = response  + "\"maxSpeed\":"+ maxSpeed +",";
+      response = response  + "\"isCutterOn\":"+ isCutterOn +",";
       response = response  + "\"power\":"+ batteryPower +",";
       response = response  + "\"rssi\":"+ rssi +",";
-      response = response  + "\"losingConnection\":"+ losingConnection +",";
+      response = response  + "\"losingConnection\":"+ losingConnection +",";      
       response = response  + "}";
       
       return response; 

@@ -108,6 +108,14 @@ class WebServer
               extractSpeedAndDir(request);
               response = state.respondWithSheepState();          
               
+            }else if (request.indexOf("/sheep/cutter/on") > 0){
+              state.cutterOn();              
+              response = state.respondWithSheepState();          
+              
+            }else if (request.indexOf("/sheep/cutter/off") > 0){
+              state.cutterOff();              
+              response = state.respondWithSheepState();          
+              
             }else if (request.indexOf("/sheep/forward") > 0){
               int dist = extractDistance(request);
               state.desiredSpeedM1 = dist; 
@@ -247,7 +255,6 @@ class WebServer
       }
       commandIssued();                    
     }
-    
 
     
 };

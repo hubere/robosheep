@@ -17,7 +17,7 @@
 #define WIFI_PASS3       "Welpenspiel"
 
 #define WIFI_SSID4       "MartinRouterKing"
-#define WIFI_PASS4       "Ihaveastream"
+#define WIFI_PASS4       "I have a stream"
 
 #define WIFI_SSID5       "Huabas"
 #define WIFI_PASS5       "Welpenspiel"
@@ -69,13 +69,26 @@ class MyWifi
     {
       Serial.println();
       Serial.println();
-      Serial.print("Trying to connect to ");
-      Serial.println(ssid);
+      Serial.print("Trying to connect to '");
+      Serial.print(ssid);
+      Serial.println("'");
       
       WiFi.begin(ssid, passwd);
+ 
+/*
+      while (WiFi.status() != WL_CONNECTED)
+      {
+        delay(500);
+        Serial.print(".");
+      }
+      Serial.println();
+    
+      Serial.print("Connected, IP address: ");
+      Serial.println(WiFi.localIP());
+*/        
     
       int tries = 0;
-      while (tries < 30) {  // 30 tries are 30 seconds!
+      while (tries < 300) {  // 30 tries are 30 seconds!
         if (WiFi.status() == WL_CONNECTED){
           Serial.println("");
           Serial.print("WiFi connected to ");
@@ -88,6 +101,18 @@ class MyWifi
               
           return true;         
         }
+        Serial.print("("+ String(tries) +") ");
+        // Serial.printf("Wi-Fi mode set to WIFI_STA %s\n", WiFi.mode(WIFI_STA) ? "" : "Failed!");
+
+        switch (WiFi.status()) {        
+          case 0 : Serial.println("WL_IDLE_STATUS when Wi-Fi is in process of changing between statuses"); break;          
+          case 1 : Serial.println("WL_NO_SSID_AVAILin case configured SSID cannot be reached"); break;          
+          case 3 : Serial.println("WL_CONNECTED after successful connection is established"); break;          
+          case 4 : Serial.println("WL_CONNECT_FAILED if connection failed"); break;          
+          case 6 : Serial.println("WL_CONNECT_WRONG_PASSWORD if password is incorrect"); break;          
+          case 7 : Serial.println("WL_DISCONNECTED if module is not configured in station mode"); break;
+        }
+        
         delay(1000);  // give 'em 1 seconds...
         tries++;
       }

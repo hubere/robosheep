@@ -65,6 +65,7 @@ unsigned char _M2IN2  = D4;
  * 
 unsigned char M1_STEP_PIN = D5;        // Digital pin to be read for M1 measurement.
 unsigned char M2_STEP_PIN = D6;        // Digital pin to be read for M2 measurement.
+unsigned char PIN_CUTTER = D7;
 */ 
 
 /*
@@ -72,8 +73,8 @@ unsigned char M2_STEP_PIN = D6;        // Digital pin to be read for M2 measurem
  * 
 const int ANALOG_PIN = A0;         // The only analog pin on the Thing
 */
-   
-unsigned char PIN_D7_NOT_USED = D7;
+
+
 unsigned char PIN_D8_NOT_USED = D8;
 unsigned char PIN_D9_NOT_USED = D9;
 unsigned char PIN_D10_NOT_USED = D10;
@@ -235,7 +236,7 @@ void adjustMotorSpeeds(){
 
   md.setSpeeds(speedM1, speedM2);
 
-  Serial.print(".");
+  // Serial.print(".");
 }
 
 
