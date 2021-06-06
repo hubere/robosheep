@@ -18,6 +18,29 @@
 *
 */
 
+
+const String postForms = "<html>\
+  <head>\
+    <title>ESP8266 Web Server POST handling</title>\
+    <style>\
+      body { background-color: #cccccc; font-family: Arial, Helvetica, Sans-Serif; Color: #000088; }\
+    </style>\
+  </head>\
+  <body>\
+    <h1>POST plain text to /postplain/</h1><br>\
+    <form method=\"post\" enctype=\"text/plain\" action=\"/postplain/\">\
+      <input type=\"text\" name=\'{\"hello\": \"world\", \"trash\": \"\' value=\'\"}\'><br>\
+      <input type=\"submit\" value=\"Submit\">\
+    </form>\
+    <h1>POST form data to /postform/</h1><br>\
+    <form method=\"post\" enctype=\"application/x-www-form-urlencoded\" action=\"/postform/\">\
+      <input type=\"text\" name=\"hello\" value=\"world\"><br>\
+      <input type=\"submit\" value=\"Submit\">\
+    </form>\
+  </body>\
+</html>";
+
+
 const char *page1 = ""
 "<!DOCTYPE HTML>\n"
 "<html lang=\"en\">\n"

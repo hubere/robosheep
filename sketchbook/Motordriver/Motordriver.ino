@@ -26,7 +26,6 @@
 
 
 #include "Wifi.h"
-#include "DualMC33926MotorShield.h"
 #include "HTML.h"
 #include "SheepState.h"
 #include "BatteryPower.h"
@@ -92,14 +91,14 @@ int led_state = 0;  // last state set for led
 //
 // global objects
 // 
-DualMC33926MotorShield md;
 
 
 void setup()
 {
   Serial.begin(115200);
-  delay(10);
-
+  delay(1000);
+  Serial.println("\n\n\nStarting Robosheep.");
+      
   // prepare GPIO
   pinMode(CONNECTED_LED_PIN, OUTPUT);
   digitalWrite(CONNECTED_LED_PIN, 1); delay(10);
@@ -159,7 +158,7 @@ void bigLoop(){
   toggleLED(bigLoopCount);                // indicate operation
   batteryPower.measureBatteryPower();     // battery power  
   stopOnLostConnection();                 // Stop if connection is lost, i.e. no commands issued anymore
-  adjustMotorSpeeds();                    // Adjust motor speeds towards desiredSpeed.
+  // adjustMotorSpeeds();                    // Adjust motor speeds towards desiredSpeed.
   myWifi.checkWifiConnection();
   webServer.listenForIncomingRequests();
 
@@ -203,8 +202,11 @@ void stopOnLostConnection()
 {
   if (state.connectionLost(MAX_ALIVE_DELAY))
   {
-    state.setDesiredSpeeds(0,0);
-    //Serial.println("Warning! Lost connection to client. timeSinceLastCommand ("+String(timeSinceLastCommand)+") > MAX_ALIVE_DELAY ("+String(MAX_ALIVE_DELAY)+")");           
+    if (state.getDesiredSpeedM1() != 0 && state.getDesiredSpeedM2() != 0)
+    {
+      Serial.println("Warning! Lost connection to client. No command issued since ("+String(MAX_ALIVE_DELAY)+")");           
+      state.stopMoving();          
+    }
   }  
 }
 
@@ -214,7 +216,8 @@ void stopOnLostConnection()
  * Bring motor speeds towards desiredSpeeds by steps of 1
  * and send speedMs to I/O
  */
-void adjustMotorSpeeds(){
+/*
+  void adjustMotorSpeeds(){
   if (state.speedM1 < state.desiredSpeedM1)     state.increaseM1();
   if (state.speedM1 > state.desiredSpeedM1)     state.decreaseM1();
   if (state.speedM2 < state.desiredSpeedM2)     state.increaseM2();
@@ -238,7 +241,7 @@ void adjustMotorSpeeds(){
 
   // Serial.print(".");
 }
-
+*/
 
 void printUsage()
 {

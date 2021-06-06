@@ -118,37 +118,28 @@ class WebServer
               
             }else if (request.indexOf("/sheep/forward") > 0){
               int dist = extractDistance(request);
-              state.desiredSpeedM1 = dist; 
-              state.desiredSpeedM2 = dist;           
+              state.setDesiredSpeeds(dist,dist);
               response = state.respondWithSheepState();          
               commandIssued();                    
-              Serial.println("Setting desiredSpeed to ("+String(state.desiredSpeedM1)+"/"+String(state.desiredSpeedM2)+")");       
     
             }else if (request.indexOf("/sheep/backward") > 0){
               int dist = extractDistance(request);
-              state.desiredSpeedM1 = -dist; 
-              state.desiredSpeedM2 = -dist;           
+              state.setDesiredSpeeds(-dist,dist);
               response = state.respondWithSheepState();          
               commandIssued();                    
-              Serial.println("Setting desiredSpeed to ("+String(state.desiredSpeedM1)+"/"+String(state.desiredSpeedM2)+")");       
     
             }else if (request.indexOf("/sheep/left") > 0){
               int dist = extractDistance(request);
-              state.desiredSpeedM1 = dist; 
-              state.desiredSpeedM2 = -dist;           
+              state.setDesiredSpeeds(dist,-dist);
               response = state.respondWithSheepState();          
               commandIssued();                    
-              Serial.println("Setting desiredSpeed to ("+String(state.desiredSpeedM1)+"/"+String(state.desiredSpeedM2)+")");       
     
             }else if (request.indexOf("/sheep/right") > 0){
               int dist = extractDistance(request);
-              state.desiredSpeedM1 = -dist; 
-              state.desiredSpeedM2 = dist;           
+              state.setDesiredSpeeds(-dist,dist);
               commandIssued();                    
               response = state.respondWithSheepState();          
-              Serial.println("Setting desiredSpeed to ("+String(state.desiredSpeedM1)+"/"+String(state.desiredSpeedM2)+")");       
     
-              
             }else if (request.indexOf("/motor") > 0){
               extractMotorSpeeds(request);    
               response = state.respondWithSheepState();
@@ -189,38 +180,55 @@ class WebServer
      * Match the request, i.e. extract parameter to set and value
      */
     void extractSetParameter(String request){
-      int posMaxSpeed = request.indexOf("maxSpeed=");
-      if (posMaxSpeed != -1)
+      String maxSpeedString = extractParam(request, "maxSpeed");
+      if (maxSpeedString != NULL)
       {
-        String maxSpeedString = request.substring(posMaxSpeed+9, request.length());
         state.maxSpeed =  maxSpeedString.toInt();
-        Serial.println("Setting maxSpeed to "+String(state.maxSpeed));       
+        Serial.println("Setting maxSpeed to "+ maxSpeedString);               
       }
+      
+      String errorM1String = extractParam(request, "errorM1");
+      if (errorM1String != NULL)
+      {
+        state.setErrorM1(errorM1String.toInt());
+        Serial.println("Setting errorM1 to "+ errorM1String);               
+      }
+      
+      String errorM2String = extractParam(request, "errorM2");
+      if (errorM2String != NULL)
+      {
+        state.setErrorM2(errorM2String.toInt());
+        Serial.println("Setting errorM2 to "+ errorM2String);               
+      }      
     }
+
+    /*
+     * Extract parameter @param as string from @request.
+     * e.g. @param is given as 'maxSpeed' (Note: leave out the '=' sign)
+     */
+    String extractParam(String request, String param)
+    {      
+      int paramPos = request.indexOf(param);
+      if (paramPos == -1) return (String)NULL;
+      return request.substring(paramPos + param.length()+1, request.length()); // +1 is for '=' sign!      
+    }
+
     
     /*
      * Match the request, i.e. extract speed and dir
      * and set desiredSpeedM1 and desiredSpeedM2
      */
     void extractSpeedAndDir(String request){
-      int posSpeed = request.indexOf("speed=");
-      int posDir = request.indexOf("dir=");
-      if (posSpeed != -1)
-      {
-        String speedString = request.substring(posSpeed+6, request.length());
-        state.cmdSpeed =  speedString.toInt();
-      }
-      if (posDir != -1)
-      {
-        String dirString = request.substring(posDir+4, request.length());
-        state.cmdDir =  dirString.toInt();
-      }
+      String speedString = extractParam(request, "speed");
+      String dirString = extractParam(request, "dir");
+      
+      if (speedString != NULL)        state.cmdSpeed =  speedString.toInt();
+      if (dirString != NULL)          state.cmdDir =  dirString.toInt();
     
       int newDesireM1 = state.cmdSpeed + state.cmdDir;
       int newDesireM2 = state.cmdSpeed - state.cmdDir;  
-      state.desiredSpeedM1 += newDesireM1; 
-      state.desiredSpeedM2 += newDesireM2; 
-      Serial.println("Setting desiredSpeed to ("+String(state.desiredSpeedM1)+"/"+String(state.desiredSpeedM2)+")");       
+
+      state.setDesiredSpeeds(newDesireM1,newDesireM2);
       commandIssued();                    
     }
     
@@ -228,31 +236,23 @@ class WebServer
      * Match the request, i.e. extract distance
      */
     int extractDistance(String request){
-      int posDist = request.indexOf("dist=");
-      if (posDist != -1)
-      {
-        String distString = request.substring(posDist+5, request.length());
-        return distString.toInt();
-      }
-      return 0;
+      String distString = extractParam(request, "dist");
+      if (distString == NULL) return 0;
+      return distString.toInt();      
     }
     
     /*
      * Match the request, i.e. extract speed for both motors,e.g. motor?m1=-10&m2=20
      */
     void extractMotorSpeeds(String request){
-      int posM1 = request.indexOf("m1=");
-      int posM2 = request.indexOf("m2=");
-      if (posM1 != -1)
-      {
-        String speedM1 = request.substring(posM1+3, request.length());
-        state.desiredSpeedM1 =  speedM1.toInt();
-      }
-      if (posM2 != -1)
-      {
-        String speedM1 = request.substring(posM2+3, request.length());
-        state.desiredSpeedM2 =  speedM1.toInt();
-      }
+      int newDesireM1 = 0;
+      int newDesireM2 = 0;
+      String speedM1 = extractParam(request, "m1");
+      String speedM2 = extractParam(request, "m2");
+      if (speedM1 != NULL) newDesireM1 =  speedM1.toInt();
+      if (speedM2 != NULL) newDesireM1 =  speedM2.toInt();
+      
+      state.setDesiredSpeeds(newDesireM1,newDesireM2);      
       commandIssued();                    
     }
 

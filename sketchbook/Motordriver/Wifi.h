@@ -16,8 +16,8 @@
 #define WIFI_SSID3       "TP-Huabas"
 #define WIFI_PASS3       "Welpenspiel"
 
-#define WIFI_SSID4       "MartinRouterKing"
-#define WIFI_PASS4       "I have a stream"
+#define WIFI_SSID4       "Winternet is comming"
+#define WIFI_PASS4       "YouKnowNothing"
 
 #define WIFI_SSID5       "Huabas"
 #define WIFI_PASS5       "Welpenspiel"
@@ -25,7 +25,7 @@
 
 
 // maximum number of tries during wifi connection setup
-#define WIFI_MAX_TRIES  30
+#define WIFI_MAX_TRIES  100
 
 // delay in ms between checks during wifi connection setup
 #define WIFI_DELAY_TRY  1000
@@ -48,6 +48,7 @@ class MyWifi
      */
     void init()
     {
+      WiFi.mode(WIFI_STA);
       Serial.println("\nInitializing Wifi");
       while (true)
       {
@@ -55,8 +56,8 @@ class MyWifi
           if (connectWIFI(WIFI_SSID1, WIFI_PASS1)) return;
     //      if (connectWIFI(WIFI_SSID3, WIFI_PASS3)) return;
     //      if (connectWIFI(WIFI_SSID4, WIFI_PASS4)) return;
-          if (connectWIFI(WIFI_SSID5, WIFI_PASS5)) return;
-          delay(5000);
+    //      if (connectWIFI(WIFI_SSID5, WIFI_PASS5)) return;
+          delay(1000);
       }
       delay(10);
       
@@ -74,21 +75,9 @@ class MyWifi
       Serial.println("'");
       
       WiFi.begin(ssid, passwd);
- 
-/*
-      while (WiFi.status() != WL_CONNECTED)
-      {
-        delay(500);
-        Serial.print(".");
-      }
-      Serial.println();
-    
-      Serial.print("Connected, IP address: ");
-      Serial.println(WiFi.localIP());
-*/        
-    
+     
       int tries = 0;
-      while (tries < 300) {  // 30 tries are 30 seconds!
+      while (tries < WIFI_MAX_TRIES) {  // 30 tries are 30 seconds!
         if (WiFi.status() == WL_CONNECTED){
           Serial.println("");
           Serial.print("WiFi connected to ");

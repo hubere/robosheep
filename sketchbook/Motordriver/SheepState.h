@@ -6,6 +6,7 @@
 #define SHEEP_STATE_h 
 
 #include <ArduinoJson.h>
+#include "DualMC33926MotorShield.h"
 
 // forward declarations
 void ISRFuncM1();
@@ -20,9 +21,14 @@ class SheepState
     unsigned char M2_STEP_PIN = D6;        // Digital pin to be read for M2 measurement.
     unsigned char PIN_CUTTER = D7;         // start / stop cutter 
 
-
     const int speedIncrease = 10; 
     const int minSpeed = 10; 
+
+    int desiredSpeedM1 = 0;    // desired speed of motor 1 (PWM)
+    int desiredSpeedM2 = 0;    // desired speed of motor 2 (PWM)
+
+    int errorM1 = 0;
+    int errorM2 = 0;
 
   public:  
     long rssi = 0;  
@@ -31,14 +37,15 @@ class SheepState
     int speedM2 = 0;    // actual speed of motor 2 (PWM)
     long posM1 = 0;
     long posM2 = 0;
-    int desiredSpeedM1 = 0;    // desired speed of motor 1 (PWM)
-    int desiredSpeedM2 = 0;    // desired speed of motor 2 (PWM)
     int cmdSpeed = 0;          // desired speed 
     int cmdDir = 0;            // desired dir
     int batteryPower = 0;      // power of battery in %
     int losingConnection = 0;  // timer for lost connection / no new commands from client.
     bool isCutterOn = false;
     unsigned long lastCommandTimestamp; // timestamp of last command 
+
+    long posM1_onLastCommand = 0;
+    long posM2_onLastCommand = 0;
 
 
 
@@ -47,6 +54,22 @@ class SheepState
     SheepState(){
     }
 
+    //
+    // getter and setter
+    //
+    int getDesiredSpeedM1(){ return desiredSpeedM1; };
+    int getDesiredSpeedM2(){ return desiredSpeedM2; };
+    void setBatteryPower(int power){
+      batteryPower = power;
+    }
+
+    int setErrorM1(int error){ errorM1 = error; };
+    int setErrorM2(int error){ errorM2 = error; };
+
+
+    //
+    // methods
+    //
     void init() {
         Serial.println();
         Serial.println("Initializing SheepState");
@@ -66,55 +89,99 @@ class SheepState
                  
     }
 
-    void setBatteryPower(int power){
-      batteryPower = power;
-    }
-
     boolean connectionLost(int maxAliveDelay){
       unsigned long timeSinceLastCommand = millis() - lastCommandTimestamp;
       losingConnection = (maxAliveDelay - timeSinceLastCommand); //  / MAX_ALIVE_DELAY * 100;
       return (timeSinceLastCommand > maxAliveDelay);
     }
 
-    void setDesiredSpeeds(int m1, int m2){
-      desiredSpeedM1 = m1;
-      desiredSpeedM2 = m2;      
+    void stopMoving()
+    {
+      setDesiredSpeeds(0,0);    
     }
+
+    void setDesiredSpeeds(int m1, int m2){
+
+      Serial.println();
+      Serial.println("setDesiredSpeeds(" + String(m1) + ", " + String(m2) + ") "); 
+      Serial.println("  onLastCommand (" + String(posM1_onLastCommand ) + ", " + String(posM2_onLastCommand ) + ") "); 
+      Serial.println("  pos           (" + String(posM1               ) + ", " + String(posM2               ) + ") "); 
+      Serial.println("  distanceTrav. (" + String(distanceTraveledM1()) + ", " + String(distanceTraveledM2()) + ") "); 
+
+      // when last command was a straight run, calculate error
+/*      
+ *    if (desiredSpeedM1 == desiredSpeedM2){
+        errorM1 = distanceTraveledM1() - distanceTraveledM2();
+        errorM2 = distanceTraveledM2() - distanceTraveledM1();
+        Serial.println("  error       (" + String(errorM1) + ", " + String(errorM2) + ") "); 
+      }
+*/      
+                
+      desiredSpeedM1 = m1;
+      desiredSpeedM2 = m2;  
+
+      if (m1 == 0 && m2 == 0)
+      {
+        md.setSpeeds(0,0);    // stop            
+      }else{
+        
+        //  ensure a minimum and maximum speed
+  //      speedM1 = adjustToLimits(m1);
+  //      speedM2 = adjustToLimits(m2);
+          
+        speedM1 = maxSpeed + errorM1;
+        speedM2 = maxSpeed + errorM2;
+        
+        posM1_onLastCommand = posM1;
+        posM2_onLastCommand = posM2;
+  
+        md.setSpeeds(speedM1, speedM2);  
+      }
+
+      
+    }
+
+    int adjustToLimits(int speedMX)
+    {
+      if (speedMX > 0){
+        speedMX = max(speedMX,  minSpeed);
+        speedMX = min(speedMX,  maxSpeed);
+      }
+      if (speedMX < 0){
+        speedMX = min(speedMX, -minSpeed);
+        speedMX = max(speedMX, -maxSpeed);
+      }
+      return speedMX;
+    }
+
+    long distanceTraveledM1(){      return posM1 - posM1_onLastCommand;    }
+    long distanceTraveledM2(){      return posM2 - posM2_onLastCommand;    }
 
     void ISR1() {
       if (speedM1 > 0) posM1++; else posM1--;
-      if (speedM1 == 0){
-        if (desiredSpeedM1 > 0) desiredSpeedM1--; 
-        if (desiredSpeedM1 < 0) desiredSpeedM1++;
-      };
-      if (speedM1 > 0) desiredSpeedM1--; 
-      if (speedM1 < 0) desiredSpeedM1++;            
+      if (desiredSpeedM1 > 0 && distanceTraveledM1() >= desiredSpeedM1) stopMoving();
+      if (desiredSpeedM1 < 0 && distanceTraveledM1() <= desiredSpeedM1) stopMoving();
+      
       //Serial.println ("ISR1: " + respondWithSheepState());
       Serial.print ("#");
-
-      // TODO FIXME HU adjust Motorspeeds
     }    
 
     void ISR2() {
       if (speedM2 > 0) posM2++; else posM2--;
-      if (speedM2 == 0){
-        if (desiredSpeedM2 > 0) desiredSpeedM2--;
-        if (desiredSpeedM2 < 0) desiredSpeedM2++;
-      };
-      if (speedM2 > 0) desiredSpeedM2--; 
-      if (speedM2 < 0) desiredSpeedM2++;            
+
+      if (desiredSpeedM2 > 0 && distanceTraveledM2() >= desiredSpeedM2) stopMoving();
+      if (desiredSpeedM2 < 0 && distanceTraveledM2() <= desiredSpeedM2) stopMoving();
+
       //Serial.println ("ISR2: " + respondWithSheepState());
       Serial.print ("*");
-
-      // TODO FIXME HU adjust Motorspeeds
-
     }    
 
+/*
     void increaseM1(){ speedM1 += speedIncrease; speedM1 = min(speedM1,  maxSpeed);   }
     void decreaseM1(){ speedM1 -= speedIncrease; speedM1 = max(speedM1, -maxSpeed);   }
     void increaseM2(){ speedM2 += speedIncrease; speedM2 = min(speedM2,  maxSpeed);   }
     void decreaseM2(){ speedM2 -= speedIncrease; speedM2 = max(speedM2, -maxSpeed);   }
-
+*/
     void cutterOn(){
       digitalWrite(PIN_CUTTER, 0); delay(10);
       isCutterOn = true;
@@ -125,9 +192,9 @@ class SheepState
       isCutterOn = false;
     }
 
-
+/*
     int diffDesired(){ return desiredSpeedM1 - desiredSpeedM2; }
-
+*/
     /*
      * Build json from internal state
      */
@@ -150,20 +217,37 @@ class SheepState
 
       String response;
       serializeJson(doc, response);
-    */
 
       // example of json string: char json[] = "{\"sensor\":\"gps\",\"time\":1351824120,\"data\":[48.756080,2.302038]}"      
+/*
+
+        response =  "{";
+      response = response  + "\"m1\":"+ String(speedM1) +", \"m2\":"+ String(speedM2) +",";
+      response = response  + "\"desiredSpeedM1\":"+ String(desiredSpeedM1) +", \"desiredSpeedM2\":"+ String(desiredSpeedM2) +",";
+      response = response  + "\"posM1\":"+ String(posM1) +", \"posM2\":"+ String(posM2) +",";
+      response = response  + "\"errorM1\":"+ String(errorM1) +", \"errorM2\":"+ String(errorM2) +",";
+      response = response  + "\"maxSpeed\":"+ String(maxSpeed) +",";
+      response = response  + "\"isCutterOn\":"+ String(isCutterOn) +",";
+      response = response  + "\"power\":"+ String(batteryPower) +",";
+      response = response  + "\"rssi\":"+ String(rssi) +",";
+      response = response  + "\"losingConnection\":"+ String(losingConnection) +",";      
+      response = response  + "}";
+
+ 
+    */
 
       String response;
       response =  "{";
       response = response  + "\"m1\":"+ speedM1 +", \"m2\":"+ speedM2 +",";
       response = response  + "\"desiredSpeedM1\":"+ desiredSpeedM1 +", \"desiredSpeedM2\":"+ desiredSpeedM2 +",";
       response = response  + "\"posM1\":"+ posM1 +", \"posM2\":"+ posM2 +",";
+      response = response  + "\"errorM1\":"+ errorM1 +", \"errorM2\":"+ errorM2 +",";
       response = response  + "\"maxSpeed\":"+ maxSpeed +",";
       response = response  + "\"isCutterOn\":"+ isCutterOn +",";
       response = response  + "\"power\":"+ batteryPower +",";
       response = response  + "\"rssi\":"+ rssi +",";
       response = response  + "\"losingConnection\":"+ losingConnection +",";      
+      response = response  + "\"nocomma\":0";      
       response = response  + "}";
       
       return response; 

@@ -4,6 +4,7 @@
 #include "NodeMCU.h"
 
 
+
 class DualMC33926MotorShield
 {
   private:
@@ -72,6 +73,8 @@ class DualMC33926MotorShield
   //
   void setSpeeds(int m1Speed, int m2Speed)
   {
+    // TODO if huge speed is to ruckelig, make loop here!
+    Serial.println("etSpeeds(" + String(m1Speed) +","+ String(m2Speed) + ")");
     setSpeed(_M1IN1, _M1IN2, m1Speed);
     setSpeed(_M2IN1, _M2IN2, m2Speed);  
   }
@@ -89,6 +92,7 @@ class DualMC33926MotorShield
 };
 
 
+DualMC33926MotorShield md;
 
 
 
