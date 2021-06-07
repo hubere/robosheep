@@ -1,0 +1,207 @@
+#
+# This is the description of our REST interface
+# 0) replace host: "192.168.1.40" with IP of local web server
+# 1) Use https://editor.swagger.io/ to edit is
+# 2) Download swagger.yaml from the editor
+# 3) use https://www.cleancss.com/json-minify/ to get the yaml as a one-line-string
+# 4) replace '"' with '\"' in the one-line-string
+#
+
+
+swagger: "2.0"
+info:
+  description: "This is the REST interface to the sheep."
+  version: "1.0.0"
+  title: "Robosheep"
+
+host: "192.168.1.40"
+
+tags:
+- name: "State"
+  description: "Getting state of sheep"
+- name: "Move"
+  description: "Make sheep move"
+- name: "Cutter"
+  description: "Make sheep eat"
+
+paths:
+  /sheep/state:
+    get:
+      tags:
+      - "State"
+      summary: "Endpoint for getting internal state of sheep"
+      description: ""
+      operationId: "getSheep"
+
+      responses:
+        200:
+          description: "Actual state of sheep"
+          schema:
+            $ref: '#/definitions/sheepState'
+
+  /sheep/set:
+    get:
+      tags:
+      - "State"
+      summary: "Endpoint for setting certain parameters of sheep"
+      description: ""
+      operationId: "setParameter"
+
+      parameters:
+        - in: query
+          name: maxSpeed
+          type: integer
+          description: The number of items to skip before starting to collect the result set
+        - in: query
+          name: errorM1
+          type: integer
+          description: Error of motor M1. This value is added to output of current for M1
+        - in: query
+          name: errorM2
+          type: integer
+          description: Error of motor M2. This value is added to output of current for M2
+
+      responses:
+        200:
+          description: "Set paramerter of sheep"
+
+  /sheep/move:
+    get:
+      tags:
+      - "Move"
+      summary: "Endpoint for moving sheep by setting speed and direction."
+      description: "Description of Endpoint for moving sheep"
+
+      parameters:
+        - in: query
+          name: speed
+          type: integer
+          description: Speed to set for both motors in percentage.
+        - in: query
+          name: dir
+          type: integer
+          description:
+            Amount of difference of motors speed in percentage. dir=10 will increase M1 by 10% and decrease M2 by 10%
+
+      responses:
+        200:
+          description: "Sheep is moving"
+
+  /sheep/motor:
+    get:
+      tags:
+      - "Move"
+      summary: "Endpoint for moving sheep by setting speed and direction."
+      description: "Description of Endpoint for moving sheep"
+
+      parameters:
+        - in: query
+          name: m1
+          type: integer
+          description: Speed to set to motor M1 in percentage.
+        - in: query
+          name: m2
+          type: integer
+          description: Speed to set to motor M2 in percentage.
+
+      responses:
+        200:
+          description: "Sheep is moving"
+
+  /sheep/forward:
+    get:
+      tags:
+      - "Move"
+      summary: "Endpoint for moving sheep forward"
+      description: "Description of Endpoint for moving sheep"
+
+      responses:
+        200:
+          description: "Sheep is moving forward"
+
+  /sheep/backward:
+    get:
+      tags:
+      - "Move"
+      summary: "Endpoint for moving sheep backward"
+      description: "Description of Endpoint for moving sheep"
+
+      responses:
+        200:
+          description: "Sheep is moving backward"
+
+  /sheep/left:
+    get:
+      tags:
+      - "Move"
+      summary: "Endpoint for moving sheep left"
+      description: "Description of Endpoint for moving sheep"
+
+      responses:
+        200:
+          description: "Sheep is moving left"
+
+  /sheep/right:
+    get:
+      tags:
+      - "Move"
+      summary: "Endpoint for moving sheep right"
+      description: "Description of Endpoint for moving sheep"
+
+      responses:
+        200:
+          description: "Sheep is moving right"
+
+  /cutter/on:
+    get:
+      tags:
+      - "Cutter"
+      summary: "Endpoint starting cutter"
+      description: ""
+
+      responses:
+        200:
+          description: "Cutter is running"
+
+  /cutter/off:
+    get:
+      tags:
+      - "Cutter"
+      summary: "Endpoint for stopping cutter"
+      description: ""
+
+      responses:
+        200:
+          description: "Cutter is shut down"
+
+definitions:
+  sheepState:
+    type: object
+    properties:
+      m1:
+        type: integer
+      m2:
+        type: integer
+      desiredSpeedM1:
+        type: integer
+      desiredSpeedM2:
+        type: integer
+      posM1:
+        type: integer
+      posM2:
+        type: integer
+      errorM1:
+        type: integer
+      errorM2:
+        type: integer
+      maxSpeed:
+        type: integer
+      isCutterOn:
+        type: boolean
+      power:
+        type: integer
+      rssi:
+        type: integer
+      losingConnection:
+        type: integer
+

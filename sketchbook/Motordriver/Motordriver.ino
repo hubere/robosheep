@@ -160,7 +160,8 @@ void bigLoop(){
   stopOnLostConnection();                 // Stop if connection is lost, i.e. no commands issued anymore
   // adjustMotorSpeeds();                    // Adjust motor speeds towards desiredSpeed.
   myWifi.checkWifiConnection();
-  webServer.listenForIncomingRequests();
+//  webServer.listenForIncomingRequests();
+  webServer.handleClient();
 
   endOfLastLoopInMillis = millis();    
 }

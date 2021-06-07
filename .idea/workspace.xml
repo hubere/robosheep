@@ -20,12 +20,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b1169ea1-08b2-4f85-a2f3-bf8b0f5fc14c" name="Default Changelist" comment="Create README">
-      <change afterPath="$PROJECT_DIR$/flask_session/2029240f6d1128be89ddc32729463129" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/flask_session/bf52188bb93711a3d158b74287554ac3" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/py-vision/screenshot20212804_110039.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/py-vision/screenshot_20212804_110446.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/snapshots/vlcsnap-2021-03-24-10h30m30s535.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sketchbook/Motordriver/swagger.html" beforeDir="false" afterPath="$PROJECT_DIR$/sketchbook/Motordriver/swagger.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,7 +45,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/gui/plain/templates" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/sketchbook/Motordriver" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -61,14 +57,15 @@
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/vision/examples" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/sketchbook/Motordriver" />
       <recent name="$PROJECT_DIR$/gui/plain/templates" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/resources" />
       <recent name="$PROJECT_DIR$/gui/plain" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/vision/examples" />
     </key>
   </component>
   <component name="RunManager" selected="Python.analyse Image">
@@ -263,6 +260,7 @@
       <workItem from="1617125083214" duration="3060000" />
       <workItem from="1619091037641" duration="1896000" />
       <workItem from="1619598446142" duration="3249000" />
+      <workItem from="1623069573094" duration="8298000" />
     </task>
     <task id="LOCAL-00001" summary="Used WebServer and Json, but does not compile">
       <created>1606501281915</created>
@@ -495,12 +493,15 @@
       <screen x="72" y="27" width="2488" height="1413" />
     </state>
     <state x="1437" y="368" width="1022" height="737" key="SettingsEditor/72.27.2488.1413/2560.536.1920.1080@72.27.2488.1413" timestamp="1616514480597" />
-    <state x="1263" y="27" width="1095" height="683" key="find.popup" timestamp="1619599796294">
+    <state x="302" y="148" width="1530" height="1213" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1623077331546">
       <screen x="72" y="27" width="2488" height="1413" />
     </state>
-    <state x="3479" y="571" width="845" height="522" key="find.popup/0.27.2560.1413/2560.728.1920.1080@0.27.2560.1413" timestamp="1611421160611" />
+    <state x="302" y="148" width="1530" height="1213" key="com.intellij.history.integration.ui.views.FileHistoryDialog/72.27.2488.1413/2560.596.1920.1080@72.27.2488.1413" timestamp="1623077331546" />
+    <state x="283" y="132" width="1095" height="683" key="find.popup" timestamp="1623077937155">
+      <screen x="72" y="27" width="2488" height="1413" />
+    </state>
     <state x="1263" y="27" width="1095" height="683" key="find.popup/72.27.2488.1413/2560.536.1920.1080@72.27.2488.1413" timestamp="1619599796294" />
-    <state x="380" y="472" width="821" height="522" key="find.popup/72.27.2488.1413/2560.728.1920.1080@72.27.2488.1413" timestamp="1610998798700" />
+    <state x="283" y="132" width="1095" height="683" key="find.popup/72.27.2488.1413/2560.596.1920.1080@72.27.2488.1413" timestamp="1623077937155" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
