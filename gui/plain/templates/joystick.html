@@ -54,6 +54,9 @@
     //
     let ip = location.host;
     if (location.host == "localhost:63342") ip = "192.168.1.30";
+    var url = new URL(window.location.href);
+    var paramHost = url.searchParams.get("host");
+    if (paramHost != null) ip = paramHost;
     console.log("communication with ip: " + ip)
 
     const url_sheep_state = "http://" + ip + "/sheep/state";

@@ -1,12 +1,19 @@
 <!DOCTYPE HTML>
+<html lang="en">
 <head>
     <title>Robosheep- Status</title>
     <meta charset="utf-8"/>
+    <!-- <meta http-equiv="refresh" content="5">-->
     <style>
         #motor_speed_bars {
             width: 600px;
             padding: 10px;
             background-color: grey;
+        }
+
+        button {
+            height: 80px;
+            width: 200px;
         }
 
         #speedBar {
@@ -77,95 +84,6 @@
 
     </div>
     <p id="sheep_state">sheep_state</p>
-
-    <div id="status_values">
-
-        <label for="maxSpeedInput">Max Speed:</label>
-        <input type="number" id="maxSpeedInput" min="5" max="100">
-        <br>
-
-        <label for="errorM1Input">Error M1:</label>
-        <input type="number" id="errorM1Input" min="0" max="100">
-        <br>
-
-        <label for="errorM2Input">Error M2:</label>
-        <input type="number" id="errorM2Input" min="0" max="100">
-        <br>
-
-        <br>
-        <br>
-
-        <table>
-        <tr>
-          <td>Parameter</td>
-          <td>Amount_________________</td>
-        </tr>
-        <tr>
-          <td>m1</td>
-          <td><div id="m1" class="progress-bar" role="progressbar"  style="width:10%" >0%
-            </div></td>
-        </tr>
-        <tr>
-          <td>m2</td>
-          <td><div id="m2" class="progress-bar" role="progressbar"  style="width:20%" >20%
-          </div></td>
-        </tr>
-        <tr>
-          <td>desiredSpeedM1</td>
-          <td><div id="desiredSpeedM1" class="progress-bar" >0%</div></td>
-        </tr>
-        <tr>
-          <td>desiredSpeedM2</td>
-          <td><div id="desiredSpeedM2" class="progress-bar" >0%</div></td>
-        </tr>
-        <tr>
-          <td>posM1</td>
-          <td><div id="posM1" class="progress-bar" >0%</div></td>
-        </tr>
-        <tr>
-          <td>posM2</td>
-          <td><div id="posM2" class="progress-bar" >0%</div></td>
-        </tr>
-        <tr>
-          <td>errorM1</td>
-          <td><div id="errorM1" class="progress-bar" role="progressbar"  style="width:100%" >100%
-          </div></td>
-        </tr>
-        <tr>
-          <td>errorM2</td>
-          <td><div id="errorM2" class="progress-bar">0%</div></td>
-        </tr>
-        <tr>
-          <td>maxSpeed</td>
-          <td><div id="maxSpeed" class="progress-bar">0%</div></td>
-        </tr>
-        <tr>
-          <td>power</td>
-          <td><div id="power" class="progress-bar">0%</div></td>
-        </tr>
-        <tr>
-          <td>isCutterOn</td>
-          <td>
-               <input type="checkbox" id="cutterOn" name="scales"  Cutter>
-          </td>
-        </tr>
-        <tr>
-          <td>rssi</td>
-          <td><div id="rssi" class="progress-bar">0%</div></td>
-        </tr>
-        <tr>
-          <td>losingConnection</td>
-          <td><div id="losingConnection" class="progress-bar">0%</div></td>
-        </tr>
-        </table>
-
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-
-    </div>
 </div>
 
 
@@ -184,16 +102,14 @@
     // global vars
     //
     let ip = location.host;
-    if (location.host.startsWith("localhost")) ip = "192.168.1.40";
-    console.log("communication with ip: " + ip)
+    if (location.host == "localhost:63342") ip = "192.168.1.30";
     var url = new URL(window.location.href);
     var paramHost = url.searchParams.get("host");
     if (paramHost != null) ip = paramHost;
+    console.log("communication with ip: " + ip)
 
     const url_sheep_state = "http://" + ip + "/sheep/state";
     const url_sheep_move = "http://" + ip + "/sheep/move";
-    const url_sheep_set = "http://" + ip + "/sheep/set";
-    const url_sheep_cutter = "http://" + ip + "/sheep/cutter";
     const url_motor = "http://" + ip + "/motor";
     var speed = 0;
     console.log("speed set to " + speed);
@@ -206,23 +122,11 @@
     const motorBar1 = document.getElementById('motorBar1');
     const motorBar2 = document.getElementById('motorBar2');
 
-    const table = document.getElementById('table');
-
     const sheepStateCtrl = document.getElementById('sheep_state');
     const logger = document.getElementById('log');
 
-    var maxSpeedInput = document.getElementById('maxSpeedInput');
-    maxSpeedInput.addEventListener('input', setMaxSpeed);
-
-    const errorM1Input = document.getElementById('errorM1Input');
-    errorM1Input.addEventListener('input', setErrorM1);
-
-    const errorM2Input = document.getElementById('errorM2Input');
-    errorM2Input.addEventListener('input', setErrorM2);
-
-    const cutterOn = document.getElementById('cutterOn');
-    cutterOn.addEventListener('input', setCutterOnOff);
-
+    const startX = ball.getBoundingClientRect().left;
+    const startY = ball.getBoundingClientRect().top;
 
 
     motor_speed_bars.onmousedown = function (event) {
@@ -272,45 +176,6 @@
         //console.log("Voltage: " + voltage)
     }
 
-    function updateAllParameter(sheep_state) {
-        for (var key in sheep_state) {
-            if (sheep_state.hasOwnProperty(key)) {
-                updateParameter(key, sheep_state[key])
-            }
-        }
-
-    }
-
-    function updateParameter(paramName, value) {
-        const paramElement = document.getElementById(paramName);
-        if (paramElement == null) return;
-        paramElement.style.width = value+'%';
-        paramElement.innerHTML = value+'%';
-        if (paramName === 'rssi'){
-            let rssiValue = parseInt(value);
-            paramElement.innerHTML = value;
-            paramElement.style.width = 100 + rssiValue +'%';
-        }
-        if (paramName === 'power'){
-            let powerValue = parseInt(value);
-            let barWidth = powerValue / 24 * 100;
-            if (barWidth > 100) barWidth = 100;
-            let voltage = (powerValue / 10.0).toFixed(1);
-            paramElement.innerHTML = voltage + 'V';
-            paramElement.style.width = barWidth +'%';
-        }
-        if (paramName === 'maxSpeed'){
-            let maxSpeed = parseInt(value);
-            paramElement.value = maxSpeed;
-        }
-
-        if (parseInt(paramElement.style.width) < 10){
-            paramElement.style.color = "black";
-        }else{
-            paramElement.style.color = "white";
-        }
-    }
-
 
     //
     // update sheep state
@@ -326,8 +191,7 @@
                 updateMotorBars(parseInt(sheep_state['m1']), parseInt(sheep_state['m2']));
                 updateRssiCtrl(sheep_state);
                 updatePwrCtrl(sheep_state);
-                updateAllParameter(sheep_state);
-                sheepStateCtrl.innerHTML = JSON.stringify(sheep_state, null, 4);
+                sheepStateCtrl.innerHTML = JSON.stringify(sheep_state);
             }
         }
     }, 1000);
@@ -370,6 +234,103 @@
         }
     }
 
+
+    //
+    // ball
+    //
+    ball.onmousedown = function (event) {
+
+        let shiftX = event.clientX - ball.getBoundingClientRect().left;
+        let shiftY = event.clientY - ball.getBoundingClientRect().top;
+
+        ball.style.position = 'absolute';
+        ball.style.zIndex = '1000';
+        document.body.append(ball);
+
+        moveAt(event.pageX, event.pageY);
+
+        // moves the ball at (pageX, pageY) coordinates
+        // taking initial shifts into account
+        function moveAt(pageX, pageY) {
+
+            //
+            // move ball image
+            //
+            ball.style.left = pageX - shiftX + 'px';
+            ball.style.top = pageY - shiftY + 'px';
+
+            // calc displacement
+            let displaceX = -Math.trunc((pageX - startX - shiftX) / 3);
+            let displaceY = -Math.trunc((pageY - startY - shiftY) / 3);
+            var msg = "Touch displace " + displaceX + "/" + displaceY;
+            console.log(msg);
+            logger.innerHTML = msg;
+
+            let speed = displaceY;
+            let dir = -displaceX;
+            sendCommand(speed, dir)
+        }
+
+        function onMouseMove(event) {
+            moveAt(event.pageX, event.pageY);
+        }
+
+        // move the ball on mousemove
+        document.addEventListener('mousemove', onMouseMove);
+
+        // drop the ball, remove unneeded handlers
+        ball.onmouseup = function () {
+            document.removeEventListener('mousemove', onMouseMove);
+            ball.onmouseup = null;
+            ball.style.left = startX + 'px';
+            ball.style.top = startY + 'px';
+
+            awaitingRequest = false;
+            sendCommand(0,0);
+        };
+
+    };
+
+    /*
+     * see also (https://www.mediaevent.de/javascript/touch-events.html)
+     */
+    ball.ontouchmove = function (e) {
+        // grab the location of touch
+        var touchLocation = e.targetTouches[0]; // erster finger
+
+        // assign box new coordinates based on the touch.
+        //ball.style.left = touchLocation.pageX + 'px';
+        //ball.style.top = touchLocation.pageY + 'px';
+
+        // calc displacement
+        let displaceX = Math.trunc((startX - touchLocation.pageX) / 3);
+        let displaceY = Math.trunc((startY - touchLocation.pageY) / 3);
+        console.log("Touch displace " + displaceX + "/" + displaceY);
+
+        var msg = "Touch displace " + displaceX + "/" + displaceY;
+        logger.innerHTML = msg;
+
+        let speed = displaceY;
+        let dir = -displaceX;
+        sendCommand(speed, dir)
+    }
+
+    ball.ontouchend = function (e) {
+        sendCommand(0, 0)
+    }
+
+    /*
+    * Disable context menu
+    */
+    window.oncontextmenu = function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        return false;
+    };
+
+    ball.ondragstart = function () {
+        return false;
+    };
 
     function speed1() {
         speed = 12;
@@ -418,49 +379,6 @@
         y = 0;
         sendCommand(0, 0);
     }
-
-    function setMaxSpeed(e) {
-        let value = maxSpeedInput.value;
-        setParameter("maxSpeed", value);
-    }
-
-    function setErrorM1() {
-        let value = errorM1Input.value;
-        setParameter("errorM1", value);
-    }
-
-    function setErrorM2() {
-        let value = errorM2Input.value;
-        setParameter("errorM2", value);
-    }
-
-    function setCutterOnOff() {
-        if (cutterOn.checked){
-            send(url_sheep_cutter + "/on");
-        }else{
-            send(url_sheep_cutter + "/off");
-        }
-    }
-
-    function setParameter(param, value) {
-        let url = url_sheep_set + "?" + param + "=" + value
-        send(url);
-    }
-
-    function send(url) {
-        // call server
-        console.log("Sending: " + url );
-        const Http = new XMLHttpRequest();
-        Http.open("GET", url);
-        Http.responseType = 'json';
-        Http.send();
-        Http.onreadystatechange = function () {
-            if (this.readyState === 4 && this.status === 200) {
-                let sheep_state = Http.response
-            }
-        }
-    }
-
 
 </script>
 </body>

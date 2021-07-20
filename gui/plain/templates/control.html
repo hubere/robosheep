@@ -23,8 +23,6 @@
     <TABLE>
         <TR>
             <TD>
-                <p><label for="enableMotor">Enable Motor: </label><input style="height:20px;width:20px" type="checkbox"
-                                                                         id="enableMotor"></p>
             </TD>
             <TD>
                 <button onclick="forward()">forward</button>
@@ -80,8 +78,11 @@
     // global vars
     //
     let ip = location.host;
-    if (location.host == "localhost:63342") ip = "192.168.1.30";
-    console.log("communication with ip: " + ip)
+    if (location.host === "localhost:63342") ip = "192.168.1.30";
+    var url = new URL(window.location.href);
+    var paramHost = url.searchParams.get("host");
+    if (paramHost != null) ip = paramHost;
+    console.log("communication with ip: " + ip);
 
     const url_sheep_state = "http://" + ip + "/sheep/state";
     const url_sheep_move = "http://" + ip + "/sheep/move";
@@ -89,87 +90,7 @@
     var speed = 0;
     console.log("speed set to " + speed);
 
-    //
-    // motor bars
-    //
-    const motor_speed_bars = document.getElementById("motor_speed_bars")
-    const speedBar = document.getElementById('speedBar');
-    const motorBar1 = document.getElementById('motorBar1');
-    const motorBar2 = document.getElementById('motorBar2');
-
-    const sheepStateCtrl = document.getElementById('sheep_state');
     const logger = document.getElementById('log');
-
-    const startX = ball.getBoundingClientRect().left;
-    const startY = ball.getBoundingClientRect().top;
-
-
-    motor_speed_bars.onmousedown = function (event) {
-        console.log("onmousedown: " + event.button)
-    }
-
-    /*
-    Update progress bars that indicate motor speed.
-    Values are between -100 and 100.
-     */
-    function updateMotorBars(m1, m2) {
-        if (m1 < -100 || m1 > 100 || m2 < -100 || m2 > 100) {
-            console.error("Called updateMotorBars(" + m1 + "," + m2 + ") with invalid values.")
-            return
-        }
-        updateMotorBar(motorBar1, m1);
-        updateMotorBar(motorBar2, m2);
-    }
-
-    function updateMotorBar(motorBar, value) {
-        width = (100 + value)/2;
-        motorBar.style.height = width+'%';
-        motorBar.innerHTML = value+'%';
-        if (value < 0){
-            motorBar.style.backgroundColor = "red";
-        }else{
-            motorBar.style.backgroundColor = "green";
-        }
-    }
-
-    function updateRssiCtrl(sheep_state){
-        let rssiValue = parseInt(sheep_state['rssi']);
-        let barHeight = 100 + rssiValue;
-        const signalStrengthCtrl = document.getElementById('signalStrength');
-        signalStrengthCtrl.style.height = barHeight+'%';
-        signalStrengthCtrl.innerHTML = rssiValue + 'dBm';
-    }
-
-    function updatePwrCtrl(sheep_state){
-        let powerValue = parseInt(sheep_state['power']);
-        let barHeight = powerValue / 24 * 100;
-        if (barHeight > 100) barHeight = 100;
-        let voltage = (powerValue / 10.0).toFixed(1);
-        const powerSupplyCtrl = document.getElementById('powerSupply');
-        powerSupplyCtrl.style.height = barHeight+'%';
-        powerSupplyCtrl.innerHTML = voltage + 'V';
-        //console.log("Voltage: " + voltage)
-    }
-
-
-    //
-    // update sheep state
-    //
-    const intervalID = setInterval(function () {
-        const Http = new XMLHttpRequest();
-        Http.open("GET", url_sheep_state);
-        Http.responseType = 'json';
-        Http.send();
-        Http.onreadystatechange = function () {
-            if (this.readyState === 4 && this.status === 200) {
-                let sheep_state = Http.response
-                updateMotorBars(parseInt(sheep_state['m1']), parseInt(sheep_state['m2']));
-                updateRssiCtrl(sheep_state);
-                updatePwrCtrl(sheep_state);
-                sheepStateCtrl.innerHTML = JSON.stringify(sheep_state);
-            }
-        }
-    }, 1000);
 
 
     /*
@@ -204,108 +125,10 @@
         Http.onreadystatechange = function () {
             if (this.readyState === 4 && this.status === 200) {
                 let sheep_state = Http.response
-                updateMotorBars(parseInt(sheep_state['m1']), parseInt(sheep_state['m2']));
             }
         }
     }
 
-
-    //
-    // ball
-    //
-    ball.onmousedown = function (event) {
-
-        let shiftX = event.clientX - ball.getBoundingClientRect().left;
-        let shiftY = event.clientY - ball.getBoundingClientRect().top;
-
-        ball.style.position = 'absolute';
-        ball.style.zIndex = '1000';
-        document.body.append(ball);
-
-        moveAt(event.pageX, event.pageY);
-
-        // moves the ball at (pageX, pageY) coordinates
-        // taking initial shifts into account
-        function moveAt(pageX, pageY) {
-
-            //
-            // move ball image
-            //
-            ball.style.left = pageX - shiftX + 'px';
-            ball.style.top = pageY - shiftY + 'px';
-
-            // calc displacement
-            let displaceX = -Math.trunc((pageX - startX - shiftX) / 3);
-            let displaceY = -Math.trunc((pageY - startY - shiftY) / 3);
-            var msg = "Touch displace " + displaceX + "/" + displaceY;
-            console.log(msg);
-            logger.innerHTML = msg;
-
-            let speed = displaceY;
-            let dir = -displaceX;
-            sendCommand(speed, dir)
-        }
-
-        function onMouseMove(event) {
-            moveAt(event.pageX, event.pageY);
-        }
-
-        // move the ball on mousemove
-        document.addEventListener('mousemove', onMouseMove);
-
-        // drop the ball, remove unneeded handlers
-        ball.onmouseup = function () {
-            document.removeEventListener('mousemove', onMouseMove);
-            ball.onmouseup = null;
-            ball.style.left = startX + 'px';
-            ball.style.top = startY + 'px';
-
-            awaitingRequest = false;
-            sendCommand(0,0);
-        };
-
-    };
-
-    /*
-     * see also (https://www.mediaevent.de/javascript/touch-events.html)
-     */
-    ball.ontouchmove = function (e) {
-        // grab the location of touch
-        var touchLocation = e.targetTouches[0]; // erster finger
-
-        // assign box new coordinates based on the touch.
-        //ball.style.left = touchLocation.pageX + 'px';
-        //ball.style.top = touchLocation.pageY + 'px';
-
-        // calc displacement
-        let displaceX = Math.trunc((startX - touchLocation.pageX) / 3);
-        let displaceY = Math.trunc((startY - touchLocation.pageY) / 3);
-        console.log("Touch displace " + displaceX + "/" + displaceY);
-
-        var msg = "Touch displace " + displaceX + "/" + displaceY;
-        logger.innerHTML = msg;
-
-        let speed = displaceY;
-        let dir = -displaceX;
-        sendCommand(speed, dir)
-    }
-
-    ball.ontouchend = function (e) {
-        sendCommand(0, 0)
-    }
-
-    /*
-    * Disable context menu
-    */
-    window.oncontextmenu = function (event) {
-        event.preventDefault();
-        event.stopPropagation();
-        return false;
-    };
-
-    ball.ondragstart = function () {
-        return false;
-    };
 
     function speed1() {
         speed = 12;
@@ -342,16 +165,7 @@
         sendCommand(-speed, 0)
     }
 
-    var offsetX;
-    var offsetY;
-    var x;
-    var y;
-
     function stop() {
-        offsetX = 0;
-        offsetY = 0;
-        x = 0;
-        y = 0;
         sendCommand(0, 0);
     }
 

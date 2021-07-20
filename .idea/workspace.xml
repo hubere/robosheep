@@ -20,8 +20,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b1169ea1-08b2-4f85-a2f3-bf8b0f5fc14c" name="Default Changelist" comment="Create README">
+      <change afterPath="$PROJECT_DIR$/gui/plain/templates/home.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gui/plain/templates/log.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sketchbook/Motordriver/resources/swagger.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sketchbook/Motordriver/resources/swagger.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sketchbook/Motordriver/resources/swagger.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sketchbook/Motordriver/resources/templates" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sketchbook/Motordriver/swagger.html" beforeDir="false" afterPath="$PROJECT_DIR$/sketchbook/Motordriver/swagger.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gui/plain/templates/control.html" beforeDir="false" afterPath="$PROJECT_DIR$/gui/plain/templates/control.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gui/plain/templates/joystick.html" beforeDir="false" afterPath="$PROJECT_DIR$/gui/plain/templates/joystick.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gui/plain/templates/status.html" beforeDir="false" afterPath="$PROJECT_DIR$/gui/plain/templates/status.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sketchbook/Motordriver/WebServer.h" beforeDir="false" afterPath="$PROJECT_DIR$/sketchbook/Motordriver/WebServer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sketchbook/Motordriver/swagger.html" beforeDir="false" afterPath="$PROJECT_DIR$/gui/plain/templates/swagger.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sketchbook/Motordriver/swagger.json" beforeDir="false" afterPath="$PROJECT_DIR$/gui/plain/templates/swagger.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sketchbook/Motordriver/swagger.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/gui/plain/templates/swagger.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sketchbook/Motordriver/swagger_minified.html" beforeDir="false" afterPath="$PROJECT_DIR$/sketchbook/Motordriver/resources/swagger_minified.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sketchbook/Motordriver/test.html" beforeDir="false" afterPath="$PROJECT_DIR$/sketchbook/Motordriver/test.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,7 +59,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/sketchbook/Motordriver" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/gui/plain/templates" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -57,15 +71,16 @@
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/vision/examples" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/sketchbook/Motordriver" />
       <recent name="$PROJECT_DIR$/gui/plain/templates" />
+      <recent name="$PROJECT_DIR$/sketchbook/Motordriver" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/resources" />
       <recent name="$PROJECT_DIR$/gui/plain" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/sketchbook/Motordriver/resources" />
+      <recent name="$PROJECT_DIR$/vision/examples" />
     </key>
   </component>
   <component name="RunManager" selected="Python.analyse Image">
@@ -260,7 +275,10 @@
       <workItem from="1617125083214" duration="3060000" />
       <workItem from="1619091037641" duration="1896000" />
       <workItem from="1619598446142" duration="3249000" />
-      <workItem from="1623069573094" duration="8298000" />
+      <workItem from="1623069573094" duration="24409000" />
+      <workItem from="1624361449668" duration="8590000" />
+      <workItem from="1626710784459" duration="881000" />
+      <workItem from="1626761711359" duration="9864000" />
     </task>
     <task id="LOCAL-00001" summary="Used WebServer and Json, but does not compile">
       <created>1606501281915</created>
@@ -489,14 +507,18 @@
       <screen x="72" y="27" width="2488" height="1413" />
     </state>
     <state width="1198" height="484" key="GridCell.Tab.1.right/72.27.2488.1413/2560.536.1920.1080@72.27.2488.1413" timestamp="1619611052414" />
+    <state x="543" y="417" width="428" height="640" key="RollbackChangesDialog" timestamp="1624366053383">
+      <screen x="72" y="27" width="2488" height="1413" />
+    </state>
+    <state x="543" y="417" width="428" height="640" key="RollbackChangesDialog/72.27.2488.1413/2560.596.1920.1080@72.27.2488.1413" timestamp="1624366053383" />
     <state x="1437" y="368" width="1022" height="737" key="SettingsEditor" timestamp="1616514480597">
       <screen x="72" y="27" width="2488" height="1413" />
     </state>
     <state x="1437" y="368" width="1022" height="737" key="SettingsEditor/72.27.2488.1413/2560.536.1920.1080@72.27.2488.1413" timestamp="1616514480597" />
-    <state x="302" y="148" width="1530" height="1213" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1623077331546">
+    <state x="302" y="148" width="1530" height="1213" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1623080418345">
       <screen x="72" y="27" width="2488" height="1413" />
     </state>
-    <state x="302" y="148" width="1530" height="1213" key="com.intellij.history.integration.ui.views.FileHistoryDialog/72.27.2488.1413/2560.596.1920.1080@72.27.2488.1413" timestamp="1623077331546" />
+    <state x="302" y="148" width="1530" height="1213" key="com.intellij.history.integration.ui.views.FileHistoryDialog/72.27.2488.1413/2560.596.1920.1080@72.27.2488.1413" timestamp="1623080418345" />
     <state x="283" y="132" width="1095" height="683" key="find.popup" timestamp="1623077937155">
       <screen x="72" y="27" width="2488" height="1413" />
     </state>
@@ -506,11 +528,6 @@
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/sketchbook/Motordriver/test.html</url>
-          <line>170</line>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/py-vision/gui.py</url>
           <line>44</line>

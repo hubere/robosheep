@@ -1,0 +1,48 @@
+<!--
+ 1) replace 192.168.1.40 with local IP of web server
+ 2) use https://www.willpeavy.com/tools/minifier/ to have this html as one line
+ 3) replace '"' with '\"' in this one line string.
+-->
+
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Robosheep</title>
+    <meta charset="utf-8"/>
+</head>
+<body>
+<h1>Robosheep</h1>
+
+
+<p>This is starting page of Robosheep. In order to facilitate memory consumption of ESP, html pages are to reside local.
+    Hence, to operate Robosheep, ensure that html-templates are accessible at <em>/templates</em></p>
+
+<form>
+<input type="button" value="Status" onclick="status()" />
+<input type="button" value="Control" onclick="control()" />
+<input type="button" value="Joystick" onclick="joystick()" />
+<input type="button" value="Log" onclick="log()" />
+<input type="button" value="Swagger" onclick="swagger()" />
+</form>
+
+
+<script>
+
+    //
+    // global vars
+    //
+    let ip = location.host;
+    if (location.host === "localhost:63342") ip = "192.168.1.40";
+    if (location.host === "") ip = "192.168.1.40";
+    console.log("location.host: " + location.host)
+    console.log("communication with ip: " + ip)
+
+    function control(){ window.open("file:////templates/control.html?host=" + ip, '_blank').focus();};
+    function status(){ window.open("file:////templates/status.html?host=" + ip, '_blank').focus();};
+    function joystick(){ window.open("file:////templates/joystick.html?host=" + ip, '_blank').focus();};
+    function log(){ window.open("file:////templates/log.html?host=" + ip, '_blank').focus();};
+    function swagger(){ window.open("file:////templates/swagger.html?host=" + ip, '_blank').focus();};
+
+</script>
+</body>
+</html>
