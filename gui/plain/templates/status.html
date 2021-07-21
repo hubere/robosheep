@@ -98,7 +98,7 @@
         <table>
         <tr>
           <td>Parameter</td>
-          <td>Amount_________________</td>
+          <td>Amount___________________________________</td>
         </tr>
         <tr>
           <td>isCutterOn</td>
@@ -122,11 +122,19 @@
         </tr>
         <tr>
           <td>posM1</td>
-          <td><div class="progress"><div id="posM1" class="progress-bar">0%</div></div></td>
+          <td><div id="posM1">0</div></td>
         </tr>
         <tr>
           <td>posM2</td>
-          <td><div class="progress"><div id="m1" class="progress-bar">0%</div></div></td>
+          <td><div id="posM2">0</div></td>
+        </tr>
+        <tr>
+          <td>dist1</td>
+          <td><div id="dist1">0</div></td>
+        </tr>
+        <tr>
+          <td>dist2</td>
+          <td><div id="dist2">0</div></td>
         </tr>
         <tr>
           <td>errorM1</td>
@@ -306,15 +314,20 @@
             paramElement.value = maxSpeed;
         }
 
-        if (paramName === 'posM1'){
+        if (["posM1","posM2","dist1","dist2"].indexOf(paramName) > -1){
             paramElement.innerHTML = value;
         }
 
-        if (paramName === 'posM2'){
-            paramElement.innerHTML = value;
+        if (["m1","m2","desiredSpeedM1","desiredSpeedM2"].indexOf(paramName) > -1){
+            width = (100 + value)/2;
+            paramElement.style.width = width+'%';
+            paramElement.innerHTML = value+'%';
+            if (value < 0){
+                paramElement.style.backgroundColor = "red";
+            }else{
+                paramElement.style.backgroundColor = "green";
+            }
         }
-
-
 
     }
 

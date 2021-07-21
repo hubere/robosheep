@@ -13,6 +13,14 @@ void ISRFuncM1();
 void ISRFuncM2();
 
 
+int sign(int x)
+{
+  if (x > 0) return 1;
+  if (x < 0) return -1;
+  return 0;  
+}
+
+
 class SheepState
 {
   
@@ -27,7 +35,7 @@ class SheepState
     int desiredSpeedM1 = 0;    // desired speed of motor 1 (PWM)
     int desiredSpeedM2 = 0;    // desired speed of motor 2 (PWM)
 
-    int errorM1 = 0;
+    int errorM1 = 1;            // empiric value
     int errorM2 = 0;
 
   public:  
@@ -122,23 +130,24 @@ class SheepState
 
       if (m1 == 0 && m2 == 0)
       {
-        md.setSpeeds(0,0);    // stop            
-      }else{
+        speedM1 = 0;
+        speedM2 = 0;        
+      }
+      else
+      {
         
         //  ensure a minimum and maximum speed
-  //      speedM1 = adjustToLimits(m1);
-  //      speedM2 = adjustToLimits(m2);
+        //      speedM1 = adjustToLimits(m1);
+        //      speedM2 = adjustToLimits(m2);
           
-        speedM1 = maxSpeed + errorM1;
-        speedM2 = maxSpeed + errorM2;
+        speedM1 = sign(m1) * (maxSpeed + errorM1);
+        speedM2 = sign(m2) * (maxSpeed + errorM2);
         
         posM1_onLastCommand = posM1;
         posM2_onLastCommand = posM2;
   
-        md.setSpeeds(speedM1, speedM2);  
       }
-
-      
+      md.setSpeeds(speedM1, speedM2);        
     }
 
     int adjustToLimits(int speedMX)
@@ -219,6 +228,7 @@ class SheepState
       response = response  + "\"desiredSpeedM1\":"    + desiredSpeedM1 +", \"desiredSpeedM2\":"+ desiredSpeedM2 +",";
       response = response  + "\"posM1\":"             + posM1 +         ", \"posM2\":"         + posM2          +",";
       response = response  + "\"errorM1\":"           + errorM1 +       ", \"errorM2\":"       + errorM2        +",";
+      response = response  + "\"dist1\":"       + distanceTraveledM1() +", \"dist2\":"       + distanceTraveledM2()        +",";
       response = response  + "\"maxSpeed\":"          + maxSpeed +",";
       response = response  + "\"isCutterOn\":"        + isCutterOn +",";
       response = response  + "\"power\":"             + batteryPower +",";

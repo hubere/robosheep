@@ -19,7 +19,6 @@ const char * page_control =      "";
 const char * page_log =          "";
 
 
-
 /*
  * A command was issued. Reset alive timer.
  */
@@ -29,72 +28,16 @@ void commandIssued(){
 
 
 /*
- * Match the request, i.e. extract speed for both motors,e.g. motor?m1=-10&m2=20
+ * State
  */
-void extractMotorSpeeds(){
-  int newDesireM1 = 0;
-  int newDesireM2 = 0;
-  String speedM1 = server.arg("m1");
-  String speedM2 = server.arg("m2");
-  if (speedM1 != NULL) newDesireM1 =  speedM1.toInt();
-  if (speedM2 != NULL) newDesireM1 =  speedM2.toInt();
-  
-  state.setDesiredSpeeds(newDesireM1,newDesireM2);      
-  commandIssued();                    
-}
-
-
-
-/*
- * Match the request, i.e. extract parameter to set and value
- */
-void extractSetParameter(){      
-  String maxSpeedString = server.arg("maxSpeed");
-  if (maxSpeedString != "")
-  {
-    state.maxSpeed =  maxSpeedString.toInt();
-    Serial.println("Setting maxSpeed to "+ maxSpeedString);               
-  }
-  
-  String errorM1String = server.arg("errorM1");
-  if (errorM1String != "")
-  {
-    state.setErrorM1(errorM1String.toInt());
-    Serial.println("Setting errorM1 to "+ errorM1String);               
-  }
-  
-  String errorM2String = server.arg("errorM2");
-  if (errorM2String != "")
-  {
-    state.setErrorM2(errorM2String.toInt());
-    Serial.println("Setting errorM2 to "+ errorM2String);               
-  }      
-}
-
-/*
- * Match the request, i.e. extract speed and dir
- * and set desiredSpeedM1 and desiredSpeedM2
- */
-void extractSpeedAndDir(){
-  String speedString = server.arg("speed");
-  String dirString = server.arg("dir");
-  
-  if (speedString != NULL)        state.cmdSpeed =  speedString.toInt();
-  if (dirString != NULL)          state.cmdDir =  dirString.toInt();
-
-  int newDesireM1 = state.cmdSpeed + state.cmdDir;
-  int newDesireM2 = state.cmdSpeed - state.cmdDir;  
-
-  state.setDesiredSpeeds(newDesireM1,newDesireM2);
-  commandIssued();                    
-}
-
-
 
 void handleSheepState() { 
   server.send(200, "application/json", state.respondWithSheepState()); 
 }
- 
+
+/* 
+ *  Set Parameter
+ */
 void handleSheepSet() { 
   String maxSpeedString = server.arg("maxSpeed");
   if (maxSpeedString != "")
@@ -119,14 +62,43 @@ void handleSheepSet() {
   server.send(200, "text/html", ""); 
 }
 
-
+/*
+ * Move (speed, dir)
+ * 
+ * At this point in time, "speed" actually means steps for both motors to go.
+ * "dir" reduces steps to go for one motor and increases them for the other one.
+ * 
+ * The steps are tracked by ISRs. Once steps are reached for a motor, this motor is stopped.
+ * 
+ */
 void handleSheepMove() { 
-  extractSpeedAndDir();
+  String speedString = server.arg("speed");
+  String dirString = server.arg("dir");
+  
+  if (speedString != NULL)        state.cmdSpeed =  speedString.toInt();
+  if (dirString != NULL)          state.cmdDir =  dirString.toInt();
+
+  int newDesireM1 = state.cmdSpeed + state.cmdDir;
+  int newDesireM2 = state.cmdSpeed - state.cmdDir;  
+
+  state.setDesiredSpeeds(newDesireM1,newDesireM2);
+  commandIssued();                    
   server.send(200, "text/html", ""); 
 }
- 
+
+/* 
+ *  Motor (m1, m2)
+ */
 void handleSheepMotor() { 
-  extractMotorSpeeds();      
+  int newDesireM1 = 0;
+  int newDesireM2 = 0;
+  String speedM1 = server.arg("m1");
+  String speedM2 = server.arg("m2");
+  if (speedM1 != NULL) newDesireM1 =  speedM1.toInt();
+  if (speedM2 != NULL) newDesireM1 =  speedM2.toInt();
+  
+  state.setDesiredSpeeds(newDesireM1,newDesireM2);      
+  commandIssued();                    
   server.send(200, "text/html", ""); 
 }
  
