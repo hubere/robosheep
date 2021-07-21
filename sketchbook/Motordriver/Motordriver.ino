@@ -26,7 +26,6 @@
 
 
 #include "Wifi.h"
-#include "HTML.h"
 #include "SheepState.h"
 #include "BatteryPower.h"
 #include "WebServer.h"
@@ -160,7 +159,6 @@ void bigLoop(){
   stopOnLostConnection();                 // Stop if connection is lost, i.e. no commands issued anymore
   // adjustMotorSpeeds();                    // Adjust motor speeds towards desiredSpeed.
   myWifi.checkWifiConnection();
-//  webServer.listenForIncomingRequests();
   webServer.handleClient();
 
   endOfLastLoopInMillis = millis();    
@@ -211,39 +209,7 @@ void stopOnLostConnection()
   }  
 }
 
-  
-
-/*
- * Bring motor speeds towards desiredSpeeds by steps of 1
- * and send speedMs to I/O
- */
-/*
-  void adjustMotorSpeeds(){
-  if (state.speedM1 < state.desiredSpeedM1)     state.increaseM1();
-  if (state.speedM1 > state.desiredSpeedM1)     state.decreaseM1();
-  if (state.speedM2 < state.desiredSpeedM2)     state.increaseM2();
-  if (state.speedM2 > state.desiredSpeedM2)     state.decreaseM2();
-
-  int speedM1 = state.speedM1;
-  int speedM2 = state.speedM2;
-  int minSpeed = 10;
-  
-  // pay respect to nonkongruent speeds
-  speedM1 -= state.diffDesired();
-  speedM2 += state.diffDesired();
-     
-  //  ensure a minimum speed
-  if (speedM1 > 0 && speedM1 <  minSpeed) speedM1 =  minSpeed;
-  if (speedM1 < 0 && speedM1 > -minSpeed) speedM1 = -minSpeed;
-  if (speedM2 > 0 && speedM2 <  minSpeed) speedM2 =  minSpeed;
-  if (speedM2 < 0 && speedM2 > -minSpeed) speedM2 = -minSpeed;
-
-  md.setSpeeds(speedM1, speedM2);
-
-  // Serial.print(".");
-}
-*/
-
+ 
 void printUsage()
 {
   //

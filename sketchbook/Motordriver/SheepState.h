@@ -176,12 +176,6 @@ class SheepState
       Serial.print ("*");
     }    
 
-/*
-    void increaseM1(){ speedM1 += speedIncrease; speedM1 = min(speedM1,  maxSpeed);   }
-    void decreaseM1(){ speedM1 -= speedIncrease; speedM1 = max(speedM1, -maxSpeed);   }
-    void increaseM2(){ speedM2 += speedIncrease; speedM2 = min(speedM2,  maxSpeed);   }
-    void decreaseM2(){ speedM2 -= speedIncrease; speedM2 = max(speedM2, -maxSpeed);   }
-*/
     void cutterOn(){
       digitalWrite(PIN_CUTTER, 0); delay(10);
       isCutterOn = true;
@@ -192,9 +186,6 @@ class SheepState
       isCutterOn = false;
     }
 
-/*
-    int diffDesired(){ return desiredSpeedM1 - desiredSpeedM2; }
-*/
     /*
      * Build json from internal state
      */
@@ -219,34 +210,20 @@ class SheepState
       serializeJson(doc, response);
 
       // example of json string: char json[] = "{\"sensor\":\"gps\",\"time\":1351824120,\"data\":[48.756080,2.302038]}"      
-/*
-
-        response =  "{";
-      response = response  + "\"m1\":"+ String(speedM1) +", \"m2\":"+ String(speedM2) +",";
-      response = response  + "\"desiredSpeedM1\":"+ String(desiredSpeedM1) +", \"desiredSpeedM2\":"+ String(desiredSpeedM2) +",";
-      response = response  + "\"posM1\":"+ String(posM1) +", \"posM2\":"+ String(posM2) +",";
-      response = response  + "\"errorM1\":"+ String(errorM1) +", \"errorM2\":"+ String(errorM2) +",";
-      response = response  + "\"maxSpeed\":"+ String(maxSpeed) +",";
-      response = response  + "\"isCutterOn\":"+ String(isCutterOn) +",";
-      response = response  + "\"power\":"+ String(batteryPower) +",";
-      response = response  + "\"rssi\":"+ String(rssi) +",";
-      response = response  + "\"losingConnection\":"+ String(losingConnection) +",";      
-      response = response  + "}";
-
  
     */
 
       String response;
       response =  "{";
-      response = response  + "\"m1\":"+ speedM1 +", \"m2\":"+ speedM2 +",";
-      response = response  + "\"desiredSpeedM1\":"+ desiredSpeedM1 +", \"desiredSpeedM2\":"+ desiredSpeedM2 +",";
-      response = response  + "\"posM1\":"+ posM1 +", \"posM2\":"+ posM2 +",";
-      response = response  + "\"errorM1\":"+ errorM1 +", \"errorM2\":"+ errorM2 +",";
-      response = response  + "\"maxSpeed\":"+ maxSpeed +",";
-      response = response  + "\"isCutterOn\":"+ isCutterOn +",";
-      response = response  + "\"power\":"+ batteryPower +",";
-      response = response  + "\"rssi\":"+ rssi +",";
-      response = response  + "\"losingConnection\":"+ losingConnection +",";      
+      response = response  + "\"m1\":"                + speedM1 +       ", \"m2\":"            + speedM2        +",";
+      response = response  + "\"desiredSpeedM1\":"    + desiredSpeedM1 +", \"desiredSpeedM2\":"+ desiredSpeedM2 +",";
+      response = response  + "\"posM1\":"             + posM1 +         ", \"posM2\":"         + posM2          +",";
+      response = response  + "\"errorM1\":"           + errorM1 +       ", \"errorM2\":"       + errorM2        +",";
+      response = response  + "\"maxSpeed\":"          + maxSpeed +",";
+      response = response  + "\"isCutterOn\":"        + isCutterOn +",";
+      response = response  + "\"power\":"             + batteryPower +",";
+      response = response  + "\"rssi\":"              + rssi +",";
+      response = response  + "\"losingConnection\":"  + losingConnection +",";      
       response = response  + "\"nocomma\":0";      
       response = response  + "}";
       

@@ -28,14 +28,11 @@
 
 <script>
 
-    //
-    // global vars
-    //
     let ip = location.host;
     if (location.host === "localhost:63342") ip = "192.168.1.40";
     if (location.host === "") ip = "192.168.1.40";
-    console.log("location.host: " + location.host)
-    console.log("communication with ip: " + ip)
+    console.log("location.host: " + location.host);
+    console.log("communication with ip: " + ip);
 
     function control(){ window.open("file:////templates/control.html?host=" + ip, '_blank').focus();};
     function status(){ window.open("file:////templates/status.html?host=" + ip, '_blank').focus();};

@@ -20,22 +20,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b1169ea1-08b2-4f85-a2f3-bf8b0f5fc14c" name="Default Changelist" comment="Create README">
-      <change afterPath="$PROJECT_DIR$/gui/plain/templates/home.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gui/plain/templates/log.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sketchbook/Motordriver/resources/swagger.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sketchbook/Motordriver/resources/swagger.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sketchbook/Motordriver/resources/swagger.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sketchbook/Motordriver/resources/templates" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gui/plain/templates/control.html" beforeDir="false" afterPath="$PROJECT_DIR$/gui/plain/templates/control.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gui/plain/templates/joystick.html" beforeDir="false" afterPath="$PROJECT_DIR$/gui/plain/templates/joystick.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gui/plain/templates/home.html" beforeDir="false" afterPath="$PROJECT_DIR$/gui/plain/templates/home.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gui/plain/templates/status.html" beforeDir="false" afterPath="$PROJECT_DIR$/gui/plain/templates/status.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gui/plain/templates/swagger.html" beforeDir="false" afterPath="$PROJECT_DIR$/gui/plain/templates/swagger.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sketchbook/Motordriver/DualMC33926MotorShield.h" beforeDir="false" afterPath="$PROJECT_DIR$/sketchbook/Motordriver/DualMC33926MotorShield.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sketchbook/Motordriver/HTML.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sketchbook/Motordriver/Motordriver.ino" beforeDir="false" afterPath="$PROJECT_DIR$/sketchbook/Motordriver/Motordriver.ino" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sketchbook/Motordriver/SheepState.h" beforeDir="false" afterPath="$PROJECT_DIR$/sketchbook/Motordriver/SheepState.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sketchbook/Motordriver/WebServer.h" beforeDir="false" afterPath="$PROJECT_DIR$/sketchbook/Motordriver/WebServer.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sketchbook/Motordriver/swagger.html" beforeDir="false" afterPath="$PROJECT_DIR$/gui/plain/templates/swagger.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sketchbook/Motordriver/swagger.json" beforeDir="false" afterPath="$PROJECT_DIR$/gui/plain/templates/swagger.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sketchbook/Motordriver/swagger.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/gui/plain/templates/swagger.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sketchbook/Motordriver/swagger_minified.html" beforeDir="false" afterPath="$PROJECT_DIR$/sketchbook/Motordriver/resources/swagger_minified.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sketchbook/Motordriver/test.html" beforeDir="false" afterPath="$PROJECT_DIR$/sketchbook/Motordriver/test.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -278,7 +272,7 @@
       <workItem from="1623069573094" duration="24409000" />
       <workItem from="1624361449668" duration="8590000" />
       <workItem from="1626710784459" duration="881000" />
-      <workItem from="1626761711359" duration="9864000" />
+      <workItem from="1626761711359" duration="18656000" />
     </task>
     <task id="LOCAL-00001" summary="Used WebServer and Json, but does not compile">
       <created>1606501281915</created>
@@ -420,7 +414,14 @@
       <option name="project" value="LOCAL" />
       <updated>1619600922504</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="Froms for editing parameters">
+      <created>1626775710503</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1626775710503</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -468,7 +469,8 @@
     <MESSAGE value="DEL vision" />
     <MESSAGE value="Create README" />
     <MESSAGE value="Take Snapshot" />
-    <option name="LAST_COMMIT_MESSAGE" value="Take Snapshot" />
+    <MESSAGE value="Froms for editing parameters" />
+    <option name="LAST_COMMIT_MESSAGE" value="Froms for editing parameters" />
   </component>
   <component name="WindowStateProjectService">
     <state x="1300" y="146" width="1202" height="710" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1619600726959">
@@ -511,17 +513,14 @@
       <screen x="72" y="27" width="2488" height="1413" />
     </state>
     <state x="543" y="417" width="428" height="640" key="RollbackChangesDialog/72.27.2488.1413/2560.596.1920.1080@72.27.2488.1413" timestamp="1624366053383" />
-    <state x="1437" y="368" width="1022" height="737" key="SettingsEditor" timestamp="1616514480597">
-      <screen x="72" y="27" width="2488" height="1413" />
-    </state>
-    <state x="1437" y="368" width="1022" height="737" key="SettingsEditor/72.27.2488.1413/2560.536.1920.1080@72.27.2488.1413" timestamp="1616514480597" />
     <state x="302" y="148" width="1530" height="1213" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1623080418345">
       <screen x="72" y="27" width="2488" height="1413" />
     </state>
     <state x="302" y="148" width="1530" height="1213" key="com.intellij.history.integration.ui.views.FileHistoryDialog/72.27.2488.1413/2560.596.1920.1080@72.27.2488.1413" timestamp="1623080418345" />
-    <state x="283" y="132" width="1095" height="683" key="find.popup" timestamp="1623077937155">
-      <screen x="72" y="27" width="2488" height="1413" />
+    <state x="2137" y="107" width="1127" height="697" key="find.popup" timestamp="1626860265163">
+      <screen x="1920" y="0" width="2560" height="1440" />
     </state>
+    <state x="2137" y="107" width="1127" height="697" key="find.popup/1920.0.2560.1440/0.671.1920.1080@1920.0.2560.1440" timestamp="1626860265163" />
     <state x="1263" y="27" width="1095" height="683" key="find.popup/72.27.2488.1413/2560.536.1920.1080@72.27.2488.1413" timestamp="1619599796294" />
     <state x="283" y="132" width="1095" height="683" key="find.popup/72.27.2488.1413/2560.596.1920.1080@72.27.2488.1413" timestamp="1623077937155" />
   </component>

@@ -32,6 +32,7 @@
             transition: height 0.6s ease;
         }
 
+
     </style>
 </head>
 <body>
@@ -91,7 +92,6 @@
         <label for="errorM2Input">Error M2:</label>
         <input type="number" id="errorM2Input" min="0" max="100">
         <br>
-
         <br>
         <br>
 
@@ -101,61 +101,56 @@
           <td>Amount_________________</td>
         </tr>
         <tr>
+          <td>isCutterOn</td>
+          <td><input type="checkbox" id="cutterOn" name="scales"  Cutter></td>
+        </tr>
+        <tr>
           <td>m1</td>
-          <td><div id="m1" class="progress-bar" role="progressbar"  style="width:10%" >0%
-            </div></td>
+          <td><div class="progress"><div id="m1" class="progress-bar">0%</div></div></td>
         </tr>
         <tr>
           <td>m2</td>
-          <td><div id="m2" class="progress-bar" role="progressbar"  style="width:20%" >20%
-          </div></td>
+          <td><div class="progress"><div id="m2" class="progress-bar">0%</div></div></td>
         </tr>
         <tr>
           <td>desiredSpeedM1</td>
-          <td><div id="desiredSpeedM1" class="progress-bar" >0%</div></td>
+          <td><div class="progress"><div id="desiredSpeedM1" class="progress-bar">0%</div></div></td>
         </tr>
         <tr>
           <td>desiredSpeedM2</td>
-          <td><div id="desiredSpeedM2" class="progress-bar" >0%</div></td>
+          <td><div class="progress"><div id="desiredSpeedM2" class="progress-bar">0%</div></div></td>
         </tr>
         <tr>
           <td>posM1</td>
-          <td><div id="posM1" class="progress-bar" >0%</div></td>
+          <td><div class="progress"><div id="posM1" class="progress-bar">0%</div></div></td>
         </tr>
         <tr>
           <td>posM2</td>
-          <td><div id="posM2" class="progress-bar" >0%</div></td>
+          <td><div class="progress"><div id="m1" class="progress-bar">0%</div></div></td>
         </tr>
         <tr>
           <td>errorM1</td>
-          <td><div id="errorM1" class="progress-bar" role="progressbar"  style="width:100%" >100%
-          </div></td>
+          <td><div class="progress"><div id="errorM1" class="progress-bar">0%</div></div></td>
         </tr>
         <tr>
           <td>errorM2</td>
-          <td><div id="errorM2" class="progress-bar">0%</div></td>
+          <td><div class="progress"><div id="errorM2" class="progress-bar">0%</div></div></td>
         </tr>
         <tr>
           <td>maxSpeed</td>
-          <td><div id="maxSpeed" class="progress-bar">0%</div></td>
+          <td><div class="progress"><div id="maxSpeed" class="progress-bar">0%</div></div></td>
         </tr>
         <tr>
           <td>power</td>
-          <td><div id="power" class="progress-bar">0%</div></td>
-        </tr>
-        <tr>
-          <td>isCutterOn</td>
-          <td>
-               <input type="checkbox" id="cutterOn" name="scales"  Cutter>
-          </td>
+          <td><div class="progress"><div id="power" class="progress-bar">0%</div></div></td>
         </tr>
         <tr>
           <td>rssi</td>
-          <td><div id="rssi" class="progress-bar">0%</div></td>
+          <td><div class="progress"><div id="rssi" class="progress-bar">0%</div></div></td>
         </tr>
         <tr>
           <td>losingConnection</td>
-          <td><div id="losingConnection" class="progress-bar">0%</div></td>
+          <td><div class="progress"><div id="losingConnection" class="progress-bar">0%</div></div></td>
         </tr>
         </table>
 
@@ -299,16 +294,28 @@
             paramElement.innerHTML = voltage + 'V';
             paramElement.style.width = barWidth +'%';
         }
+        if (paramName === 'losingConnection'){
+            let timeToLosingConnection = parseInt(value);
+            if (timeToLosingConnection < 0 ) timeToLosingConnection = 0;
+            let barWidth = timeToLosingConnection / 5000 * 100;
+            paramElement.innerHTML = timeToLosingConnection + 'ms';
+            paramElement.style.width = barWidth +'%';
+        }
         if (paramName === 'maxSpeed'){
             let maxSpeed = parseInt(value);
             paramElement.value = maxSpeed;
         }
 
-        if (parseInt(paramElement.style.width) < 10){
-            paramElement.style.color = "black";
-        }else{
-            paramElement.style.color = "white";
+        if (paramName === 'posM1'){
+            paramElement.innerHTML = value;
         }
+
+        if (paramName === 'posM2'){
+            paramElement.innerHTML = value;
+        }
+
+
+
     }
 
 
@@ -368,55 +375,6 @@
                 updateMotorBars(parseInt(sheep_state['m1']), parseInt(sheep_state['m2']));
             }
         }
-    }
-
-
-    function speed1() {
-        speed = 12;
-        console.log("speed set to " + speed);
-    }
-
-    function speed2() {
-        speed = 25;
-        console.log("speed set to " + speed);
-    }
-
-    function speed3() {
-        speed = 100;
-        console.log("speed set to " + speed);
-    }
-
-    function stop() {
-        sendCommand(0, 0);
-    }
-
-    function forward() {
-        sendCommand(speed, 0)
-    }
-
-    function left() {
-        sendCommand(0, -speed);
-    }
-
-    function right() {
-        sendCommand(0, speed);
-    }
-
-    function backward() {
-        sendCommand(-speed, 0)
-    }
-
-    var offsetX;
-    var offsetY;
-    var x;
-    var y;
-
-    function stop() {
-        offsetX = 0;
-        offsetY = 0;
-        x = 0;
-        y = 0;
-        sendCommand(0, 0);
     }
 
     function setMaxSpeed(e) {
