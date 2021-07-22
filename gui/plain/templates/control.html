@@ -23,6 +23,8 @@
     <TABLE>
         <TR>
             <TD>
+                <label for="steps">Steps</label>
+                <input type="range" id="steps" value="10" min="0" max="1000" onchange="updateSteps(this.value);"><span id="stepsResult">10</span>
             </TD>
             <TD>
                 <button onclick="forward()">forward</button>
@@ -56,6 +58,14 @@
             </TD>
             <TD>
                 <button onclick="speed3()">speed3</button>
+            </TD>
+        </TR>
+        <TR>
+            <TD>
+            </TD>
+            <TD>
+            </TD>
+            <TD>
             </TD>
         </TR>
 
@@ -132,17 +142,26 @@
 
     function speed1() {
         speed = 12;
-        console.log("speed set to " + speed);
+        updateSteps(speed)
     }
 
     function speed2() {
         speed = 25;
+        updateSteps(speed)
         console.log("speed set to " + speed);
     }
 
     function speed3() {
         speed = 100;
+        updateSteps(speed)
         console.log("speed set to " + speed);
+    }
+
+    function updateSteps(val) {
+        speed = val;
+        document.getElementById('steps').value=val;
+        document.getElementById('stepsResult').innerText=val;
+        console.log("speed set to " + val);
     }
 
     function stop() {
