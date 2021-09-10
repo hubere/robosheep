@@ -120,10 +120,12 @@
         let sum = direction + speed
         let diff = direction - speed
 
+        /*
         if (Math.abs(sum) > 100 || Math.abs(diff) > 100) {
             console.log("motor speeds to high")
             return
         }
+        */
 
         // call server
         let url = url_sheep_move + "?speed=" + speed + "&dir=" + direction

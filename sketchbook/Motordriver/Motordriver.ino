@@ -29,6 +29,7 @@
 #include "SheepState.h"
 #include "BatteryPower.h"
 #include "WebServer.h"
+#include "compass.h"
 
 
 //
@@ -46,24 +47,51 @@
 // Pin Definitions //
 /////////////////////
 
-unsigned char CONNECTED_LED_PIN = D0;  // yellow LED
+/**
+Label GPIO  Input     Output  Notes
+D0  GPIO16  no int-   no PWM  HIGH at boot
+            errupt    no I2C  used to wake up from deep sleep                                                                       
+D1  GPIO5   OK        OK      often used as SCL (I2C)
+D2  GPIO4   OK        OK      often used as SDA (I2C)
+D3  GPIO0   pulled up OK      connected to FLASH button, boot fails if pulled LOW
+D4  GPIO2   pulled up OK      HIGH at boot
+                              connected to on-board LED, boot fails if pulled LOW
+D5  GPIO14  OK        OK      SPI (SCLK)
+D6  GPIO12  OK        OK      SPI (MISO)
+D7  GPIO13  OK        OK      SPI (MOSI)
+D8  GPIO15  pulled    OK      SPI (CS)
+            to GND            Boot fails if pulled HIGH  
+RX  GPIO3   OK        RX pin  HIGH at boot
+TX  GPIO1   TX pin    OK      HIGH at boot
+                              debug output at boot, boot fails if pulled LOW
+A0  ADC0    AnalogIn  X 
+ */
+
+unsigned char CONNECTED_LED_PIN = D9_RX;  // yellow LED
+
+/*
+ * DON' USE THESE (used as default in Wire.h/QMC5883LCompass.h as SCL and SDA)
+ * 
+unsigned char SCL = D1;        
+unsigned char SDA = D2;        
+*/
 
 /*
  * DON' USE THESE (see DualMC....h)
  * 
-unsigned char _M1IN1  = D1;
-unsigned char _M1IN2  = D2;
-unsigned char _M2IN1  = D3;
-unsigned char _M2IN2  = D4;
+unsigned char _M1IN1  = D3;
+unsigned char _M1IN2  = D4;
+unsigned char _M2IN1  = D7;
+unsigned char _M2IN2  = D8;
 */
 
 
 /*
  * DON' USE THESE (see SheepState.h)
  * 
+unsigned char PIN_CUTTER = D0;
 unsigned char M1_STEP_PIN = D5;        // Digital pin to be read for M1 measurement.
 unsigned char M2_STEP_PIN = D6;        // Digital pin to be read for M2 measurement.
-unsigned char PIN_CUTTER = D7;
 */ 
 
 /*
@@ -73,9 +101,8 @@ const int ANALOG_PIN = A0;         // The only analog pin on the Thing
 */
 
 
-unsigned char PIN_D8_NOT_USED = D8;
-unsigned char PIN_D9_NOT_USED = D9;
-unsigned char PIN_D10_NOT_USED = D10;
+
+unsigned char PIN_D10_NOT_USED = D10_TX;
 
 
 
@@ -94,7 +121,7 @@ int led_state = 0;  // last state set for led
 
 void setup()
 {
-  Serial.begin(115200);
+  Serial.begin(9600);
   delay(1000);
   Serial.println("\n\n\nStarting Robosheep.");
       
@@ -107,6 +134,7 @@ void setup()
   state.init();
   myWifi.init();
   webServer.init();
+  compass.init();
 
   printUsage();
 
@@ -156,6 +184,7 @@ void bigLoop(){
 
   toggleLED(bigLoopCount);                // indicate operation
   batteryPower.measureBatteryPower();     // battery power  
+  compass.readValues();
   stopOnLostConnection();                 // Stop if connection is lost, i.e. no commands issued anymore
   // adjustMotorSpeeds();                    // Adjust motor speeds towards desiredSpeed.
   myWifi.checkWifiConnection();

@@ -23,6 +23,9 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gui/plain/templates/control.html" beforeDir="false" afterPath="$PROJECT_DIR$/gui/plain/templates/control.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gui/plain/templates/status.html" beforeDir="false" afterPath="$PROJECT_DIR$/gui/plain/templates/status.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sketchbook/Motordriver/DualMC33926MotorShield.h" beforeDir="false" afterPath="$PROJECT_DIR$/sketchbook/Motordriver/DualMC33926MotorShield.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sketchbook/Motordriver/Motordriver.ino" beforeDir="false" afterPath="$PROJECT_DIR$/sketchbook/Motordriver/Motordriver.ino" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sketchbook/Motordriver/SheepState.h" beforeDir="false" afterPath="$PROJECT_DIR$/sketchbook/Motordriver/SheepState.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -265,7 +268,9 @@
       <workItem from="1623069573094" duration="24409000" />
       <workItem from="1624361449668" duration="8590000" />
       <workItem from="1626710784459" duration="881000" />
-      <workItem from="1626761711359" duration="29912000" />
+      <workItem from="1626761711359" duration="31829000" />
+      <workItem from="1627557382118" duration="1181000" />
+      <workItem from="1631272259006" duration="1232000" />
     </task>
     <task id="LOCAL-00001" summary="Used WebServer and Json, but does not compile">
       <created>1606501281915</created>
@@ -428,7 +433,14 @@
       <option name="project" value="LOCAL" />
       <updated>1626879296001</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="FIX bars centered">
+      <created>1626957565213</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1626957565213</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

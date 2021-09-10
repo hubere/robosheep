@@ -25,9 +25,9 @@ class SheepState
 {
   
   private:
+    unsigned char PIN_CUTTER = D0;
     unsigned char M1_STEP_PIN = D5;        // Digital pin to be read for M1 measurement.
     unsigned char M2_STEP_PIN = D6;        // Digital pin to be read for M2 measurement.
-    unsigned char PIN_CUTTER = D7;         // start / stop cutter 
 
     const int speedIncrease = 10; 
     const int minSpeed = 10; 
@@ -37,6 +37,11 @@ class SheepState
 
     int errorM1 = 1;            // empiric value
     int errorM2 = 0;
+
+    int compass_azimuth = 0;
+    int compass_x = 0;
+    int compass_y = 0;
+    int compass_z = 0;
 
   public:  
     long rssi = 0;  
@@ -69,7 +74,14 @@ class SheepState
     int getDesiredSpeedM2(){ return desiredSpeedM2; };
     void setBatteryPower(int power){
       batteryPower = power;
-    }
+    };
+
+    void setCompassReadings(int azimuth, int x, int y, int z){
+      compass_azimuth = azimuth;
+      compass_x = x;
+      compass_y = y;
+      compass_z = z;      
+    };
 
     int setErrorM1(int error){ errorM1 = error; };
     int setErrorM2(int error){ errorM2 = error; };
@@ -232,6 +244,7 @@ class SheepState
       response = response  + "\"maxSpeed\":"          + maxSpeed +",";
       response = response  + "\"isCutterOn\":"        + isCutterOn +",";
       response = response  + "\"power\":"             + batteryPower +",";
+      response = response  + "\"azimuth\":"           + compass_azimuth +",";
       response = response  + "\"rssi\":"              + rssi +",";
       response = response  + "\"losingConnection\":"  + losingConnection +",";      
       response = response  + "\"nocomma\":0";      

@@ -9,10 +9,10 @@ class DualMC33926MotorShield
 {
   private:
     // unsigned char _nD2    = D0;  -> set _nD2 on Mottordrivershield to high!
-    unsigned char _M1IN1  = D1;
-    unsigned char _M1IN2  = D2;
-    unsigned char _M2IN1  = D3;
-    unsigned char _M2IN2  = D4;
+    unsigned char _M1IN1  = D3;
+    unsigned char _M1IN2  = D4;
+    unsigned char _M2IN1  = D7;
+    unsigned char _M2IN2  = D8;
     // unsigned char _nSF    = D8;  -> no posibility to read error state
 
     String LOGGER_NAME = "DualMC33926MotorShield";
