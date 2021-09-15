@@ -160,6 +160,10 @@
           <td><div id="azimuth">0</div></td>
         </tr>
         <tr>
+          <td>compass (x,y,z)</td>
+          <td><div id="compass_x">0</div><div id="compass_y">0</div><div id="compass_z">0</div></td>
+        </tr>
+        <tr>
           <td>power</td>
           <td><div class="progress"><div id="power" class="progress-bar">0%</div></div></td>
         </tr>
@@ -334,7 +338,7 @@
             paramElement.value = maxSpeed;
         }
 
-        if (["posM1","posM2","dist1","dist2", "azimuth"].indexOf(paramName) > -1){
+        if (["posM1","posM2","dist1","dist2", "azimuth", "compass_x", "compass_y", "compass_z"].indexOf(paramName) > -1){
             paramElement.innerHTML = value;
         }
 

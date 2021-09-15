@@ -245,6 +245,9 @@ class SheepState
       response = response  + "\"isCutterOn\":"        + isCutterOn +",";
       response = response  + "\"power\":"             + batteryPower +",";
       response = response  + "\"azimuth\":"           + compass_azimuth +",";
+      response = response  + "\"compass_x\":"         + compass_x +",";
+      response = response  + "\"compass_y\":"         + compass_y +",";
+      response = response  + "\"compass_z\":"         + compass_z +",";
       response = response  + "\"rssi\":"              + rssi +",";
       response = response  + "\"losingConnection\":"  + losingConnection +",";      
       response = response  + "\"nocomma\":0";      
